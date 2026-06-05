@@ -1,0 +1,11 @@
+# PixInsight/local scratch
+*.bak
+*.tmp
+*.log
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
