@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xri version="1.0">
+   <description>
+      <p>
+         GrandPaClanger PixInsight Toolbox Scripts.
+      </p>
+   </description>
+   <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
+      <package fileName="packages/MatchOpenImageSizes-1.0.0.zip"
+               sha1="58e9ec7df1ab8c134a5040fb5009db4979805dca"
+               type="script"
+               releaseDate="20260605">
+         <title>
+            MatchOpenImageSizes 1.0.0
+         </title>
+         <description>
+            <p>
+               Installs the MatchOpenImageSizes script under Script &gt; Toolbox.
+               The script matches open image windows to a selected reference window and supports PixInsight process icons.
+            </p>
+         </description>
+      </package>
+   </platform>
+</xri>

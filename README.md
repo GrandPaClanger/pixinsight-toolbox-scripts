@@ -2,6 +2,10 @@
 
 Repository for PixInsight JavaScript Runtime scripts.
 
+PixInsight repository URL:
+
+`https://raw.githubusercontent.com/GrandPaClanger/pixinsight-toolbox-scripts/main/`
+
 ## Included Scripts
 
 ### MatchOpenImageSizes
@@ -22,11 +26,7 @@ It also supports PixInsight process icons:
 
 ## PixInsight Repository URL
 
-After this repository is published to GitHub as:
-
-`https://github.com/GrandPaClanger/pixinsight-toolbox-scripts`
-
-members should add this URL in PixInsight:
+Members should add this URL in PixInsight:
 
 `https://raw.githubusercontent.com/GrandPaClanger/pixinsight-toolbox-scripts/main/`
 
@@ -38,6 +38,10 @@ Then use:
 
 `Resources > Updates > Check for Updates`
 
+PixInsight retrieves repository information from:
+
+`updates.xri`
+
 ## Repository Layout
 
 PixInsight scans scripts under:
@@ -48,3 +52,6 @@ This script is installed from:
 
 `src/scripts/Toolbox/MatchOpenImageSizes.js`
 
+The update package is:
+
+`packages/MatchOpenImageSizes-1.0.0.zip`
