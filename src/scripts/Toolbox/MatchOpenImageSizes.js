@@ -18,7 +18,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define TITLE "MatchOpenImageSizes"
-#define VERSION "1.0.0"
+#define VERSION "1.0.1"
 
 function formatSize( image )
 {
@@ -301,7 +301,7 @@ function MatchOpenImageSizesDialog()
    this.newInstanceButton.icon = this.scaledResource( ":/process-interface/new-instance.png" );
    this.newInstanceButton.setScaledFixedSize( 24, 24 );
    this.newInstanceButton.toolTip =
-      "New Instance: drag to the workspace to create a process icon, or drag the icon to an image to use that image as the reference.";
+      "New Instance: drag to the workspace first to create a process icon. Then drag that process icon to an image to use it as the reference.";
    this.newInstanceButton.onMousePress = function()
    {
       exportParameters( dialog.referenceCombo.itemText( dialog.referenceCombo.currentItem ) );

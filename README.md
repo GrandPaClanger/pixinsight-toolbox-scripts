@@ -24,6 +24,8 @@ It also supports PixInsight process icons:
 2. Use the New Instance triangle to drag a process icon to the PixInsight workspace.
 3. Drag that process icon onto an image window to use that image as the reference.
 
+Do not drag the live New Instance triangle directly onto an image. Current PixInsight versions report this as recursive script-instance execution. Create the desktop process icon first, then drag that icon onto an image.
+
 ## PixInsight Repository URL
 
 Members should add this URL in PixInsight:
@@ -54,4 +56,4 @@ This script is installed from:
 
 The update package is:
 
-`packages/MatchOpenImageSizes-1.0.0.zip`
+`packages/MatchOpenImageSizes-1.0.1.zip`

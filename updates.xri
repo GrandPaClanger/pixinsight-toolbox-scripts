@@ -6,12 +6,12 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/MatchOpenImageSizes-1.0.0.zip"
-               sha1="58e9ec7df1ab8c134a5040fb5009db4979805dca"
+      <package fileName="packages/MatchOpenImageSizes-1.0.1.zip"
+               sha1="5c9d2206be0d7899aa92ec7d9a6148ae2584ed1f"
                type="script"
                releaseDate="20260605">
          <title>
-            MatchOpenImageSizes 1.0.0
+            MatchOpenImageSizes 1.0.1
          </title>
          <description>
             <p>
