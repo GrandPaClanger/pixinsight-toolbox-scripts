@@ -36,7 +36,7 @@ Menu:
 
 Version:
 
-`1.0.6`
+`1.0.7`
 
 Purpose:
 
@@ -154,9 +154,15 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-1.0.6.zip`
+`packages/ChapelAstroUtilities-1.0.7.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 1.0.7
+
+- Updated `ImageRenameByFilter` to 1.0.7.
+- The output folder now defaults to the source directory used by the majority of currently open images.
+- A manually typed or browsed folder is still respected for the current dialog session.
 
 ### Chapel Astro Utilities 1.0.6
 

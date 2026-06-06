@@ -18,7 +18,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define TITLE "ImageRenameByFilter"
-#define VERSION "1.0.6"
+#define VERSION "1.0.7"
 
 #define SETTINGS_ROOT "GrandPaClanger/ImageRenameByFilter"
 
@@ -404,9 +404,36 @@ function buildPlan( mappings, suffix, previousSelections, renameMode )
 
 function defaultOutputDirectory( plan )
 {
+   var counts = new Object;
+   var directories = new Array;
+   var bestDirectory = "";
+   var bestCount = 0;
+
    for ( var i = 0; i < plan.length; ++i )
-      if ( plan[i].mapping != null && plan[i].sourceDirectory.length > 0 )
-         return plan[i].sourceDirectory;
+   {
+      var directory = plan[i].sourceDirectory;
+
+      if ( directory.length > 0 )
+      {
+         if ( counts[directory] == null )
+         {
+            counts[directory] = 0;
+            directories.push( directory );
+         }
+
+         ++counts[directory];
+      }
+   }
+
+   for ( var j = 0; j < directories.length; ++j )
+      if ( counts[directories[j]] > bestCount )
+      {
+         bestDirectory = directories[j];
+         bestCount = counts[directories[j]];
+      }
+
+   if ( bestDirectory.length > 0 )
+      return bestDirectory;
 
    return settingReadString( "outputDirectory", "" );
 }
@@ -1432,6 +1459,8 @@ function ImageRenameByFilterDialog()
    var selectedMappingIndex = -1;
    var suffixText = parametersSuffix();
    var renameMode = parametersRenameMode();
+   var updatingOutputDirectory = false;
+   var outputDirectoryManuallyChanged = false;
 
    this.windowTitle = TITLE + " " + VERSION;
 
@@ -1559,6 +1588,7 @@ function ImageRenameByFilterDialog()
 
       if ( d.execute() )
       {
+         outputDirectoryManuallyChanged = true;
          dialog.outputEdit.text = d.directory;
          dialog.refreshPreview();
       }
@@ -1729,8 +1759,18 @@ function ImageRenameByFilterDialog()
                                   previousSelections,
                                   dialog.renameMode() );
 
-         if ( dialog.outputEdit.text.length == 0 )
-            dialog.outputEdit.text = defaultOutputDirectory( currentPlan );
+         if ( !outputDirectoryManuallyChanged )
+         {
+            var defaultDirectory = defaultOutputDirectory( currentPlan );
+
+            if ( defaultDirectory.length > 0 &&
+                 dialog.outputEdit.text != defaultDirectory )
+            {
+               updatingOutputDirectory = true;
+               dialog.outputEdit.text = defaultDirectory;
+               updatingOutputDirectory = false;
+            }
+         }
 
          fillPreview( dialog.previewTree,
                       currentPlan,
@@ -1824,6 +1864,9 @@ function ImageRenameByFilterDialog()
 
    this.outputEdit.onTextUpdated = function()
    {
+      if ( !updatingOutputDirectory )
+         outputDirectoryManuallyChanged = true;
+
       dialog.saveDialogSettings();
       fillPreview( dialog.previewTree,
                    currentPlan,
