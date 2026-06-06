@@ -36,7 +36,7 @@ Menu:
 
 Version:
 
-`1.0.4`
+`1.0.5`
 
 Purpose:
 
@@ -154,9 +154,16 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-1.0.4.zip`
+`packages/ChapelAstroUtilities-1.0.5.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 1.0.5
+
+- Updated `ImageRenameByFilter` to 1.0.5.
+- Rename-only operations now always leave selected images open.
+- Added a rename-only note and disabled post-save controls when saving is off.
+- Left-aligned the main rename/apply and in-place save action buttons.
 
 ### Chapel Astro Utilities 1.0.4
 

@@ -18,7 +18,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define TITLE "ImageRenameByFilter"
-#define VERSION "1.0.4"
+#define VERSION "1.0.5"
 
 #define SETTINGS_ROOT "GrandPaClanger/ImageRenameByFilter"
 
@@ -1319,18 +1319,6 @@ function applyPlan( plan, saveImages, outputDirectory, postSaveAction, openSaved
                   collapseWindow( plan[k].window );
             }
    }
-   else
-   {
-      for ( var m = 0; m < plan.length; ++m )
-         if ( plan[m].selected && plan[m].mapping != null )
-         {
-            if ( postSaveAction == "close" )
-               closeWindow( plan[m].window );
-            else if ( postSaveAction == "collapse" )
-               collapseWindow( plan[m].window );
-         }
-   }
-
    Console.writeln( "Done. Renamed " + renamed.toString() +
                     " image window(s); saved " + saved.toString() +
                     "; opened " + opened.toString() + "." );
@@ -1580,6 +1568,12 @@ function ImageRenameByFilterDialog()
    this.postSaveSizer.add( this.postSaveCombo, 100 );
    this.postSaveSizer.add( this.openSavedCheckBox );
 
+   this.renameOnlyNoteLabel = new Label( this );
+   this.renameOnlyNoteLabel.text =
+      "Rename-only operations will not save, close, or collapse images.";
+   this.renameOnlyNoteLabel.wordWrapping = true;
+   this.renameOnlyNoteLabel.textAlignment = TextAlign_Left | TextAlign_VertCenter;
+
    this.previewTree = new TreeBox( this );
    this.previewTree.numberOfColumns = 4;
    this.previewTree.headerVisible = true;
@@ -1649,10 +1643,12 @@ function ImageRenameByFilterDialog()
       {
       }
 
-      dialog.postSaveLabel.text = saveVisible ? "After save:" : "After apply:";
-      dialog.postSaveLabel.enabled = true;
-      dialog.postSaveCombo.enabled = true;
+      dialog.postSaveLabel.text = "After save:";
+      dialog.postSaveLabel.enabled = saveVisible;
+      dialog.postSaveCombo.enabled = saveVisible;
       dialog.openSavedCheckBox.enabled = saveVisible;
+      dialog.renameOnlyNoteLabel.visible = !saveVisible;
+      dialog.renameOnlyNoteLabel.enabled = !saveVisible;
    };
 
    this.postSaveAction = function()
@@ -1997,8 +1993,8 @@ function ImageRenameByFilterDialog()
 
    this.renameActionSizer = new HorizontalSizer;
    this.renameActionSizer.spacing = 6;
-   this.renameActionSizer.addStretch();
    this.renameActionSizer.add( this.applyButton );
+   this.renameActionSizer.addStretch();
 
    this.overwriteActionLabel = new Label( this );
    this.overwriteActionLabel.text = "In-Place File Save";
@@ -2007,8 +2003,8 @@ function ImageRenameByFilterDialog()
 
    this.overwriteActionSizer = new HorizontalSizer;
    this.overwriteActionSizer.spacing = 6;
-   this.overwriteActionSizer.addStretch();
    this.overwriteActionSizer.add( this.saveOverwriteButton );
+   this.overwriteActionSizer.addStretch();
 
    this.closeButton = new PushButton( this );
    this.closeButton.text = "Close";
@@ -2037,6 +2033,7 @@ function ImageRenameByFilterDialog()
    this.sizer.add( this.saveCheckBox );
    this.sizer.add( this.folderSizer );
    this.sizer.add( this.postSaveSizer );
+   this.sizer.add( this.renameOnlyNoteLabel );
    this.sizer.add( this.previewSizer, 100 );
    this.sizer.add( this.selectionActionLabel );
    this.sizer.add( this.selectionButtonSizer );
