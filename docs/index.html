@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chapel Astro Utilities for PixInsight</title>
+  <meta name="description" content="Chapel Astro Utilities helps PixInsight users rename, save, and manage stacked master frames with clean filter-aware workflows.">
+  <style>
+    :root {
+      --bg: #10161a;
+      --bg-2: #172027;
+      --text: #f4f7f7;
+      --muted: #b8c3c8;
+      --panel: #f6f8f8;
+      --panel-text: #172027;
+      --line: rgba(244, 247, 247, 0.14);
+      --teal: #14a99d;
+      --teal-dark: #0d6f68;
+      --gold: #e2ad3d;
+      --rust: #b95f3e;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      --radius: 8px;
+      color-scheme: dark;
+      font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .site-header {
+      position: fixed;
+      z-index: 20;
+      top: 0;
+      left: 0;
+      right: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(16, 22, 26, 0.82);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 68px;
+      gap: 22px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 750;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--teal), var(--gold));
+      color: #071113;
+      box-shadow: 0 8px 22px rgba(20, 169, 157, 0.25);
+      font-weight: 900;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 18px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .button.primary {
+      border-color: transparent;
+      background: var(--teal);
+      color: #061314;
+    }
+
+    .button.secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+    }
+
+    .hero {
+      min-height: 92vh;
+      display: grid;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding: 118px 0 74px;
+      background-image:
+        linear-gradient(90deg, rgba(16, 22, 26, 0.96) 0%, rgba(16, 22, 26, 0.78) 38%, rgba(16, 22, 26, 0.2) 100%),
+        linear-gradient(0deg, rgba(16, 22, 26, 0.85) 0%, rgba(16, 22, 26, 0.1) 36%),
+        url("assets/image-rename-preview.png");
+      background-size: cover;
+      background-position: center;
+    }
+
+    .hero-inner,
+    .section-inner {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .hero-copy {
+      max-width: 690px;
+      overflow-wrap: break-word;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 22px;
+      font-size: clamp(44px, 7vw, 82px);
+      line-height: 0.98;
+      font-weight: 850;
+    }
+
+    .hero-copy p {
+      max-width: 620px;
+      margin-bottom: 28px;
+      color: #d5dddf;
+      font-size: clamp(18px, 2.3vw, 23px);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 34px;
+    }
+
+    .proof {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      max-width: 620px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .proof div {
+      padding: 18px 18px 18px 0;
+    }
+
+    .proof strong {
+      display: block;
+      color: var(--gold);
+      font-size: 22px;
+      line-height: 1.1;
+    }
+
+    .proof span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    section {
+      padding: 76px 0;
+    }
+
+    .light {
+      background: var(--panel);
+      color: var(--panel-text);
+    }
+
+    .section-heading {
+      max-width: 760px;
+      margin-bottom: 34px;
+    }
+
+    .section-heading h2 {
+      margin-bottom: 14px;
+      font-size: clamp(32px, 4vw, 52px);
+      line-height: 1.05;
+    }
+
+    .section-heading p {
+      color: #526068;
+      font-size: 18px;
+    }
+
+    .benefits {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .benefit,
+    .workflow,
+    .guide-block,
+    .install-box {
+      border: 1px solid rgba(23, 32, 39, 0.12);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: 0 14px 34px rgba(23, 32, 39, 0.08);
+    }
+
+    .benefit {
+      padding: 24px;
+    }
+
+    .icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 18px;
+      border-radius: 8px;
+      background: #e8f5f3;
+      color: var(--teal-dark);
+      font-weight: 900;
+    }
+
+    .benefit:nth-child(2) .icon {
+      background: #fff4d8;
+      color: #8a5d00;
+    }
+
+    .benefit:nth-child(3) .icon {
+      background: #f5e9e2;
+      color: var(--rust);
+    }
+
+    .benefit h3,
+    .workflow h3,
+    .guide-block h3,
+    .install-box h3 {
+      margin-bottom: 10px;
+      font-size: 21px;
+    }
+
+    .benefit p,
+    .workflow p,
+    .guide-block p,
+    .install-box p,
+    .guide-block li {
+      color: #526068;
+    }
+
+    .dark-band {
+      background: var(--bg-2);
+    }
+
+    .dark-band .section-heading p {
+      color: var(--muted);
+    }
+
+    .workflow-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .workflow {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.12);
+      box-shadow: none;
+      padding: 24px;
+      color: var(--text);
+    }
+
+    .workflow p {
+      color: var(--muted);
+    }
+
+    .workflow code,
+    .guide-block code,
+    .install-box code {
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: rgba(20, 169, 157, 0.14);
+      color: #107c74;
+      font-family: "Cascadia Mono", Consolas, monospace;
+      font-size: 0.92em;
+    }
+
+    .dark-band .workflow code {
+      color: #a8f2ea;
+      background: rgba(20, 169, 157, 0.18);
+    }
+
+    .install-layout {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .install-box {
+      padding: 26px;
+    }
+
+    .steps {
+      margin: 18px 0 0;
+      padding-left: 22px;
+    }
+
+    .steps li {
+      margin-bottom: 12px;
+    }
+
+    .repo-url {
+      display: block;
+      margin-top: 18px;
+      padding: 14px;
+      overflow-wrap: anywhere;
+      border: 1px solid rgba(23, 32, 39, 0.14);
+      border-radius: var(--radius);
+      background: #eef4f5;
+      color: #17333a;
+      font-family: "Cascadia Mono", Consolas, monospace;
+      font-size: 14px;
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .guide-block {
+      padding: 24px;
+    }
+
+    .guide-block ul {
+      margin: 12px 0 0;
+      padding-left: 20px;
+    }
+
+    .safety {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background:
+        linear-gradient(90deg, rgba(20, 169, 157, 0.18), rgba(226, 173, 61, 0.12)),
+        var(--bg);
+    }
+
+    .safety-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .safety-item {
+      min-height: 150px;
+      padding: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .safety-item strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--gold);
+    }
+
+    .safety-item span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .cta {
+      text-align: center;
+      background: #0f1518;
+    }
+
+    .cta h2 {
+      max-width: 780px;
+      margin: 0 auto 18px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.05;
+    }
+
+    .cta p {
+      max-width: 650px;
+      margin: 0 auto 28px;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .site-footer {
+      padding: 28px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer-inner {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 900px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        min-height: 88vh;
+        background-position: 58% center;
+      }
+
+      .proof,
+      .benefits,
+      .workflow-grid,
+      .install-layout,
+      .guide-grid,
+      .safety-grid {
+        grid-template-columns: 1fr;
+      }
+
+      section {
+        padding: 58px 0;
+      }
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 31px;
+        line-height: 1.08;
+      }
+
+      .hero-copy {
+        max-width: 350px;
+      }
+
+      .hero-copy p {
+        max-width: 340px;
+        font-size: 18px;
+      }
+
+      .section-heading h2,
+      .cta h2 {
+        font-size: 30px;
+        line-height: 1.1;
+      }
+
+      .hero {
+        background-position: 62% center;
+      }
+
+      .button {
+        min-height: 46px;
+        padding: 0 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav" aria-label="Main navigation">
+      <a class="brand" href="#top" aria-label="Chapel Astro Utilities home">
+        <span class="brand-mark">CA</span>
+        <span>Chapel Astro Utilities</span>
+      </a>
+      <div class="nav-links">
+        <a href="#benefits">Benefits</a>
+        <a href="#workflows">Workflows</a>
+        <a href="#install">Install</a>
+        <a href="#guide">Guide</a>
+        <a class="button primary" href="#install">Install</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <h1>Clean names for serious PixInsight workflows.</h1>
+          <p>Chapel Astro Utilities turns long stacked master frame names into readable filter identifiers, adds processing suffixes, and keeps save operations predictable.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#install">Install in PixInsight</a>
+            <a class="button secondary" href="#guide">Read the user guide</a>
+          </div>
+          <div class="proof" aria-label="Key benefits">
+            <div>
+              <strong>2 scripts</strong>
+              <span>Focused utilities under one PixInsight menu.</span>
+            </div>
+            <div>
+              <strong>Filter aware</strong>
+              <span>L, R, G, B, H, O, S, and OSC defaults.</span>
+            </div>
+            <div>
+              <strong>Batch safe</strong>
+              <span>Preview, select, confirm, and save deliberately.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="benefits" class="light">
+      <div class="section-inner">
+        <div class="section-heading">
+          <h2>Built for the messy middle of image processing.</h2>
+          <p>PixInsight can generate beautifully calibrated data and wildly long window names. These utilities keep the workspace readable when you are moving fast.</p>
+        </div>
+        <div class="benefits">
+          <article class="benefit">
+            <div class="icon">1</div>
+            <h3>Reduce naming friction</h3>
+            <p>Turn stacked masters such as filter-tagged luminance, red, hydrogen, or OSC frames into clean identifiers that are easy to scan in the left image tabs.</p>
+          </article>
+          <article class="benefit">
+            <div class="icon">2</div>
+            <h3>Track processing stages</h3>
+            <p>Add suffixes such as <code>PreNoiseX</code>, <code>PostCrop</code>, or <code>PreStretch</code> without rebuilding mappings or touching unrelated images.</p>
+          </article>
+          <article class="benefit">
+            <div class="icon">3</div>
+            <h3>Save with confidence</h3>
+            <p>Choose between rename-only, save-as output, and in-place overwrite. The preview makes the intended result visible before the operation runs.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="workflows" class="dark-band">
+      <div class="section-inner">
+        <div class="section-heading">
+          <h2>Three common workflows, one compact tool.</h2>
+          <p>ImageRenameByFilter is designed around the real sequence most imagers follow: stack, clean up names, process, mark processing stages, and save.</p>
+        </div>
+        <div class="workflow-grid">
+          <article class="workflow">
+            <h3>Rename by filter mapping</h3>
+            <p>Match words such as <code>Red</code>, <code>Hydrogen</code>, or <code>Nofilter</code> in the file path, caption, or image ID and rename them to concise identifiers such as <code>R</code>, <code>H</code>, or <code>OSC</code>.</p>
+          </article>
+          <article class="workflow">
+            <h3>Append a processing suffix</h3>
+            <p>After a crop, gradient correction, or noise reduction pass, append a PixInsight-safe suffix to the currently open names. The filter mapping can be ignored when the current name is already the truth.</p>
+          </article>
+          <article class="workflow">
+            <h3>Rename one image ad hoc</h3>
+            <p>Need to correct just one image? Select a single preview row, enter a valid identifier, and rename the side tab and top caption without running a batch operation.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="install" class="light">
+      <div class="section-inner install-layout">
+        <div class="section-heading">
+          <h2>Install through PixInsight updates.</h2>
+          <p>Add the repository once, then update from PixInsight whenever a new Chapel Astro Utilities package is published.</p>
+        </div>
+        <div class="install-box">
+          <h3>Repository URL</h3>
+          <code class="repo-url">https://raw.githubusercontent.com/GrandPaClanger/pixinsight-toolbox-scripts/main/</code>
+          <ol class="steps">
+            <li>Open <code>Resources &gt; Updates &gt; Manage Repositories</code>.</li>
+            <li>Add the repository URL above.</li>
+            <li>Run <code>Resources &gt; Updates &gt; Check for Updates</code>.</li>
+            <li>After installation, use <code>Script &gt; Chapel Astro Utilities</code>.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="guide" class="light">
+      <div class="section-inner">
+        <div class="section-heading">
+          <h2>User guide.</h2>
+          <p>The short version: choose the images, choose the operation, check the preview, then apply or save.</p>
+        </div>
+        <div class="guide-grid">
+          <article class="guide-block">
+            <h3>ImageRenameByFilter</h3>
+            <ul>
+              <li><strong>Rename By Filter Mappings:</strong> best for newly stacked masters with long generated names.</li>
+              <li><strong>Append suffix to current names:</strong> best after processing when the current names are already correct.</li>
+              <li><strong>Single Image Rename:</strong> best for one-off corrections.</li>
+              <li><strong>Save images after renaming:</strong> saves the renamed output to the selected folder.</li>
+              <li><strong>Save &amp; Overwrite Selected:</strong> saves selected images using their current open image names.</li>
+            </ul>
+          </article>
+          <article class="guide-block">
+            <h3>MatchOpenImageSizes</h3>
+            <p>Use this companion utility when open images need to match a selected reference image. It copies the reference zoom and attempts to match the frame size where PixInsight exposes that geometry.</p>
+            <ul>
+              <li>Select the reference image window.</li>
+              <li>Run <code>Script &gt; Chapel Astro Utilities &gt; MatchOpenImageSizes</code>.</li>
+              <li>Use a process icon when you want to apply the same reference workflow repeatedly.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="safety">
+      <div class="section-inner">
+        <div class="section-heading">
+          <h2>Designed to protect the session you are in.</h2>
+          <p>These scripts are intentionally direct, but they include guardrails for the naming and saving decisions that are easiest to get wrong late at night.</p>
+        </div>
+        <div class="safety-grid">
+          <div class="safety-item">
+            <strong>Identifier checks</strong>
+            <span>Ad-hoc names must follow PixInsight identifier rules and cannot duplicate another open image ID.</span>
+          </div>
+          <div class="safety-item">
+            <strong>Selection preview</strong>
+            <span>The preview shows current, matched, new, and status columns before batch operations run.</span>
+          </div>
+          <div class="safety-item">
+            <strong>Overwrite confirmation</strong>
+            <span>Overwrite operations ask once for the batch, then save selected images deliberately.</span>
+          </div>
+          <div class="safety-item">
+            <strong>Folder defaults</strong>
+            <span>The save folder defaults to the source directory used by the majority of open images.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="section-inner">
+        <h2>Spend less time decoding tabs and more time processing data.</h2>
+        <p>Chapel Astro Utilities keeps PixInsight workspaces legible from stacked masters through the final pre-stretch save.</p>
+        <div class="hero-actions" style="justify-content: center;">
+          <a class="button primary" href="#install">Install the update repository</a>
+          <a class="button secondary" href="https://github.com/GrandPaClanger/pixinsight-toolbox-scripts">View on GitHub</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>Chapel Astro Utilities for PixInsight</span>
+      <span>Current package: Chapel Astro Utilities 2.2</span>
+    </div>
+  </footer>
+</body>
+</html>

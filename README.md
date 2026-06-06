@@ -15,6 +15,10 @@ Then run:
 
 `Resources > Updates > Check for Updates`
 
+Web guide:
+
+`docs/index.html`
+
 ## Menu Location
 
 After installation, scripts appear under:
@@ -55,6 +59,7 @@ The mapping table uses:
 Default mappings:
 
 ```csv
+Nofilter,OSC
 Luminance,L
 Red,R
 Green,G
