@@ -18,7 +18,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define TITLE "ImageRenameByFilter"
-#define VERSION "1.0.8"
+#define VERSION "2.0"
 
 #define SETTINGS_ROOT "GrandPaClanger/ImageRenameByFilter"
 
@@ -548,6 +548,36 @@ function countSelected( plan )
          ++n;
 
    return n;
+}
+
+function showHelpDialog()
+{
+   var helpText =
+      "IMAGE RENAME BY FILTER 2.0\n\n" +
+      "[1] RENAME MODES\n" +
+      "- Rename By Filter Mappings: matches text in the image id, filename, or caption and renames to the mapped value.\n" +
+      "- Append suffix to current names: adds the suffix to the current image id. Filter matching is ignored.\n" +
+      "- Select a mode before using Apply Rename / Append.\n\n" +
+      "[2] MAPPINGS\n" +
+      "- Text to find is the token to search for, such as Red, Hydrogen, or Nofilter.\n" +
+      "- Rename to is the new PixInsight image identifier, such as R, H, or OSC.\n" +
+      "- Use Default Mappings to restore the supplied defaults. Custom mappings are remembered.\n\n" +
+      "[3] SUFFIXES\n" +
+      "- Suffix text is sanitised for PixInsight identifiers.\n" +
+      "- PreNoiseX becomes _PreNoiseX, for example R_PreNoiseX.\n" +
+      "- Rename-only operations do not save, close, or collapse images.\n\n" +
+      "[4] SAVE AFTER RENAMING\n" +
+      "- When enabled, Apply Rename / Append also saves renamed files to the selected folder.\n" +
+      "- The folder defaults to the source directory used by most open images.\n" +
+      "- After save can leave, collapse, or close the selected source images.\n" +
+      "- Open newly saved images reloads the saved files after the save operation.\n\n" +
+      "[5] SAVE & OVERWRITE SELECTED\n" +
+      "- This is a separate in-place save operation.\n" +
+      "- It saves selected open images to their current or previewed image names in the source folder.\n" +
+      "- It overwrites after one confirmation, so check the Preview New column first.";
+
+   (new MessageBox( helpText, TITLE + " Help", StdIcon_Information,
+                    StdButton_Ok )).execute();
 }
 
 function outputSavePath( item, outputDirectory )
@@ -1937,6 +1967,14 @@ function ImageRenameByFilterDialog()
       dialog.refreshPreview();
    };
 
+   this.helpButton = new PushButton( this );
+   this.helpButton.text = "?";
+   this.helpButton.toolTip = "Show help for ImageRenameByFilter.";
+   this.helpButton.onClick = function()
+   {
+      showHelpDialog();
+   };
+
    this.selectAllButton = new PushButton( this );
    this.selectAllButton.text = "Select All";
    this.selectAllButton.onClick = function()
@@ -2092,6 +2130,7 @@ function ImageRenameByFilterDialog()
    this.buttonSizer.spacing = 6;
    this.buttonSizer.add( this.resetButton );
    this.buttonSizer.add( this.refreshButton );
+   this.buttonSizer.add( this.helpButton );
    this.buttonSizer.addStretch();
    this.buttonSizer.add( this.closeButton );
 

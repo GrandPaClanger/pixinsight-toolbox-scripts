@@ -36,7 +36,7 @@ Menu:
 
 Version:
 
-`1.0.8`
+`2.0`
 
 Purpose:
 
@@ -154,9 +154,14 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-1.0.8.zip`
+`packages/ChapelAstroUtilities-2.0.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 2.0
+
+- Updated `ImageRenameByFilter` to 2.0.
+- Added a `?` help button with an operational guide for rename modes, mappings, suffixes, save-after-renaming, and in-place overwrite.
 
 ### Chapel Astro Utilities 1.0.8
 

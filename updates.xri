@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/ChapelAstroUtilities-1.0.8.zip"
-               sha1="897b51d8fb6e65c4fc3b6a1960421d0c014793a4"
+      <package fileName="packages/ChapelAstroUtilities-2.0.zip"
+               sha1="d2715a2d1cea763b306002ca07f09f4a4cc1f0d9"
                type="script"
                releaseDate="20260606">
          <title>
-            Chapel Astro Utilities 1.0.8
+            Chapel Astro Utilities 2.0
          </title>
          <description>
             <p>
-               Installs ImageRenameByFilter 1.0.8 and MatchOpenImageSizes 1.0.2 under Script &gt; Chapel Astro Utilities.
-               Adds Nofilter to OSC as the first default rename mapping for one-shot colour images.
+               Installs ImageRenameByFilter 2.0 and MatchOpenImageSizes 1.0.2 under Script &gt; Chapel Astro Utilities.
+               Adds an in-script help guide for rename modes, mappings, suffixes, save-after-renaming, and overwrite behaviour.
             </p>
          </description>
       </package>
