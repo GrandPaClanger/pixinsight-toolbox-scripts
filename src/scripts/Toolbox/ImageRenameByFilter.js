@@ -18,7 +18,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define TITLE "ImageRenameByFilter"
-#define VERSION "1.0.3"
+#define VERSION "1.0.4"
 
 #define SETTINGS_ROOT "GrandPaClanger/ImageRenameByFilter"
 
@@ -863,18 +863,51 @@ function zoomedImageDisplaySize( image, zoom )
 
 function fitWindowToCurrentZoom( window )
 {
-   if ( typeof window.resize != "function" )
-   {
-      return;
-   }
-
    var image = window.mainView.image;
    var display = zoomedImageDisplaySize( image, window.zoomFactor );
 
-   var targetWidth = Math.max( 180, display.width + 64 );
-   var targetHeight = Math.max( 140, display.height + 52 );
+   var targetWidth = Math.max( 120, display.width + 42 );
+   var targetHeight = Math.max( 96, display.height + 36 );
 
-   window.resize( targetWidth, targetHeight );
+   try
+   {
+      if ( typeof window.resize == "function" )
+      {
+         window.resize( targetWidth, targetHeight );
+      }
+   }
+   catch ( error1 )
+   {
+   }
+
+   try
+   {
+      if ( typeof window.width == "number" &&
+           typeof window.height == "number" )
+      {
+         window.width = targetWidth;
+         window.height = targetHeight;
+      }
+   }
+   catch ( error2 )
+   {
+   }
+
+   try
+   {
+      if ( typeof window.frameRect != "undefined" &&
+           typeof window.position != "undefined" )
+      {
+         var p = window.position;
+         window.frameRect = new Rect( p.x,
+                                      p.y,
+                                      p.x + targetWidth,
+                                      p.y + targetHeight );
+      }
+   }
+   catch ( error3 )
+   {
+   }
 }
 
 function ensureDirectory( directory )
@@ -1858,7 +1891,7 @@ function ImageRenameByFilterDialog()
    };
 
    this.applyButton = new PushButton( this );
-   this.applyButton.text = "Apply";
+   this.applyButton.text = "Apply Rename / Append";
    this.applyButton.icon = this.scaledResource( ":/icons/execute.png" );
    this.applyButton.defaultButton = true;
    this.applyButton.onClick = function()
@@ -1926,7 +1959,7 @@ function ImageRenameByFilterDialog()
    };
 
    this.saveOverwriteButton = new PushButton( this );
-   this.saveOverwriteButton.text = "Save && Overwrite";
+   this.saveOverwriteButton.text = "Save && Overwrite Selected";
    this.saveOverwriteButton.icon = this.scaledResource( ":/icons/save.png" );
    this.saveOverwriteButton.toolTip =
       "Save selected open images back to their current file paths, overwriting existing files after one confirmation.";
@@ -1946,6 +1979,37 @@ function ImageRenameByFilterDialog()
       }
    };
 
+   this.selectionActionLabel = new Label( this );
+   this.selectionActionLabel.text = "Preview Selection";
+   this.selectionActionLabel.frameStyle = FrameStyle_Box;
+   this.selectionActionLabel.margin = 4;
+
+   this.selectionButtonSizer = new HorizontalSizer;
+   this.selectionButtonSizer.spacing = 6;
+   this.selectionButtonSizer.add( this.selectAllButton );
+   this.selectionButtonSizer.add( this.unselectAllButton );
+   this.selectionButtonSizer.addStretch();
+
+   this.renameActionLabel = new Label( this );
+   this.renameActionLabel.text = "Rename / Append Operation";
+   this.renameActionLabel.frameStyle = FrameStyle_Box;
+   this.renameActionLabel.margin = 4;
+
+   this.renameActionSizer = new HorizontalSizer;
+   this.renameActionSizer.spacing = 6;
+   this.renameActionSizer.addStretch();
+   this.renameActionSizer.add( this.applyButton );
+
+   this.overwriteActionLabel = new Label( this );
+   this.overwriteActionLabel.text = "In-Place File Save";
+   this.overwriteActionLabel.frameStyle = FrameStyle_Box;
+   this.overwriteActionLabel.margin = 4;
+
+   this.overwriteActionSizer = new HorizontalSizer;
+   this.overwriteActionSizer.spacing = 6;
+   this.overwriteActionSizer.addStretch();
+   this.overwriteActionSizer.add( this.saveOverwriteButton );
+
    this.closeButton = new PushButton( this );
    this.closeButton.text = "Close";
    this.closeButton.icon = this.scaledResource( ":/icons/close.png" );
@@ -1960,10 +2024,6 @@ function ImageRenameByFilterDialog()
    this.buttonSizer.add( this.resetButton );
    this.buttonSizer.add( this.refreshButton );
    this.buttonSizer.addStretch();
-   this.buttonSizer.add( this.selectAllButton );
-   this.buttonSizer.add( this.unselectAllButton );
-   this.buttonSizer.add( this.saveOverwriteButton );
-   this.buttonSizer.add( this.applyButton );
    this.buttonSizer.add( this.closeButton );
 
    this.sizer = new VerticalSizer;
@@ -1978,6 +2038,12 @@ function ImageRenameByFilterDialog()
    this.sizer.add( this.folderSizer );
    this.sizer.add( this.postSaveSizer );
    this.sizer.add( this.previewSizer, 100 );
+   this.sizer.add( this.selectionActionLabel );
+   this.sizer.add( this.selectionButtonSizer );
+   this.sizer.add( this.renameActionLabel );
+   this.sizer.add( this.renameActionSizer );
+   this.sizer.add( this.overwriteActionLabel );
+   this.sizer.add( this.overwriteActionSizer );
    this.sizer.add( this.buttonSizer );
 
    this.adjustToContents();
