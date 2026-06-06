@@ -332,6 +332,48 @@
       background: rgba(20, 169, 157, 0.18);
     }
 
+    .screenshot-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 28px;
+    }
+
+    .screenshot-card {
+      overflow: hidden;
+      border: 1px solid rgba(23, 32, 39, 0.12);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: 0 14px 34px rgba(23, 32, 39, 0.08);
+    }
+
+    .dark-band .screenshot-card {
+      border-color: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.05);
+      box-shadow: none;
+    }
+
+    .screenshot-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #111;
+    }
+
+    .screenshot-card figcaption {
+      padding: 14px 16px 16px;
+      color: #526068;
+      font-size: 14px;
+    }
+
+    .dark-band .screenshot-card figcaption {
+      color: var(--muted);
+    }
+
+    .wide-shot {
+      margin-top: 28px;
+    }
+
     .install-layout {
       display: grid;
       grid-template-columns: 0.95fr 1.05fr;
@@ -461,6 +503,7 @@
       .proof,
       .benefits,
       .workflow-grid,
+      .screenshot-row,
       .install-layout,
       .guide-grid,
       .safety-grid {
@@ -475,6 +518,7 @@
     @media (min-width: 901px) and (max-width: 1100px) {
       .benefits,
       .workflow-grid,
+      .screenshot-row,
       .safety-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -483,6 +527,7 @@
     @media (max-width: 600px) {
       .benefits,
       .workflow-grid,
+      .screenshot-row,
       .safety-grid {
         grid-template-columns: 1fr;
       }
@@ -619,6 +664,16 @@
             <p>Select a reference image and make the other open windows match its zoom and frame. If their pixel dimensions differ, the utility resamples them to the reference dimensions.</p>
           </article>
         </div>
+        <div class="screenshot-row">
+          <figure class="screenshot-card">
+            <img src="assets/filter-rename.png" alt="PixInsight workspace showing long master light names before filter renaming" loading="lazy" decoding="async">
+            <figcaption>Before: stacked master lights still carry long generated names across the top bar and side tabs.</figcaption>
+          </figure>
+          <figure class="screenshot-card">
+            <img src="assets/filter-auto-save.png" alt="PixInsight workspace showing renamed LRGB files and pre-processing suffix files" loading="lazy" decoding="async">
+            <figcaption>After: saved output uses concise filter identifiers and processing-stage suffixes.</figcaption>
+          </figure>
+        </div>
       </div>
     </section>
 
@@ -653,6 +708,16 @@
               <li>Supports PixInsight process icons for repeated reference-based use.</li>
             </ul>
           </article>
+        </div>
+        <div class="screenshot-row">
+          <figure class="screenshot-card">
+            <img src="assets/filter-rename-append.png" alt="PixInsight workspace showing images renamed with a PreABE suffix and collapsed source icons stacked vertically" loading="lazy" decoding="async">
+            <figcaption>Suffix workflows can keep the current filter name and add the processing state, while collapsed source images are stacked into a tidy column.</figcaption>
+          </figure>
+          <figure class="screenshot-card">
+            <img src="assets/resize-after.png" alt="PixInsight workspace showing image windows aligned after running MatchOpenImageSizes" loading="lazy" decoding="async">
+            <figcaption>MatchOpenImageSizes brings open windows into a consistent display layout based on the selected reference.</figcaption>
+          </figure>
         </div>
       </div>
     </section>
@@ -710,6 +775,16 @@
               <li><strong>Know the limit:</strong> if PixInsight does not expose writable window geometry, the script still matches zoom and dimensions but may not be able to copy the frame size.</li>
             </ul>
           </article>
+        </div>
+        <div class="screenshot-row">
+          <figure class="screenshot-card">
+            <img src="assets/resize-before.png" alt="PixInsight workspace before resizing, with open image windows at different zooms and sizes" loading="lazy" decoding="async">
+            <figcaption>Before: open images can end up at different zoom factors and frame sizes, making visual comparison awkward.</figcaption>
+          </figure>
+          <figure class="screenshot-card">
+            <img src="assets/resize-after.png" alt="PixInsight workspace after resizing, with open image windows matched to the selected reference" loading="lazy" decoding="async">
+            <figcaption>After: the selected reference drives the display size, zoom, and dimensions of the other open image windows.</figcaption>
+          </figure>
         </div>
       </div>
     </section>
