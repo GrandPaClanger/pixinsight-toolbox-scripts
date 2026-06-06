@@ -36,7 +36,7 @@ Menu:
 
 Version:
 
-`2.1`
+`2.2`
 
 Purpose:
 
@@ -154,9 +154,15 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-2.1.zip`
+`packages/ChapelAstroUtilities-2.2.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 2.2
+
+- Updated `ImageRenameByFilter` to 2.2.
+- `Save & Overwrite Selected` now always saves each selected image using its current open image name.
+- This prevents a manually renamed image from being saved back to a mapped preview name or an earlier filename.
 
 ### Chapel Astro Utilities 2.1
 

@@ -18,7 +18,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define TITLE "ImageRenameByFilter"
-#define VERSION "2.1"
+#define VERSION "2.2"
 
 #define SETTINGS_ROOT "GrandPaClanger/ImageRenameByFilter"
 
@@ -588,7 +588,7 @@ function showHelpDialog()
       "- Open newly saved images reloads the saved files after the save operation.\n\n" +
       "[6] SAVE & OVERWRITE SELECTED\n" +
       "- This is a separate in-place save operation.\n" +
-      "- It saves selected open images to their current or previewed image names in the source folder.\n" +
+      "- It saves selected open images to their current image names in the source folder.\n" +
       "- It overwrites after one confirmation, so check the Preview New column first.";
 
    (new MessageBox( helpText, TITLE + " Help", StdIcon_Information,
@@ -603,9 +603,6 @@ function outputSavePath( item, outputDirectory )
 
 function overwriteTargetId( item )
 {
-   if ( item.newId != null && item.newId.length > 0 )
-      return item.newId;
-
    return item.currentId;
 }
 
@@ -648,7 +645,7 @@ function overwriteSelectedCurrentFiles( plan )
    var message =
       "Overwrite the existing files for " + selected.toString() +
       " selected image(s)?\n\n" +
-      "This saves each selected open image to its current or previewed image name in the source folder.";
+      "This saves each selected open image to its current image name in the source folder.";
 
    if ( (new MessageBox( message, TITLE, StdIcon_Warning,
                          StdButton_Yes, StdButton_No )).execute() != StdButton_Yes )
@@ -2165,7 +2162,7 @@ function ImageRenameByFilterDialog()
    this.saveOverwriteButton.text = "Save && Overwrite Selected";
    this.saveOverwriteButton.icon = this.scaledResource( ":/icons/save.png" );
    this.saveOverwriteButton.toolTip =
-      "Save selected open images to their current or previewed image names in the source folder, overwriting existing files after one confirmation.";
+      "Save selected open images to their current image names in the source folder, overwriting existing files after one confirmation.";
    this.saveOverwriteButton.onClick = function()
    {
       try
