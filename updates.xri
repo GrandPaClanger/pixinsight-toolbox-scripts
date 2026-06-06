@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/ChapelAstroUtilities-2.4.zip"
-               sha1="cbf91340781ffc6385b913f641d6ca85c32f2425"
+      <package fileName="packages/ChapelAstroUtilities-2.5.zip"
+               sha1="6edba6c34ce94d8e83667f6d49823c2b51e26dc5"
                type="script"
                releaseDate="20260606">
          <title>
-            Chapel Astro Utilities 2.4
+            Chapel Astro Utilities 2.5
          </title>
          <description>
             <p>
-               Installs ImageRenameByFilter 2.4 and MatchOpenImageSizes 1.0.2 under Script &gt; Chapel Astro Utilities.
-               Collapsed source images are now stacked into a vertical column after save/collapse operations where PixInsight exposes writable icon geometry.
+               Installs ImageRenameByFilter 2.5 and MatchOpenImageSizes 1.0.3 under Script &gt; Chapel Astro Utilities.
+               Adds all-rights-reserved copyright notices to the distributed script files.
             </p>
          </description>
       </package>

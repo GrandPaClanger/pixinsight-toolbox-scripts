@@ -23,6 +23,15 @@ Hosted guide:
 
 `https://chapel-astro-utilities-guide.vercel.app/`
 
+## Licence
+
+Copyright (c) 2026 Ian Steane. All rights reserved.
+
+This repository is publicly visible for PixInsight update distribution,
+documentation, and end-user access only. No permission is granted to copy,
+modify, redistribute, repackage, sell, sublicense, or create derivative works
+without prior written permission.
+
 ## Menu Location
 
 After installation, scripts appear under:
@@ -44,7 +53,7 @@ Menu:
 
 Version:
 
-`2.4`
+`2.5`
 
 Purpose:
 
@@ -134,7 +143,7 @@ Menu:
 
 Version:
 
-`1.0.2`
+`1.0.3`
 
 Purpose:
 
@@ -167,9 +176,15 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-2.4.zip`
+`packages/ChapelAstroUtilities-2.5.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 2.5
+
+- Updated `ImageRenameByFilter` to 2.5.
+- Updated `MatchOpenImageSizes` to 1.0.3.
+- Added all-rights-reserved copyright notices to the repository and distributed script files.
 
 ### Chapel Astro Utilities 2.4
 

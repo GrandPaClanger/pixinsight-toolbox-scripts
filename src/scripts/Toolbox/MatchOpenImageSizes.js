@@ -2,6 +2,11 @@
 //
 // PixInsight JavaScript Runtime script.
 //
+// Copyright (c) 2026 Ian Steane. All rights reserved.
+// Public visibility is for PixInsight update distribution only. No permission
+// is granted to copy, modify, redistribute, repackage, sell, sublicense, or
+// create derivative works without prior written permission.
+//
 // Match all open image windows to a reference image window's zoom and, where
 // PixInsight exposes writable geometry, frame size. When invoked as a view
 // target from a process icon, the dropped-on view is used as the reference.
@@ -18,7 +23,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define TITLE "MatchOpenImageSizes"
-#define VERSION "1.0.2"
+#define VERSION "1.0.3"
 
 function formatSize( image )
 {

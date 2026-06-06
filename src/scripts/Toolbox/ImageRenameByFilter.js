@@ -2,6 +2,11 @@
 //
 // PixInsight JavaScript Runtime script.
 //
+// Copyright (c) 2026 Ian Steane. All rights reserved.
+// Public visibility is for PixInsight update distribution only. No permission
+// is granted to copy, modify, redistribute, repackage, sell, sublicense, or
+// create derivative works without prior written permission.
+//
 // Rename open image windows by matching configurable filename/view-id tokens to
 // short filter names. Mappings are persisted in PixInsight settings.
 
@@ -18,7 +23,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define TITLE "ImageRenameByFilter"
-#define VERSION "2.4"
+#define VERSION "2.5"
 
 #define SETTINGS_ROOT "GrandPaClanger/ImageRenameByFilter"
 
