@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Chapel Astro Utilities for PixInsight</title>
-  <meta name="description" content="Chapel Astro Utilities helps PixInsight users rename, save, resize, and visually align open image windows with clean workflow-focused scripts.">
+  <meta name="description" content="Chapel Astro Utilities helps PixInsight users batch rename, save, resize, and visually align open image windows with clean workflow-focused scripts.">
   <style>
     :root {
       --bg: #10161a;
@@ -586,15 +586,15 @@
       <div class="hero-inner">
         <div class="hero-copy">
           <h1>Clean, consistent PixInsight workspaces.</h1>
-          <p>Chapel Astro Utilities turns long stacked master frame names into readable identifiers, saves batches deliberately, and lines up open image windows to a chosen reference.</p>
+          <p>Chapel Astro Utilities batch-processes open PixInsight images: turn long stacked master frame names into readable identifiers, save batches deliberately, and line up open image windows to a chosen reference.</p>
           <div class="hero-actions">
             <a class="button primary" href="#install">Install in PixInsight</a>
             <a class="button secondary" href="#guide">Read the user guide</a>
           </div>
           <div class="proof" aria-label="Key benefits">
             <div>
-              <strong>2 scripts</strong>
-              <span>Focused utilities under one PixInsight menu.</span>
+              <strong>Batch tools</strong>
+              <span>Process many open images from one PixInsight menu.</span>
             </div>
             <div>
               <strong>Filter aware</strong>
@@ -619,22 +619,22 @@
           <article class="benefit">
             <div class="icon">1</div>
             <h3>Line up open images</h3>
-            <p>Use one image as the reference, then match the other open windows to its zoom, frame size, and pixel dimensions when needed.</p>
+            <p>Use one image as the reference, then batch-match the other open windows to its zoom, frame size, and pixel dimensions when needed.</p>
           </article>
           <article class="benefit">
             <div class="icon">2</div>
             <h3>Reduce naming friction</h3>
-            <p>Turn stacked masters such as filter-tagged luminance, red, hydrogen, or OSC frames into clean identifiers that are easy to scan in the left image tabs.</p>
+            <p>Batch-rename stacked masters such as filter-tagged luminance, red, hydrogen, or OSC frames into clean identifiers that are easy to scan in the left image tabs.</p>
           </article>
           <article class="benefit">
             <div class="icon">3</div>
             <h3>Track processing stages</h3>
-            <p>Add suffixes such as <code>PreNoiseX</code>, <code>PostCrop</code>, or <code>PreStretch</code> without rebuilding mappings or touching unrelated images.</p>
+            <p>Batch-append suffixes such as <code>PreNoiseX</code>, <code>PostCrop</code>, or <code>PreStretch</code> without rebuilding mappings or touching unrelated images.</p>
           </article>
           <article class="benefit">
             <div class="icon">4</div>
             <h3>Save with confidence</h3>
-            <p>Choose between rename-only, save-as output, and overwrite saves to the selected folder.</p>
+            <p>Choose between batch rename-only, save-as output, and overwrite saves to the selected folder.</p>
           </article>
         </div>
       </div>
@@ -644,20 +644,20 @@
       <div class="section-inner">
         <div class="section-heading">
           <h2>Recommended workflow order.</h2>
-          <p>Start by making the open windows comparable, then clean up the names, mark processing stages, and handle any one-off corrections.</p>
+          <p>Start by making the open windows comparable, then batch-clean the names, batch-mark processing stages, and handle any one-off corrections.</p>
         </div>
         <div class="workflow-grid">
           <article class="workflow">
             <h3>1. Resize images to reference</h3>
-            <p>Select a reference image and make the other open windows match its zoom and frame. If their pixel dimensions differ, the utility resamples them to the reference dimensions.</p>
+            <p>Select a reference image and batch-match the other open windows to its zoom and frame. If their pixel dimensions differ, the utility resamples them to the reference dimensions.</p>
           </article>
           <article class="workflow">
             <h3>2. Shorten long file names</h3>
-            <p>Match words such as <code>Red</code>, <code>Hydrogen</code>, or <code>Nofilter</code> in the file path, caption, or image ID and rename them to concise identifiers such as <code>R</code>, <code>H</code>, or <code>OSC</code>.</p>
+            <p>Match words such as <code>Red</code>, <code>Hydrogen</code>, or <code>Nofilter</code> in the file path, caption, or image ID and batch-rename them to concise identifiers such as <code>R</code>, <code>H</code>, or <code>OSC</code>.</p>
           </article>
           <article class="workflow">
             <h3>3. Append file name suffixes</h3>
-            <p>After a crop, gradient correction, or noise reduction pass, append a PixInsight-safe suffix to the currently open names. The filter mapping can be ignored when the current name is already the truth.</p>
+            <p>After a crop, gradient correction, or noise reduction pass, batch-append a PixInsight-safe suffix to the currently open names. The filter mapping can be ignored when the current name is already the truth.</p>
           </article>
           <article class="workflow">
             <h3>4. Rename individual image</h3>
@@ -686,11 +686,11 @@
         <div class="guide-grid">
           <article class="guide-block">
             <h3>ImageRenameByFilter</h3>
-            <p>A naming and save workflow for open image windows. It is especially useful straight after stacking, when master frames inherit long file names from the integration process.</p>
+            <p>A batch naming and save workflow for open image windows. It is especially useful straight after stacking, when master frames inherit long file names from the integration process.</p>
             <ul>
-              <li>Maps filename, caption, or view-id text to short filter names.</li>
+              <li>Batch-maps filename, caption, or view-id text to short filter names.</li>
               <li>Stores editable user mappings between sessions.</li>
-              <li>Appends PixInsight-safe processing suffixes to current names.</li>
+              <li>Batch-appends PixInsight-safe processing suffixes to current names.</li>
               <li>Renames one selected image with an ad-hoc identifier.</li>
               <li>Saves renamed images, reopens saved output, and can close or collapse sources.</li>
               <li>Overwrites selected files using the current open image name and selected folder.</li>
@@ -698,7 +698,7 @@
           </article>
           <article class="guide-block">
             <h3>MatchOpenImageSizes</h3>
-            <p>A visual consistency tool for comparing open images. Choose the image that already looks right, then bring the rest of the workspace into line.</p>
+            <p>A batch visual consistency tool for comparing open images. Choose the image that already looks right, then bring the rest of the workspace into line.</p>
             <ul>
               <li>Uses the selected image window as the reference.</li>
               <li>Copies the reference zoom factor to all other open images.</li>
@@ -716,7 +716,7 @@
           </figure>
           <figure class="screenshot-card">
             <img src="assets/resize-after.png" alt="PixInsight workspace showing image windows aligned after running MatchOpenImageSizes" loading="lazy" decoding="async">
-            <figcaption>MatchOpenImageSizes brings open windows into a consistent display layout based on the selected reference.</figcaption>
+            <figcaption>MatchOpenImageSizes batch-aligns open windows into a consistent display layout based on the selected reference.</figcaption>
           </figure>
         </div>
       </div>
@@ -755,9 +755,9 @@
               <li><strong>Edit mappings:</strong> add, update, or delete rows in the mapping table. More specific matches win before generic ones.</li>
               <li><strong>Use valid names:</strong> output identifiers must start with a letter or underscore and only contain letters, digits, or underscores.</li>
               <li><strong>Select the batch:</strong> checked preview rows are processed. Collapsed windows are unchecked by default when PixInsight exposes that state.</li>
-              <li><strong>Apply Rename / Append:</strong> renames open images. If saving is not enabled, images are not closed, collapsed, or saved.</li>
+              <li><strong>Apply Rename / Append:</strong> batch-renames open images. If saving is not enabled, images are not closed, collapsed, or saved.</li>
               <li><strong>Save images after renaming:</strong> saves the renamed output to the selected folder and can reopen saved images.</li>
-              <li><strong>After save:</strong> leave, close, or collapse selected source images. Collapsed sources are stacked neatly where PixInsight allows it.</li>
+              <li><strong>After save:</strong> leave, close, or collapse selected source images.</li>
               <li><strong>Single Image Rename:</strong> select exactly one preview row, enter an ad-hoc name, and rename both the side tab and top caption.</li>
               <li><strong>Save &amp; Overwrite Selected:</strong> saves checked open images using their current open image names in the selected folder.</li>
             </ul>
@@ -769,7 +769,7 @@
               <li><strong>Pick the reference:</strong> click the image window with the size, zoom, and dimensions you want to keep.</li>
               <li><strong>Run the utility:</strong> open <code>Script &gt; Chapel Astro Utilities &gt; MatchOpenImageSizes</code>.</li>
               <li><strong>Confirm the summary:</strong> the script reports the reference image, pixel size, zoom, and frame size before making changes.</li>
-              <li><strong>Let it match the rest:</strong> every other open image is matched to the reference zoom and frame size.</li>
+              <li><strong>Let it match the rest:</strong> every other open image is batch-matched to the reference zoom and frame size.</li>
               <li><strong>Understand resampling:</strong> if another image has different pixel dimensions, it is resampled to the reference width and height.</li>
               <li><strong>Use process icons:</strong> drag the New Instance triangle to the workspace, then drag that process icon onto an image to use it as the reference.</li>
               <li><strong>Know the limit:</strong> if PixInsight does not expose writable window geometry, the script still matches zoom and dimensions but may not be able to copy the frame size.</li>
@@ -783,7 +783,7 @@
           </figure>
           <figure class="screenshot-card">
             <img src="assets/resize-after.png" alt="PixInsight workspace after resizing, with open image windows matched to the selected reference" loading="lazy" decoding="async">
-            <figcaption>After: the selected reference drives the display size, zoom, and dimensions of the other open image windows.</figcaption>
+            <figcaption>After: the selected reference drives the display size, zoom, and dimensions of the other open image windows in the batch.</figcaption>
           </figure>
         </div>
       </div>
