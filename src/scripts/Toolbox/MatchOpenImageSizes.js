@@ -6,7 +6,7 @@
 // PixInsight exposes writable geometry, frame size. When invoked as a view
 // target from a process icon, the dropped-on view is used as the reference.
 
-#feature-id    MatchOpenImageSizes : Toolbox > MatchOpenImageSizes
+#feature-id    MatchOpenImageSizes : Chapel Astro Utilities > MatchOpenImageSizes
 #feature-info  Match open image window display size to a selected reference window.
 
 #include <pjsr/FrameStyle.jsh>
@@ -18,7 +18,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define TITLE "MatchOpenImageSizes"
-#define VERSION "1.0.1"
+#define VERSION "1.0.2"
 
 function formatSize( image )
 {

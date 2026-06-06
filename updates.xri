@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/MatchOpenImageSizes-1.0.1.zip"
-               sha1="5c9d2206be0d7899aa92ec7d9a6148ae2584ed1f"
+      <package fileName="packages/ChapelAstroUtilities-1.0.0.zip"
+               sha1="7c58021fd150ba42e0a7c563d6bfb03d12e56e0e"
                type="script"
-               releaseDate="20260605">
+               releaseDate="20260606">
          <title>
-            MatchOpenImageSizes 1.0.1
+            Chapel Astro Utilities 1.0.0
          </title>
          <description>
             <p>
-               Installs the MatchOpenImageSizes script under Script &gt; Toolbox.
-               The script matches open image windows to a selected reference window and supports PixInsight process icons.
+               Installs ImageRenameByFilter 1.0.0 and MatchOpenImageSizes 1.0.2 under Script &gt; Chapel Astro Utilities.
+               Existing MatchOpenImageSizes installations are updated to the new menu location.
             </p>
          </description>
       </package>
