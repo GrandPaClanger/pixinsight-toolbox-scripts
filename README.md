@@ -40,7 +40,7 @@ Menu:
 
 Version:
 
-`2.3`
+`2.4`
 
 Purpose:
 
@@ -106,6 +106,9 @@ Post-save actions:
 - Collapse selected images
 - Close selected images
 
+Collapsed source images are stacked into a vertical column when PixInsight
+exposes writable image-window icon geometry.
+
 `Open newly saved images` appears only when saving is enabled.
 
 In suffix mode, saving creates suffixed copies while preserving the original
@@ -160,9 +163,14 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-2.3.zip`
+`packages/ChapelAstroUtilities-2.4.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 2.4
+
+- Updated `ImageRenameByFilter` to 2.4.
+- Collapsed source images are now stacked into a neat vertical column after save/collapse operations where PixInsight exposes writable icon geometry.
 
 ### Chapel Astro Utilities 2.3
 

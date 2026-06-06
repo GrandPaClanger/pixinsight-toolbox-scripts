@@ -18,7 +18,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define TITLE "ImageRenameByFilter"
-#define VERSION "2.3"
+#define VERSION "2.4"
 
 #define SETTINGS_ROOT "GrandPaClanger/ImageRenameByFilter"
 
@@ -585,6 +585,7 @@ function showHelpDialog()
       "- When enabled, Apply Rename / Append also saves renamed files to the selected folder.\n" +
       "- The folder defaults to the source directory used by most open images.\n" +
       "- After save can leave, collapse, or close the selected source images.\n" +
+      "- Collapsed source images are stacked into a neat column when PixInsight exposes writable icon geometry.\n" +
       "- Open newly saved images reloads the saved files after the save operation.\n\n" +
       "[6] SAVE & OVERWRITE SELECTED\n" +
       "- This is a separate overwrite save operation.\n" +
@@ -1127,6 +1128,62 @@ function collapseWindow( window )
    return false;
 }
 
+function moveWindowTo( window, x, y )
+{
+   try
+   {
+      if ( typeof window.moveTo == "function" )
+      {
+         window.moveTo( x, y );
+         return true;
+      }
+   }
+   catch ( error1 )
+   {
+   }
+
+   try
+   {
+      if ( typeof window.position != "undefined" )
+      {
+         window.position = new Point( x, y );
+         return true;
+      }
+   }
+   catch ( error2 )
+   {
+   }
+
+   try
+   {
+      if ( typeof window.frameRect != "undefined" )
+      {
+         var r = window.frameRect;
+         window.frameRect = new Rect( x, y, x + r.width, y + r.height );
+         return true;
+      }
+   }
+   catch ( error3 )
+   {
+   }
+
+   return false;
+}
+
+function stackCollapsedWindows( windows )
+{
+   var x = 12;
+   var y = 36;
+   var spacing = 28;
+   var moved = 0;
+
+   for ( var i = 0; i < windows.length; ++i )
+      if ( moveWindowTo( windows[i], x, y + i * spacing ) )
+         ++moved;
+
+   return moved;
+}
+
 function closeWindow( window )
 {
    try
@@ -1347,6 +1404,7 @@ function applyPlan( plan, saveImages, outputDirectory, postSaveAction, openSaved
    var saved = 0;
    var opened = 0;
    var postActions = new Array;
+   var collapsedWindows = new Array;
 
    Console.show();
    Console.writeln( "<end><cbr><br>" + TITLE + " " + VERSION );
@@ -1437,7 +1495,10 @@ function applyPlan( plan, saveImages, outputDirectory, postSaveAction, openSaved
          if ( postSaveAction == "close" )
             closeWindow( actionItem.window );
          else if ( postSaveAction == "collapse" )
-            collapseWindow( actionItem.window );
+         {
+            if ( collapseWindow( actionItem.window ) )
+               collapsedWindows.push( actionItem.window );
+         }
 
          if ( actionItem.savedWindow != null )
          {
@@ -1460,8 +1521,18 @@ function applyPlan( plan, saveImages, outputDirectory, postSaveAction, openSaved
                if ( postSaveAction == "close" )
                   closeWindow( plan[k].window );
                else if ( postSaveAction == "collapse" )
-                  collapseWindow( plan[k].window );
+               {
+                  if ( collapseWindow( plan[k].window ) )
+                     collapsedWindows.push( plan[k].window );
+               }
             }
+
+      if ( collapsedWindows.length > 0 )
+      {
+         var stacked = stackCollapsedWindows( collapsedWindows );
+         if ( stacked > 0 )
+            Console.writeln( "Stacked " + stacked.toString() + " collapsed image window(s)." );
+      }
    }
    Console.writeln( "Done. Renamed " + renamed.toString() +
                     " image window(s); saved " + saved.toString() +
