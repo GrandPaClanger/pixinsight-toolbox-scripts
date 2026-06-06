@@ -18,7 +18,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define TITLE "ImageRenameByFilter"
-#define VERSION "1.0.5"
+#define VERSION "1.0.6"
 
 #define SETTINGS_ROOT "GrandPaClanger/ImageRenameByFilter"
 
@@ -528,6 +528,25 @@ function outputSavePath( item, outputDirectory )
    return joinPath( directory, item.newId + item.extension );
 }
 
+function overwriteTargetId( item )
+{
+   if ( item.newId != null && item.newId.length > 0 )
+      return item.newId;
+
+   return item.currentId;
+}
+
+function overwriteTargetPath( item )
+{
+   var directory = item.sourceDirectory;
+   var extension = item.extension.length > 0 ? item.extension : ".xisf";
+
+   if ( directory.length == 0 )
+      return "";
+
+   return joinPath( directory, overwriteTargetId( item ) + extension );
+}
+
 function overwriteSelectedCurrentFiles( plan )
 {
    var selected = 0;
@@ -538,7 +557,7 @@ function overwriteSelectedCurrentFiles( plan )
       {
          ++selected;
 
-         if ( plan[i].sourcePath.length == 0 )
+         if ( overwriteTargetPath( plan[i] ).length == 0 )
             missingPath.push( plan[i].currentId );
       }
 
@@ -550,13 +569,13 @@ function overwriteSelectedCurrentFiles( plan )
    }
 
    if ( missingPath.length > 0 )
-      throw new Error( "The following selected image(s) do not expose an existing file path and cannot be overwritten in place:\n\n" +
+      throw new Error( "The following selected image(s) do not expose an existing source folder and cannot be saved:\n\n" +
                        missingPath.join( "\n" ) );
 
    var message =
       "Overwrite the existing files for " + selected.toString() +
       " selected image(s)?\n\n" +
-      "This saves each selected open image back to its current file path.";
+      "This saves each selected open image to its current or previewed image name in the source folder.";
 
    if ( (new MessageBox( message, TITLE, StdIcon_Warning,
                          StdButton_Yes, StdButton_No )).execute() != StdButton_Yes )
@@ -569,9 +588,19 @@ function overwriteSelectedCurrentFiles( plan )
    for ( var j = 0; j < plan.length; ++j )
       if ( plan[j].selected )
       {
-         removeFileIfExists( plan[j].sourcePath );
-         saveWindowAs( plan[j].window, plan[j].sourcePath );
-         Console.writeln( "Overwrote " + plan[j].sourcePath );
+         var targetId = overwriteTargetId( plan[j] );
+         var targetPath = overwriteTargetPath( plan[j] );
+         var originalId = plan[j].window.mainView.id;
+
+         if ( originalId != targetId )
+         {
+            plan[j].window.mainView.id = targetId;
+            cleanCaption( plan[j].window, targetId );
+         }
+
+         removeFileIfExists( targetPath );
+         saveWindowAs( plan[j].window, targetPath );
+         Console.writeln( "Overwrote " + targetPath );
       }
 
    Console.writeln( "Done. Overwrote " + selected.toString() + " selected image file(s)." );
@@ -1958,7 +1987,7 @@ function ImageRenameByFilterDialog()
    this.saveOverwriteButton.text = "Save && Overwrite Selected";
    this.saveOverwriteButton.icon = this.scaledResource( ":/icons/save.png" );
    this.saveOverwriteButton.toolTip =
-      "Save selected open images back to their current file paths, overwriting existing files after one confirmation.";
+      "Save selected open images to their current or previewed image names in the source folder, overwriting existing files after one confirmation.";
    this.saveOverwriteButton.onClick = function()
    {
       try

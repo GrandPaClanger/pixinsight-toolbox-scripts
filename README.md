@@ -36,7 +36,7 @@ Menu:
 
 Version:
 
-`1.0.5`
+`1.0.6`
 
 Purpose:
 
@@ -154,9 +154,15 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-1.0.5.zip`
+`packages/ChapelAstroUtilities-1.0.6.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 1.0.6
+
+- Updated `ImageRenameByFilter` to 1.0.6.
+- `Save & Overwrite Selected` now saves to the current or previewed image name in the source folder instead of blindly reusing the originally loaded file path.
+- This prevents processed `H_PreNoiseX`, `L_PreNoiseX`, and similar windows from overwriting the earlier `H`, `L`, and `R` files.
 
 ### Chapel Astro Utilities 1.0.5
 
