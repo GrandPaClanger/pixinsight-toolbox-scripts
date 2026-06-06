@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/ChapelAstroUtilities-2.2.zip"
-               sha1="e8be45e10da07976fec067dac74d3a408ba61396"
+      <package fileName="packages/ChapelAstroUtilities-2.3.zip"
+               sha1="72cbb5fb740b51faf59e2fd734ea307bb77c2d6a"
                type="script"
                releaseDate="20260606">
          <title>
-            Chapel Astro Utilities 2.2
+            Chapel Astro Utilities 2.3
          </title>
          <description>
             <p>
-               Installs ImageRenameByFilter 2.2 and MatchOpenImageSizes 1.0.2 under Script &gt; Chapel Astro Utilities.
-               Save &amp; Overwrite Selected now always saves each selected image using its current open image name.
+               Installs ImageRenameByFilter 2.3 and MatchOpenImageSizes 1.0.2 under Script &gt; Chapel Astro Utilities.
+               Save &amp; Overwrite Selected now respects the selected folder while using each current open image name.
             </p>
          </description>
       </package>

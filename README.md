@@ -40,7 +40,7 @@ Menu:
 
 Version:
 
-`2.2`
+`2.3`
 
 Purpose:
 
@@ -115,8 +115,9 @@ open images.
 
 `Save && Overwrite` is a separate action next to `Apply`.
 
-It saves the checked open images back to their current file paths after one
-confirmation. It is intended for in-place overwrite saves, not Save As output.
+It saves the checked open images to their current image names in the selected
+folder after one confirmation. If no folder is selected, it falls back to the
+source image folder.
 
 ### MatchOpenImageSizes
 
@@ -159,9 +160,15 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-2.2.zip`
+`packages/ChapelAstroUtilities-2.3.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 2.3
+
+- Updated `ImageRenameByFilter` to 2.3.
+- `Save & Overwrite Selected` now respects the folder field while keeping the current open image name as the saved filename.
+- If the folder field is blank, the operation still falls back to the image source folder.
 
 ### Chapel Astro Utilities 2.2
 
