@@ -36,7 +36,7 @@ Menu:
 
 Version:
 
-`2.0`
+`2.1`
 
 Purpose:
 
@@ -154,9 +154,15 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-2.0.zip`
+`packages/ChapelAstroUtilities-2.1.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 2.1
+
+- Updated `ImageRenameByFilter` to 2.1.
+- Added a single-image ad-hoc rename section.
+- Ad-hoc renames require exactly one selected preview image, reject duplicate open image identifiers, and enforce PixInsight identifier rules.
 
 ### Chapel Astro Utilities 2.0
 

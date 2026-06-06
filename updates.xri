@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/ChapelAstroUtilities-2.0.zip"
-               sha1="d2715a2d1cea763b306002ca07f09f4a4cc1f0d9"
+      <package fileName="packages/ChapelAstroUtilities-2.1.zip"
+               sha1="115976eb0e227fbbde0015a17ecb0c6d1e38afc3"
                type="script"
                releaseDate="20260606">
          <title>
-            Chapel Astro Utilities 2.0
+            Chapel Astro Utilities 2.1
          </title>
          <description>
             <p>
-               Installs ImageRenameByFilter 2.0 and MatchOpenImageSizes 1.0.2 under Script &gt; Chapel Astro Utilities.
-               Adds an in-script help guide for rename modes, mappings, suffixes, save-after-renaming, and overwrite behaviour.
+               Installs ImageRenameByFilter 2.1 and MatchOpenImageSizes 1.0.2 under Script &gt; Chapel Astro Utilities.
+               Adds a single-image ad-hoc rename option with duplicate and PixInsight identifier validation.
             </p>
          </description>
       </package>

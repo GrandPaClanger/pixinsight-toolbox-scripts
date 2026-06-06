@@ -18,7 +18,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define TITLE "ImageRenameByFilter"
-#define VERSION "2.0"
+#define VERSION "2.1"
 
 #define SETTINGS_ROOT "GrandPaClanger/ImageRenameByFilter"
 
@@ -167,6 +167,16 @@ function sanitizeViewId( id )
       result = "_" + result;
 
    return result;
+}
+
+function isValidViewId( id )
+{
+   return /^[A-Za-z_][A-Za-z0-9_]*$/.test( id );
+}
+
+function validViewIdMessage()
+{
+   return "PixInsight identifiers must start with an alphabetic or underscore character and can only contain alphabetic, decimal digit, or underscore characters.";
 }
 
 function setControlBold( control, bold )
@@ -553,25 +563,30 @@ function countSelected( plan )
 function showHelpDialog()
 {
    var helpText =
-      "IMAGE RENAME BY FILTER 2.0\n\n" +
+      "IMAGE RENAME BY FILTER " + VERSION + "\n\n" +
       "[1] RENAME MODES\n" +
       "- Rename By Filter Mappings: matches text in the image id, filename, or caption and renames to the mapped value.\n" +
       "- Append suffix to current names: adds the suffix to the current image id. Filter matching is ignored.\n" +
       "- Select a mode before using Apply Rename / Append.\n\n" +
-      "[2] MAPPINGS\n" +
+      "[2] SINGLE IMAGE RENAME\n" +
+      "- Tick exactly one image in the Preview list.\n" +
+      "- Enter an ad-hoc name and click Rename Selected Image.\n" +
+      "- The name must be a valid PixInsight identifier and must not duplicate another open image id.\n" +
+      "- This updates the side tab and top caption only. It does not save files.\n\n" +
+      "[3] MAPPINGS\n" +
       "- Text to find is the token to search for, such as Red, Hydrogen, or Nofilter.\n" +
       "- Rename to is the new PixInsight image identifier, such as R, H, or OSC.\n" +
       "- Use Default Mappings to restore the supplied defaults. Custom mappings are remembered.\n\n" +
-      "[3] SUFFIXES\n" +
+      "[4] SUFFIXES\n" +
       "- Suffix text is sanitised for PixInsight identifiers.\n" +
       "- PreNoiseX becomes _PreNoiseX, for example R_PreNoiseX.\n" +
       "- Rename-only operations do not save, close, or collapse images.\n\n" +
-      "[4] SAVE AFTER RENAMING\n" +
+      "[5] SAVE AFTER RENAMING\n" +
       "- When enabled, Apply Rename / Append also saves renamed files to the selected folder.\n" +
       "- The folder defaults to the source directory used by most open images.\n" +
       "- After save can leave, collapse, or close the selected source images.\n" +
       "- Open newly saved images reloads the saved files after the save operation.\n\n" +
-      "[5] SAVE & OVERWRITE SELECTED\n" +
+      "[6] SAVE & OVERWRITE SELECTED\n" +
       "- This is a separate in-place save operation.\n" +
       "- It saves selected open images to their current or previewed image names in the source folder.\n" +
       "- It overwrites after one confirmation, so check the Preview New column first.";
@@ -662,6 +677,45 @@ function overwriteSelectedCurrentFiles( plan )
       }
 
    Console.writeln( "Done. Overwrote " + selected.toString() + " selected image file(s)." );
+}
+
+function renameSingleSelectedImage( plan, requestedId )
+{
+   var selected = new Array;
+   var newId = trimString( requestedId );
+
+   for ( var i = 0; i < plan.length; ++i )
+      if ( plan[i].selected )
+         selected.push( plan[i] );
+
+   if ( selected.length == 0 )
+      throw new Error( "Select one image in the preview before using the ad-hoc rename." );
+
+   if ( selected.length > 1 )
+      throw new Error( "Select only one image in the preview before using the ad-hoc rename." );
+
+   if ( newId.length == 0 )
+      throw new Error( "Enter a new image name." );
+
+   if ( !isValidViewId( newId ) )
+      throw new Error( "Invalid PixInsight identifier: " + newId + "\n\n" +
+                       validViewIdMessage() );
+
+   var item = selected[0];
+   var existing = existingViewIds();
+
+   if ( existing[newId] && newId != item.currentId )
+      throw new Error( "Another open image already uses the identifier '" + newId + "'." );
+
+   if ( newId == item.currentId )
+      throw new Error( "The selected image already uses the identifier '" + newId + "'." );
+
+   item.window.mainView.id = newId;
+   cleanCaption( item.window, newId );
+
+   Console.show();
+   Console.writeln( "<end><cbr><br>" + TITLE + " " + VERSION );
+   Console.writeln( "Renamed " + item.currentId + " -> " + newId + "." );
 }
 
 function confirmOverwrites( plan, outputDirectory )
@@ -1683,6 +1737,29 @@ function ImageRenameByFilterDialog()
    this.previewSizer.add( this.previewLabel );
    this.previewSizer.add( this.previewTree, 100 );
 
+   this.singleRenameLabel = new Label( this );
+   this.singleRenameLabel.text = "Single Image Rename";
+   this.singleRenameLabel.frameStyle = FrameStyle_Box;
+   this.singleRenameLabel.margin = 4;
+
+   this.singleRenameNameLabel = new Label( this );
+   this.singleRenameNameLabel.text = "New name:";
+   this.singleRenameNameLabel.textAlignment = TextAlign_Right | TextAlign_VertCenter;
+
+   this.singleRenameEdit = new Edit( this );
+   this.singleRenameEdit.toolTip = validViewIdMessage();
+
+   this.singleRenameButton = new PushButton( this );
+   this.singleRenameButton.text = "Rename Selected Image";
+   this.singleRenameButton.toolTip =
+      "Rename exactly one selected preview image to this ad-hoc PixInsight identifier.";
+
+   this.singleRenameSizer = new HorizontalSizer;
+   this.singleRenameSizer.spacing = 6;
+   this.singleRenameSizer.add( this.singleRenameNameLabel );
+   this.singleRenameSizer.add( this.singleRenameEdit, 100 );
+   this.singleRenameSizer.add( this.singleRenameButton );
+
    this.mappingsText = function()
    {
       return mappingsToText( mappingRows );
@@ -1997,6 +2074,25 @@ function ImageRenameByFilterDialog()
                    trimString( dialog.outputEdit.text ) );
    };
 
+   this.singleRenameButton.onClick = function()
+   {
+      try
+      {
+         currentPlan = buildPlan( mappingRows,
+                                  sanitizeOptionalSuffix( dialog.suffixEdit.text ),
+                                  capturePreviewSelections( dialog.previewTree, currentPlan ),
+                                  dialog.renameMode() );
+         renameSingleSelectedImage( currentPlan,
+                                    dialog.singleRenameEdit.text );
+         dialog.singleRenameEdit.text = "";
+         dialog.refreshPreview();
+      }
+      catch ( error )
+      {
+         (new MessageBox( error.message, TITLE, StdIcon_Error, StdButton_Ok )).execute();
+      }
+   };
+
    this.applyButton = new PushButton( this );
    this.applyButton.text = "Apply Rename / Append";
    this.applyButton.icon = this.scaledResource( ":/icons/execute.png" );
@@ -2149,6 +2245,8 @@ function ImageRenameByFilterDialog()
    this.sizer.add( this.previewSizer, 100 );
    this.sizer.add( this.selectionActionLabel );
    this.sizer.add( this.selectionButtonSizer );
+   this.sizer.add( this.singleRenameLabel );
+   this.sizer.add( this.singleRenameSizer );
    this.sizer.add( this.renameActionLabel );
    this.sizer.add( this.renameActionSizer );
    this.sizer.add( this.overwriteActionLabel );
