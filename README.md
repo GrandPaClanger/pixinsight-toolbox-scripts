@@ -36,7 +36,7 @@ Menu:
 
 Version:
 
-`1.0.0`
+`1.0.1`
 
 Purpose:
 
@@ -154,4 +154,18 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-1.0.0.zip`
+`packages/ChapelAstroUtilities-1.0.1.zip`
+
+## Change Log
+
+### Chapel Astro Utilities 1.0.1
+
+- Updated `ImageRenameByFilter` to 1.0.1.
+- Reopened saved images now keep the saved zoom and resize their windows to the
+  zoomed image footprint to reduce large gray margins.
+
+### Chapel Astro Utilities 1.0.0
+
+- Added `ImageRenameByFilter` 1.0.0.
+- Updated `MatchOpenImageSizes` to 1.0.2.
+- Moved scripts to `Script > Chapel Astro Utilities`.

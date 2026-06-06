@@ -18,7 +18,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define TITLE "ImageRenameByFilter"
-#define VERSION "1.0.0"
+#define VERSION "1.0.1"
 
 #define SETTINGS_ROOT "GrandPaClanger/ImageRenameByFilter"
 
@@ -839,6 +839,55 @@ function applyDisplayGeometry( window, geometry )
    }
 }
 
+function zoomedImageDisplaySize( image, zoom )
+{
+   var width = image.width;
+   var height = image.height;
+
+   if ( zoom > 0 )
+   {
+      width *= zoom;
+      height *= zoom;
+   }
+   else if ( zoom < 0 )
+   {
+      width /= -zoom;
+      height /= -zoom;
+   }
+
+   return {
+      width: Math.max( 1, Math.round( width ) ),
+      height: Math.max( 1, Math.round( height ) )
+   };
+}
+
+function fitWindowToCurrentZoom( window )
+{
+   try
+   {
+      if ( typeof window.resize != "function" )
+         return false;
+
+      var image = window.mainView.image;
+      var display = zoomedImageDisplaySize( image, window.zoomFactor );
+
+      // PixInsight image windows include title/tab chrome around the viewport.
+      // A small fixed allowance avoids clipping while removing large gray areas.
+      var targetWidth = Math.max( 180, display.width + 64 );
+      var targetHeight = Math.max( 140, display.height + 52 );
+
+      window.resize( targetWidth, targetHeight );
+      return true;
+   }
+   catch ( error )
+   {
+      Console.warningln( "Could not fit " + window.mainView.id +
+                         " to its current zoom: " + error.message );
+   }
+
+   return false;
+}
+
 function ensureDirectory( directory )
 {
    if ( directory.length == 0 )
@@ -1111,6 +1160,7 @@ function openSavedImage( path, id, geometry )
          cleanCaption( window, openedId );
          showWindow( window );
          applyDisplayGeometry( window, geometry );
+         fitWindowToCurrentZoom( window );
          bringWindowToFront( window );
          ++openedCount;
       }
@@ -1227,6 +1277,7 @@ function applyPlan( plan, saveImages, outputDirectory, postSaveAction, openSaved
          {
             showWindow( actionItem.savedWindow );
             applyDisplayGeometry( actionItem.savedWindow, actionItem.displayGeometry );
+            fitWindowToCurrentZoom( actionItem.savedWindow );
             bringWindowToFront( actionItem.savedWindow );
             ++opened;
          }

@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/ChapelAstroUtilities-1.0.0.zip"
-               sha1="7c58021fd150ba42e0a7c563d6bfb03d12e56e0e"
+      <package fileName="packages/ChapelAstroUtilities-1.0.1.zip"
+               sha1="6561df2baf2abdf4860c85bd6b822fb1bfd7af88"
                type="script"
                releaseDate="20260606">
          <title>
-            Chapel Astro Utilities 1.0.0
+            Chapel Astro Utilities 1.0.1
          </title>
          <description>
             <p>
-               Installs ImageRenameByFilter 1.0.0 and MatchOpenImageSizes 1.0.2 under Script &gt; Chapel Astro Utilities.
-               Existing MatchOpenImageSizes installations are updated to the new menu location.
+               Installs ImageRenameByFilter 1.0.1 and MatchOpenImageSizes 1.0.2 under Script &gt; Chapel Astro Utilities.
+               Reopened saved images now fit their windows to the saved zoom to reduce gray margins.
             </p>
          </description>
       </package>
