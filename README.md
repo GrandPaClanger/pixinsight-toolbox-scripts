@@ -19,6 +19,10 @@ Web guide:
 
 `docs/index.html`
 
+Hosted guide:
+
+`https://chapel-astro-utilities-guide.vercel.app/`
+
 ## Menu Location
 
 After installation, scripts appear under:
