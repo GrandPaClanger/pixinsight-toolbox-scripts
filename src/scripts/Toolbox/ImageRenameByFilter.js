@@ -18,7 +18,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define TITLE "ImageRenameByFilter"
-#define VERSION "1.0.2"
+#define VERSION "1.0.3"
 
 #define SETTINGS_ROOT "GrandPaClanger/ImageRenameByFilter"
 
@@ -864,18 +864,17 @@ function zoomedImageDisplaySize( image, zoom )
 function fitWindowToCurrentZoom( window )
 {
    if ( typeof window.resize != "function" )
-      return false;
+   {
+      return;
+   }
 
    var image = window.mainView.image;
    var display = zoomedImageDisplaySize( image, window.zoomFactor );
 
-   // PixInsight image windows include title/tab chrome around the viewport.
-   // A small fixed allowance avoids clipping while removing large gray areas.
    var targetWidth = Math.max( 180, display.width + 64 );
    var targetHeight = Math.max( 140, display.height + 52 );
 
    window.resize( targetWidth, targetHeight );
-   return true;
 }
 
 function ensureDirectory( directory )

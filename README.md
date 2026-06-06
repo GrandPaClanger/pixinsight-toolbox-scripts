@@ -36,7 +36,7 @@ Menu:
 
 Version:
 
-`1.0.2`
+`1.0.3`
 
 Purpose:
 
@@ -154,9 +154,15 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-1.0.2.zip`
+`packages/ChapelAstroUtilities-1.0.3.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 1.0.3
+
+- Updated `ImageRenameByFilter` to 1.0.3.
+- Removed boolean return values from the reopened-window fit-to-zoom helper to
+  avoid PixInsight parser/static-analysis errors.
 
 ### Chapel Astro Utilities 1.0.2
 
