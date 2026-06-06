@@ -643,31 +643,31 @@
     <section id="workflows" class="dark-band">
       <div class="section-inner">
         <div class="section-heading">
-          <h2>Four common workflows, two compact tools.</h2>
-          <p>The utilities are designed around the real sequence most imagers follow: stack, clean up names, compare frames, process, mark processing stages, and save.</p>
+          <h2>Recommended workflow order.</h2>
+          <p>Start by making the open windows comparable, then clean up the names, mark processing stages, and handle any one-off corrections.</p>
         </div>
         <div class="workflow-grid">
           <article class="workflow">
-            <h3>Rename by filter mapping</h3>
+            <h3>1. Resize images to reference</h3>
+            <p>Select a reference image and make the other open windows match its zoom and frame. If their pixel dimensions differ, the utility resamples them to the reference dimensions.</p>
+          </article>
+          <article class="workflow">
+            <h3>2. Shorten long file names</h3>
             <p>Match words such as <code>Red</code>, <code>Hydrogen</code>, or <code>Nofilter</code> in the file path, caption, or image ID and rename them to concise identifiers such as <code>R</code>, <code>H</code>, or <code>OSC</code>.</p>
           </article>
           <article class="workflow">
-            <h3>Append a processing suffix</h3>
+            <h3>3. Append file name suffixes</h3>
             <p>After a crop, gradient correction, or noise reduction pass, append a PixInsight-safe suffix to the currently open names. The filter mapping can be ignored when the current name is already the truth.</p>
           </article>
           <article class="workflow">
-            <h3>Rename one image ad hoc</h3>
+            <h3>4. Rename individual image</h3>
             <p>Need to correct just one image? Select a single preview row, enter a valid identifier, and rename the side tab and top caption without running a batch operation.</p>
-          </article>
-          <article class="workflow">
-            <h3>Match open image sizes</h3>
-            <p>Select a reference image and make the other open windows match its zoom and frame. If their pixel dimensions differ, the utility resamples them to the reference dimensions.</p>
           </article>
         </div>
         <div class="screenshot-row">
           <figure class="screenshot-card">
             <img src="assets/filter-rename.png" alt="PixInsight workspace showing long master light names before filter renaming" loading="lazy" decoding="async">
-            <figcaption>Before: stacked master lights still carry long generated names across the top bar and side tabs.</figcaption>
+            <figcaption>Stacked master lights on the left carry long generated names across the top bar and side tabs. On the right are images with names derived from a custom filter mapping table. Options exist so source images can remain open, be collapsed, or be closed.</figcaption>
           </figure>
           <figure class="screenshot-card">
             <img src="assets/filter-auto-save.png" alt="PixInsight workspace showing renamed LRGB files and pre-processing suffix files" loading="lazy" decoding="async">
