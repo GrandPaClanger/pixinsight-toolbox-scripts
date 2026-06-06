@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Chapel Astro Utilities for PixInsight</title>
-  <meta name="description" content="Chapel Astro Utilities helps PixInsight users rename, save, and manage stacked master frames with clean filter-aware workflows.">
+  <meta name="description" content="Chapel Astro Utilities helps PixInsight users rename, save, resize, and visually align open image windows with clean workflow-focused scripts.">
   <style>
     :root {
       --bg: #10161a;
@@ -229,7 +229,7 @@
 
     .benefits {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 18px;
     }
 
@@ -269,6 +269,11 @@
       color: var(--rust);
     }
 
+    .benefit:nth-child(4) .icon {
+      background: #edf1ff;
+      color: #4256a6;
+    }
+
     .benefit h3,
     .workflow h3,
     .guide-block h3,
@@ -295,7 +300,7 @@
 
     .workflow-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 18px;
     }
 
@@ -385,7 +390,7 @@
 
     .safety-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 16px;
     }
 
@@ -467,7 +472,21 @@
       }
     }
 
+    @media (min-width: 901px) and (max-width: 1100px) {
+      .benefits,
+      .workflow-grid,
+      .safety-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
     @media (max-width: 600px) {
+      .benefits,
+      .workflow-grid,
+      .safety-grid {
+        grid-template-columns: 1fr;
+      }
+
       h1 {
         font-size: 31px;
         line-height: 1.08;
@@ -509,6 +528,7 @@
       <div class="nav-links">
         <a href="#benefits">Benefits</a>
         <a href="#workflows">Workflows</a>
+        <a href="#tools">Tools</a>
         <a href="#install">Install</a>
         <a href="#guide">Guide</a>
         <a class="button primary" href="#install">Install</a>
@@ -520,8 +540,8 @@
     <section class="hero">
       <div class="hero-inner">
         <div class="hero-copy">
-          <h1>Clean names for serious PixInsight workflows.</h1>
-          <p>Chapel Astro Utilities turns long stacked master frame names into readable filter identifiers, adds processing suffixes, and keeps save operations predictable.</p>
+          <h1>Clean, consistent PixInsight workspaces.</h1>
+          <p>Chapel Astro Utilities turns long stacked master frame names into readable identifiers, saves batches deliberately, and lines up open image windows to a chosen reference.</p>
           <div class="hero-actions">
             <a class="button primary" href="#install">Install in PixInsight</a>
             <a class="button secondary" href="#guide">Read the user guide</a>
@@ -533,11 +553,11 @@
             </div>
             <div>
               <strong>Filter aware</strong>
-              <span>L, R, G, B, H, O, S, and OSC defaults.</span>
+              <span>L, R, G, B, H, O, S, and OSC rename defaults.</span>
             </div>
             <div>
-              <strong>Batch safe</strong>
-              <span>Preview, select, confirm, and save deliberately.</span>
+              <strong>Visually aligned</strong>
+              <span>Match zoom, frame size, and dimensions to a reference.</span>
             </div>
           </div>
         </div>
@@ -548,7 +568,7 @@
       <div class="section-inner">
         <div class="section-heading">
           <h2>Built for the messy middle of image processing.</h2>
-          <p>PixInsight can generate beautifully calibrated data and wildly long window names. These utilities keep the workspace readable when you are moving fast.</p>
+          <p>PixInsight can generate beautifully calibrated data, wildly long window names, and image windows that all open at different sizes. These utilities keep the workspace readable when you are moving fast.</p>
         </div>
         <div class="benefits">
           <article class="benefit">
@@ -563,6 +583,11 @@
           </article>
           <article class="benefit">
             <div class="icon">3</div>
+            <h3>Line up open images</h3>
+            <p>Use one image as the reference, then match the other open windows to its zoom, frame size, and pixel dimensions when needed.</p>
+          </article>
+          <article class="benefit">
+            <div class="icon">4</div>
             <h3>Save with confidence</h3>
             <p>Choose between rename-only, save-as output, and overwrite saves to the selected folder. Collapsed source windows can be stacked neatly after the batch.</p>
           </article>
@@ -573,8 +598,8 @@
     <section id="workflows" class="dark-band">
       <div class="section-inner">
         <div class="section-heading">
-          <h2>Three common workflows, one compact tool.</h2>
-          <p>ImageRenameByFilter is designed around the real sequence most imagers follow: stack, clean up names, process, mark processing stages, and save.</p>
+          <h2>Four common workflows, two compact tools.</h2>
+          <p>The utilities are designed around the real sequence most imagers follow: stack, clean up names, compare frames, process, mark processing stages, and save.</p>
         </div>
         <div class="workflow-grid">
           <article class="workflow">
@@ -588,6 +613,45 @@
           <article class="workflow">
             <h3>Rename one image ad hoc</h3>
             <p>Need to correct just one image? Select a single preview row, enter a valid identifier, and rename the side tab and top caption without running a batch operation.</p>
+          </article>
+          <article class="workflow">
+            <h3>Match open image sizes</h3>
+            <p>Select a reference image and make the other open windows match its zoom and frame. If their pixel dimensions differ, the utility resamples them to the reference dimensions.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="tools" class="light">
+      <div class="section-inner">
+        <div class="section-heading">
+          <h2>What each utility does.</h2>
+          <p>Both scripts live under the same PixInsight menu, but they solve different workspace problems.</p>
+        </div>
+        <div class="guide-grid">
+          <article class="guide-block">
+            <h3>ImageRenameByFilter</h3>
+            <p>A naming and save workflow for open image windows. It is especially useful straight after stacking, when master frames inherit long file names from the integration process.</p>
+            <ul>
+              <li>Maps filename, caption, or view-id text to short filter names.</li>
+              <li>Stores editable user mappings between sessions.</li>
+              <li>Appends PixInsight-safe processing suffixes to current names.</li>
+              <li>Renames one selected image with an ad-hoc identifier.</li>
+              <li>Saves renamed images, reopens saved output, and can close or collapse sources.</li>
+              <li>Overwrites selected files using the current open image name and selected folder.</li>
+            </ul>
+          </article>
+          <article class="guide-block">
+            <h3>MatchOpenImageSizes</h3>
+            <p>A visual consistency tool for comparing open images. Choose the image that already looks right, then bring the rest of the workspace into line.</p>
+            <ul>
+              <li>Uses the selected image window as the reference.</li>
+              <li>Copies the reference zoom factor to all other open images.</li>
+              <li>Copies the reference window frame size when PixInsight exposes writable geometry.</li>
+              <li>Resamples images whose pixel dimensions differ from the reference.</li>
+              <li>Leaves the reference image unchanged.</li>
+              <li>Supports PixInsight process icons for repeated reference-based use.</li>
+            </ul>
           </article>
         </div>
       </div>
@@ -622,20 +686,28 @@
           <article class="guide-block">
             <h3>ImageRenameByFilter</h3>
             <ul>
-              <li><strong>Rename By Filter Mappings:</strong> best for newly stacked masters with long generated names.</li>
-              <li><strong>Append suffix to current names:</strong> best after processing when the current names are already correct.</li>
-              <li><strong>Single Image Rename:</strong> best for one-off corrections.</li>
-              <li><strong>Save images after renaming:</strong> saves the renamed output to the selected folder.</li>
-              <li><strong>Save &amp; Overwrite Selected:</strong> saves selected images using their current open image names.</li>
+              <li><strong>Choose a mode:</strong> select either <code>Rename By Filter Mappings</code> or <code>Append suffix to current names</code>. Apply stays disabled until a mode is selected.</li>
+              <li><strong>Edit mappings:</strong> add, update, or delete rows in the mapping table. More specific matches win before generic ones.</li>
+              <li><strong>Use valid names:</strong> output identifiers must start with a letter or underscore and only contain letters, digits, or underscores.</li>
+              <li><strong>Select the batch:</strong> checked preview rows are processed. Collapsed windows are unchecked by default when PixInsight exposes that state.</li>
+              <li><strong>Apply Rename / Append:</strong> renames open images. If saving is not enabled, images are not closed, collapsed, or saved.</li>
+              <li><strong>Save images after renaming:</strong> saves the renamed output to the selected folder and can reopen saved images.</li>
+              <li><strong>After save:</strong> leave, close, or collapse selected source images. Collapsed sources are stacked neatly where PixInsight allows it.</li>
+              <li><strong>Single Image Rename:</strong> select exactly one preview row, enter an ad-hoc name, and rename both the side tab and top caption.</li>
+              <li><strong>Save &amp; Overwrite Selected:</strong> saves checked open images using their current open image names in the selected folder.</li>
             </ul>
           </article>
           <article class="guide-block">
             <h3>MatchOpenImageSizes</h3>
             <p>Use this companion utility when open images need to match a selected reference image. It copies the reference zoom and attempts to match the frame size where PixInsight exposes that geometry.</p>
             <ul>
-              <li>Select the reference image window.</li>
-              <li>Run <code>Script &gt; Chapel Astro Utilities &gt; MatchOpenImageSizes</code>.</li>
-              <li>Use a process icon when you want to apply the same reference workflow repeatedly.</li>
+              <li><strong>Pick the reference:</strong> click the image window with the size, zoom, and dimensions you want to keep.</li>
+              <li><strong>Run the utility:</strong> open <code>Script &gt; Chapel Astro Utilities &gt; MatchOpenImageSizes</code>.</li>
+              <li><strong>Confirm the summary:</strong> the script reports the reference image, pixel size, zoom, and frame size before making changes.</li>
+              <li><strong>Let it match the rest:</strong> every other open image is matched to the reference zoom and frame size.</li>
+              <li><strong>Understand resampling:</strong> if another image has different pixel dimensions, it is resampled to the reference width and height.</li>
+              <li><strong>Use process icons:</strong> drag the New Instance triangle to the workspace, then drag that process icon onto an image to use it as the reference.</li>
+              <li><strong>Know the limit:</strong> if PixInsight does not expose writable window geometry, the script still matches zoom and dimensions but may not be able to copy the frame size.</li>
             </ul>
           </article>
         </div>
@@ -665,6 +737,14 @@
             <strong>Folder defaults</strong>
             <span>The save folder defaults to the source directory used by the majority of open images.</span>
           </div>
+          <div class="safety-item">
+            <strong>Reference preserved</strong>
+            <span>MatchOpenImageSizes leaves the selected reference image unchanged.</span>
+          </div>
+          <div class="safety-item">
+            <strong>Resample warning</strong>
+            <span>Images with different pixel dimensions are resized to the reference, so choose the reference deliberately.</span>
+          </div>
         </div>
       </div>
     </section>
@@ -672,7 +752,7 @@
     <section class="cta">
       <div class="section-inner">
         <h2>Spend less time decoding tabs and more time processing data.</h2>
-        <p>Chapel Astro Utilities keeps PixInsight workspaces legible from stacked masters through the final pre-stretch save.</p>
+        <p>Chapel Astro Utilities keeps PixInsight workspaces legible and consistent from stacked masters through comparison, processing, and final pre-stretch saves.</p>
         <div class="hero-actions" style="justify-content: center;">
           <a class="button primary" href="#install">Install the update repository</a>
           <a class="button secondary" href="https://github.com/GrandPaClanger/pixinsight-toolbox-scripts">View on GitHub</a>
