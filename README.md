@@ -36,7 +36,7 @@ Menu:
 
 Version:
 
-`1.0.7`
+`1.0.8`
 
 Purpose:
 
@@ -154,9 +154,14 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-1.0.7.zip`
+`packages/ChapelAstroUtilities-1.0.8.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 1.0.8
+
+- Updated `ImageRenameByFilter` to 1.0.8.
+- Added `Nofilter -> OSC` at the top of the default rename mappings for one-shot colour images.
 
 ### Chapel Astro Utilities 1.0.7
 

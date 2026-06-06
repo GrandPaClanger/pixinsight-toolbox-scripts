@@ -18,11 +18,12 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define TITLE "ImageRenameByFilter"
-#define VERSION "1.0.7"
+#define VERSION "1.0.8"
 
 #define SETTINGS_ROOT "GrandPaClanger/ImageRenameByFilter"
 
 var DEFAULT_MAPPINGS =
+   "Nofilter,OSC\n" +
    "Luminance,L\n" +
    "Red,R\n" +
    "Green,G\n" +
