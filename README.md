@@ -53,7 +53,7 @@ Menu:
 
 Version:
 
-`2.6-beta11`
+`3.0`
 
 Purpose:
 
@@ -143,7 +143,7 @@ Menu:
 
 Version:
 
-`1.0.4-beta7`
+`1.0.4`
 
 Purpose:
 
@@ -179,9 +179,20 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-2.6-beta14.zip`
+`packages/ChapelAstroUtilities-3.0.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 3.0
+
+- Live release package.
+- Updated `ImageRenameByFilter` to 3.0.
+- Updated `MatchOpenImageSizes` to 1.0.4.
+- Promoted the wizard-based ImageRenameByFilter workflow to live, including
+  filter mapping rename, suffix append, single-image rename, and save-only
+  overwrite mode.
+- Promoted the Chapel Astro Utilities menu location and MatchOpenImageSizes
+  companion workflow to live.
 
 ### Chapel Astro Utilities 2.6-beta14
 

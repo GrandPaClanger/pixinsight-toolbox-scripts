@@ -23,7 +23,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 var IMAGE_RENAME_TITLE = "ImageRenameByFilter";
-var IMAGE_RENAME_VERSION = "2.6-beta11";
+var IMAGE_RENAME_VERSION = "3.0";
 var IMAGE_RENAME_SETTINGS_ROOT = "GrandPaClanger/ImageRenameByFilter";
 
 var DEFAULT_MAPPINGS =

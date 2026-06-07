@@ -15,7 +15,7 @@
 #feature-info  Match open image window display size to a selected reference window.
 
 var TITLE = "MatchOpenImageSizes";
-var VERSION = "1.0.4-beta7";
+var VERSION = "1.0.4";
 
 var FrameStyle_Box = 1;
 var ResizeMode_AbsolutePixels = 1;
