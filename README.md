@@ -53,7 +53,7 @@ Menu:
 
 Version:
 
-`2.6-beta1`
+`2.6-beta2`
 
 Purpose:
 
@@ -176,9 +176,18 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-2.6-beta1.zip`
+`packages/ChapelAstroUtilities-2.6-beta2.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 2.6-beta2
+
+- DEV beta package.
+- Updated `ImageRenameByFilter` to 2.6-beta2.
+- Moved Rename individual image into Step 1.
+- Suffix entry is shown only when Append suffix to current names is selected.
+- Single-image rename mode requires exactly one selected image.
+- Final summary action is now `Apply Changes` at the bottom right.
 
 ### Chapel Astro Utilities 2.6-beta1
 

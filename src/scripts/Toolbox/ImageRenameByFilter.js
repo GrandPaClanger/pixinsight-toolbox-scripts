@@ -23,7 +23,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define TITLE "ImageRenameByFilter"
-#define VERSION "2.6-beta1"
+#define VERSION "2.6-beta2"
 
 #define SETTINGS_ROOT "GrandPaClanger/ImageRenameByFilter"
 
@@ -543,6 +543,36 @@ function capturePreviewSelections( treeBox, plan )
    return selections;
 }
 
+function enforceSinglePreviewSelection( treeBox, plan )
+{
+   var found = false;
+
+   try
+   {
+      for ( var i = 0; i < treeBox.numberOfChildren; ++i )
+      {
+         var node = treeBox.child( i );
+
+         if ( node != null && typeof node.__planIndex == "number" )
+         {
+            if ( node.checked && !found )
+            {
+               found = true;
+               plan[node.__planIndex].selected = true;
+            }
+            else
+            {
+               node.checked = false;
+               plan[node.__planIndex].selected = false;
+            }
+         }
+      }
+   }
+   catch ( error )
+   {
+   }
+}
+
 function countMatched( plan )
 {
    var n = 0;
@@ -572,10 +602,11 @@ function showHelpDialog()
       "[1] RENAME MODES\n" +
       "- Rename By Filter Mappings: matches text in the image id, filename, or caption and renames to the mapped value.\n" +
       "- Append suffix to current names: adds the suffix to the current image id. Filter matching is ignored.\n" +
-      "- Select a mode before using Apply Rename / Append.\n\n" +
+      "- Rename individual image: enter an ad-hoc name in Step 1, select exactly one image in Step 2, then use Apply Changes in the summary.\n" +
+      "- Select a mode before using Apply Changes.\n\n" +
       "[2] SINGLE IMAGE RENAME\n" +
       "- Tick exactly one image in the Preview list.\n" +
-      "- Enter an ad-hoc name and click Rename Selected Image.\n" +
+      "- Enter an ad-hoc name in Step 1 and select exactly one image in Step 2.\n" +
       "- The name must be a valid PixInsight identifier and must not duplicate another open image id.\n" +
       "- This updates the side tab and top caption only. It does not save files.\n\n" +
       "[3] MAPPINGS\n" +
@@ -587,7 +618,7 @@ function showHelpDialog()
       "- PreNoiseX becomes _PreNoiseX, for example R_PreNoiseX.\n" +
       "- Rename-only operations do not save, close, or collapse images.\n\n" +
       "[5] SAVE AFTER RENAMING\n" +
-      "- When enabled, Apply Rename / Append also saves renamed files to the selected folder.\n" +
+      "- When enabled, Apply Changes also saves renamed files to the selected folder.\n" +
       "- The folder defaults to the source directory used by most open images.\n" +
       "- After save can leave, collapse, or close the selected source images.\n" +
       "- Collapsed source images are stacked into a neat column when PixInsight exposes writable icon geometry.\n" +
@@ -1711,6 +1742,10 @@ function ImageRenameByFilterDialog()
    this.suffixOnlyModeRadio.text = "Append suffix to current names";
    this.suffixOnlyModeRadio.checked = renameMode == "suffixOnly";
 
+   this.singleRenameModeRadio = new RadioButton( this );
+   this.singleRenameModeRadio.text = "Rename individual image";
+   this.singleRenameModeRadio.checked = renameMode == "single";
+
    this.modePromptLabel = new Label( this );
    this.modePromptLabel.textAlignment = TextAlign_Left | TextAlign_VertCenter;
 
@@ -1719,6 +1754,7 @@ function ImageRenameByFilterDialog()
    this.modeSizer.add( this.modeLabel );
    this.modeSizer.add( this.mappingModeRadio );
    this.modeSizer.add( this.suffixOnlyModeRadio );
+   this.modeSizer.add( this.singleRenameModeRadio );
    this.modeSizer.add( this.modePromptLabel );
    this.modeSizer.addStretch();
 
@@ -1844,9 +1880,9 @@ function ImageRenameByFilterDialog()
    this.singleRenameEdit.toolTip = validViewIdMessage();
 
    this.singleRenameButton = new PushButton( this );
-   this.singleRenameButton.text = "Rename Selected Image";
+   this.singleRenameButton.text = "Validate Name";
    this.singleRenameButton.toolTip =
-      "Rename exactly one selected preview image to this ad-hoc PixInsight identifier.";
+      "Check that the ad-hoc image name follows PixInsight identifier rules.";
 
    this.singleRenameSizer = new HorizontalSizer;
    this.singleRenameSizer.spacing = 6;
@@ -1887,6 +1923,9 @@ function ImageRenameByFilterDialog()
       if ( dialog.suffixOnlyModeRadio.checked )
          return "suffixOnly";
 
+      if ( dialog.singleRenameModeRadio.checked )
+         return "single";
+
       return "";
    };
 
@@ -1899,6 +1938,22 @@ function ImageRenameByFilterDialog()
          "Select a rename mode before applying.";
       dialog.modePromptLabel.text = hasMode ? "" : "Select a mode to enable Apply";
       setControlBold( dialog.modePromptLabel, !hasMode );
+   };
+
+   this.updateOperationVisibility = function()
+   {
+      var mode = dialog.renameMode();
+
+      try
+      {
+         dialog.suffixSizer.visible = mode == "suffixOnly";
+         dialog.mappingSizer.visible = mode == "mapping";
+         dialog.singleRenameLabel.visible = mode == "single";
+         dialog.singleRenameSizer.visible = mode == "single";
+      }
+      catch ( error )
+      {
+      }
    };
 
    this.updateSaveOptionVisibility = function()
@@ -1953,9 +2008,11 @@ function ImageRenameByFilterDialog()
    this.stepInstruction = function( step )
    {
       if ( step == 0 )
-         return "Choose Rename By Filter Mappings or Append suffix to current names. Edit mappings or suffix before continuing.";
+         return "Choose Rename By Filter Mappings, Append suffix to current names, or Rename individual image. Enter the suffix or single-image name here when needed.";
       if ( step == 1 )
-         return "Tick the open image windows to include in the batch.";
+         return dialog.renameMode() == "single" ?
+            "Tick exactly one open image window to rename." :
+            "Tick the open image windows to include in the batch.";
       if ( step == 2 )
          return "Choose what should happen to the selected source images after a save.";
       if ( step == 3 )
@@ -1972,6 +2029,9 @@ function ImageRenameByFilterDialog()
 
    this.nextWizardStep = function()
    {
+      if ( wizardStep == 1 && dialog.renameMode() == "single" )
+         return 5;
+
       if ( wizardStep == 3 && !dialog.saveCheckBox.checked )
          return 5;
 
@@ -1980,6 +2040,9 @@ function ImageRenameByFilterDialog()
 
    this.previousWizardStep = function()
    {
+      if ( wizardStep == 5 && dialog.renameMode() == "single" )
+         return 1;
+
       if ( wizardStep == 5 && !dialog.saveCheckBox.checked )
          return 3;
 
@@ -2002,6 +2065,23 @@ function ImageRenameByFilterDialog()
          return false;
       }
 
+      if ( wizardStep == 1 && dialog.renameMode() == "single" )
+      {
+         if ( dialog.selectedPreviewCount() != 1 )
+         {
+            (new MessageBox( "Select exactly one image before continuing with Rename individual image.",
+                             TITLE, StdIcon_Information, StdButton_Ok )).execute();
+            return false;
+         }
+
+         if ( trimString( dialog.singleRenameEdit.text ).length == 0 )
+         {
+            (new MessageBox( "Enter the new image name in Step 1 before continuing.",
+                             TITLE, StdIcon_Information, StdButton_Ok )).execute();
+            return false;
+         }
+      }
+
       return true;
    };
 
@@ -2009,22 +2089,26 @@ function ImageRenameByFilterDialog()
    {
       var modeText = dialog.renameMode() == "mapping" ?
          "Rename By Filter Mappings" :
-         "Append suffix to current names";
+         (dialog.renameMode() == "suffixOnly" ?
+            "Append suffix to current names" :
+            "Rename individual image");
       var selected = dialog.selectedPreviewCount();
       var matched = countMatched( currentPlan );
       var suffix = sanitizeOptionalSuffix( dialog.suffixEdit.text );
       var outputDirectory = trimString( dialog.outputEdit.text );
-      var saveText = dialog.saveCheckBox.checked ?
+      var saveText = dialog.renameMode() == "single" ?
+         "Single-image rename only. Files will not be saved, closed, or collapsed." :
+         (dialog.saveCheckBox.checked ?
          "Save renamed images to: " +
             (outputDirectory.length > 0 ? outputDirectory :
              "each image's source folder, where available") :
-         "Rename only. Images will not be saved, closed, or collapsed.";
+         "Rename only. Images will not be saved, closed, or collapsed.");
       var windowText = dialog.postSaveAction() == "collapse" ?
          "Collapse selected source images after save." :
          (dialog.postSaveAction() == "close" ?
             "Close selected source images after save." :
             "Leave selected source images open after save.");
-      var reopenText = dialog.saveCheckBox.checked ?
+      var reopenText = dialog.saveCheckBox.checked && dialog.renameMode() != "single" ?
          (dialog.openSavedCheckBox.checked ?
             "Reopen newly saved images." :
             "Do not reopen newly saved images.") :
@@ -2033,9 +2117,12 @@ function ImageRenameByFilterDialog()
       return "Operation: " + modeText + "\n" +
              "Selected images: " + selected.toString() + "\n" +
              "Ready to process: " + matched.toString() + "\n" +
+             (dialog.renameMode() == "single" ?
+                "New single-image name: " + trimString( dialog.singleRenameEdit.text ) + "\n" :
+                "") +
              "Suffix: " + (suffix.length > 0 ? "_" + suffix : "(none)") + "\n" +
              saveText + "\n" +
-             windowText + "\n" +
+             (dialog.renameMode() == "single" ? "" : windowText + "\n") +
              reopenText;
    };
 
@@ -2059,8 +2146,15 @@ function ImageRenameByFilterDialog()
       dialog.applyButton.visible = wizardStep == 5;
       dialog.applyButton.defaultButton = wizardStep == 5;
       dialog.nextButton.defaultButton = wizardStep < 5;
+      dialog.overwriteActionLabel.visible = wizardStep == 5 && dialog.renameMode() != "single";
+      dialog.overwriteActionSizer.visible = wizardStep == 5 && dialog.renameMode() != "single";
+      dialog.selectAllButton.text = dialog.renameMode() == "single" ?
+         "Select First" :
+         "Select All";
 
-      if ( wizardStep == 3 && !dialog.saveCheckBox.checked )
+      if ( wizardStep == 1 && dialog.renameMode() == "single" )
+         dialog.nextButton.text = "Next: Summary";
+      else if ( wizardStep == 3 && !dialog.saveCheckBox.checked )
          dialog.nextButton.text = "Next: Summary";
       else if ( wizardStep == 4 )
          dialog.nextButton.text = "Next: Summary";
@@ -2127,6 +2221,9 @@ function ImageRenameByFilterDialog()
                       currentPlan,
                       dialog.saveCheckBox.checked,
                       trimString( dialog.outputEdit.text ) );
+
+         if ( dialog.renameMode() == "single" )
+            enforceSinglePreviewSelection( dialog.previewTree, currentPlan );
       }
       catch ( error )
       {
@@ -2241,12 +2338,21 @@ function ImageRenameByFilterDialog()
       dialog.updateWizard();
    };
 
+   this.singleRenameEdit.onTextUpdated = function()
+   {
+      dialog.updateWizard();
+   };
+
    this.mappingModeRadio.onCheck = function()
    {
       if ( dialog.mappingModeRadio.checked )
+      {
          dialog.suffixOnlyModeRadio.checked = false;
+         dialog.singleRenameModeRadio.checked = false;
+      }
       dialog.saveDialogSettings();
       dialog.updateApplyState();
+      dialog.updateOperationVisibility();
       dialog.refreshPreview();
       dialog.updateWizard();
    };
@@ -2254,9 +2360,27 @@ function ImageRenameByFilterDialog()
    this.suffixOnlyModeRadio.onCheck = function()
    {
       if ( dialog.suffixOnlyModeRadio.checked )
+      {
          dialog.mappingModeRadio.checked = false;
+         dialog.singleRenameModeRadio.checked = false;
+      }
       dialog.saveDialogSettings();
       dialog.updateApplyState();
+      dialog.updateOperationVisibility();
+      dialog.refreshPreview();
+      dialog.updateWizard();
+   };
+
+   this.singleRenameModeRadio.onCheck = function()
+   {
+      if ( dialog.singleRenameModeRadio.checked )
+      {
+         dialog.mappingModeRadio.checked = false;
+         dialog.suffixOnlyModeRadio.checked = false;
+      }
+      dialog.saveDialogSettings();
+      dialog.updateApplyState();
+      dialog.updateOperationVisibility();
       dialog.refreshPreview();
       dialog.updateWizard();
    };
@@ -2306,11 +2430,23 @@ function ImageRenameByFilterDialog()
    this.selectAllButton.text = "Select All";
    this.selectAllButton.onClick = function()
    {
-      setPreviewSelections( dialog.previewTree, currentPlan, true );
+      if ( dialog.renameMode() == "single" )
+      {
+         setPreviewSelections( dialog.previewTree, currentPlan, false );
+
+         if ( currentPlan.length > 0 )
+            currentPlan[0].selected = true;
+      }
+      else
+         setPreviewSelections( dialog.previewTree, currentPlan, true );
+
       fillPreview( dialog.previewTree,
                    currentPlan,
                    dialog.saveCheckBox.checked,
                    trimString( dialog.outputEdit.text ) );
+
+      if ( dialog.renameMode() == "single" )
+         enforceSinglePreviewSelection( dialog.previewTree, currentPlan );
    };
 
    this.unselectAllButton = new PushButton( this );
@@ -2328,14 +2464,17 @@ function ImageRenameByFilterDialog()
    {
       try
       {
-         currentPlan = buildPlan( mappingRows,
-                                  sanitizeOptionalSuffix( dialog.suffixEdit.text ),
-                                  capturePreviewSelections( dialog.previewTree, currentPlan ),
-                                  dialog.renameMode() );
-         renameSingleSelectedImage( currentPlan,
-                                    dialog.singleRenameEdit.text );
-         dialog.singleRenameEdit.text = "";
-         dialog.refreshPreview();
+         var newId = trimString( dialog.singleRenameEdit.text );
+
+         if ( newId.length == 0 )
+            throw new Error( "Enter a new image name." );
+
+         if ( !isValidViewId( newId ) )
+            throw new Error( "Invalid PixInsight identifier: " + newId + "\n\n" +
+                             validViewIdMessage() );
+
+         (new MessageBox( "The image name is valid.",
+                          TITLE, StdIcon_Information, StdButton_Ok )).execute();
       }
       catch ( error )
       {
@@ -2344,7 +2483,7 @@ function ImageRenameByFilterDialog()
    };
 
    this.applyButton = new PushButton( this );
-   this.applyButton.text = "Apply Rename / Append";
+   this.applyButton.text = "Apply Changes";
    this.applyButton.icon = this.scaledResource( ":/icons/execute.png" );
    this.applyButton.defaultButton = true;
    this.applyButton.onClick = function()
@@ -2360,6 +2499,15 @@ function ImageRenameByFilterDialog()
          {
             (new MessageBox( "Select a rename mode before applying.",
                              TITLE, StdIcon_Information, StdButton_Ok )).execute();
+            return;
+         }
+
+         if ( dialog.renameMode() == "single" )
+         {
+            renameSingleSelectedImage( currentPlan,
+                                       dialog.singleRenameEdit.text );
+            dialog.singleRenameEdit.text = "";
+            dialog.ok();
             return;
          }
 
@@ -2443,16 +2591,6 @@ function ImageRenameByFilterDialog()
    this.selectionButtonSizer.add( this.unselectAllButton );
    this.selectionButtonSizer.addStretch();
 
-   this.renameActionLabel = new Label( this );
-   this.renameActionLabel.text = "Rename / Append Operation";
-   this.renameActionLabel.frameStyle = FrameStyle_Box;
-   this.renameActionLabel.margin = 4;
-
-   this.renameActionSizer = new HorizontalSizer;
-   this.renameActionSizer.spacing = 6;
-   this.renameActionSizer.add( this.applyButton );
-   this.renameActionSizer.addStretch();
-
    this.overwriteActionLabel = new Label( this );
    this.overwriteActionLabel.text = "In-Place File Save";
    this.overwriteActionLabel.frameStyle = FrameStyle_Box;
@@ -2499,6 +2637,8 @@ function ImageRenameByFilterDialog()
    this.pageOperation.sizer.add( this.optionsHeaderLabel );
    this.pageOperation.sizer.add( this.modeSizer );
    this.pageOperation.sizer.add( this.suffixSizer );
+   this.pageOperation.sizer.add( this.singleRenameLabel );
+   this.pageOperation.sizer.add( this.singleRenameSizer );
    this.pageOperation.sizer.add( this.mappingSizer, 100 );
 
    this.pageSelection = new Control( this );
@@ -2531,10 +2671,6 @@ function ImageRenameByFilterDialog()
    this.pageSummary.sizer.spacing = 8;
    this.pageSummary.sizer.add( this.summaryLabel );
    this.pageSummary.sizer.add( this.summaryTextLabel );
-   this.pageSummary.sizer.add( this.singleRenameLabel );
-   this.pageSummary.sizer.add( this.singleRenameSizer );
-   this.pageSummary.sizer.add( this.renameActionLabel );
-   this.pageSummary.sizer.add( this.renameActionSizer );
    this.pageSummary.sizer.add( this.overwriteActionLabel );
    this.pageSummary.sizer.add( this.overwriteActionSizer );
 
@@ -2553,6 +2689,7 @@ function ImageRenameByFilterDialog()
    this.buttonSizer.addStretch();
    this.buttonSizer.add( this.backButton );
    this.buttonSizer.add( this.nextButton );
+   this.buttonSizer.add( this.applyButton );
    this.buttonSizer.add( this.closeButton );
 
    this.sizer = new VerticalSizer;
@@ -2576,6 +2713,7 @@ function ImageRenameByFilterDialog()
    this.refreshPreview();
    this.updateApplyState();
    this.updateSaveOptionVisibility();
+   this.updateOperationVisibility();
    this.updateWizard();
 }
 
