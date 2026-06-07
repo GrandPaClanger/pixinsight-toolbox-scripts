@@ -23,7 +23,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 var IMAGE_RENAME_TITLE = "ImageRenameByFilter";
-var IMAGE_RENAME_VERSION = "2.6-beta9";
+var IMAGE_RENAME_VERSION = "2.6-beta10";
 var IMAGE_RENAME_SETTINGS_ROOT = "GrandPaClanger/ImageRenameByFilter";
 
 var DEFAULT_MAPPINGS =
@@ -661,7 +661,7 @@ function showHelpDialog()
       "- Collapsed source images are stacked into a neat column when PixInsight exposes writable icon geometry.\n" +
       "- Open newly saved images reloads the saved files after the save operation.\n\n" +
       "[6] SAVE & OVERWRITE SELECTED\n" +
-      "- This is a separate overwrite save operation on the Select your images step.\n" +
+      "- This is a separate overwrite save operation on Step 1.\n" +
       "- It saves selected open images to their current image names in the selected folder.\n" +
       "- If no folder is selected, it falls back to the image source folder.\n" +
       "- It overwrites after one confirmation, so check the Preview New column first.";
@@ -2618,7 +2618,7 @@ function ImageRenameByFilterDialog()
    this.saveOverwriteButton.text = "Save && Overwrite Selected";
    this.saveOverwriteButton.icon = this.scaledResource( ":/icons/save.png" );
    this.saveOverwriteButton.toolTip =
-      "Save selected open images to their current image names in the selected folder, overwriting existing files after one confirmation.";
+      "Save selected open images to their current image names in the selected folder, overwriting existing files after one confirmation. This does not rename, close, or collapse images.";
    this.saveOverwriteButton.onClick = function()
    {
       try
@@ -2644,8 +2644,22 @@ function ImageRenameByFilterDialog()
    this.selectionButtonSizer.spacing = 6;
    this.selectionButtonSizer.add( this.selectAllButton );
    this.selectionButtonSizer.add( this.unselectAllButton );
-   this.selectionButtonSizer.add( this.saveOverwriteButton );
    this.selectionButtonSizer.addStretch();
+
+   this.saveOnlyHeaderLabel = new Label( this );
+   this.saveOnlyHeaderLabel.text = "Save Only";
+   this.saveOnlyHeaderLabel.frameStyle = FrameStyle_Box;
+   this.saveOnlyHeaderLabel.margin = 4;
+
+   this.saveOnlyHintLabel = new Label( this );
+   this.saveOnlyHintLabel.text =
+      "Save selected open images immediately using their current names. This does not rename, close, or collapse images.";
+   this.saveOnlyHintLabel.wordWrapping = true;
+
+   this.saveOnlySizer = new HorizontalSizer;
+   this.saveOnlySizer.spacing = 6;
+   this.saveOnlySizer.add( this.saveOverwriteButton );
+   this.saveOnlySizer.addStretch();
 
    this.closeButton = new PushButton( this );
    this.closeButton.text = "Close";
@@ -2686,6 +2700,9 @@ function ImageRenameByFilterDialog()
    this.pageOperation.sizer.add( this.singleRenameLabel );
    this.pageOperation.sizer.add( this.singleRenameSizer );
    this.pageOperation.sizer.add( this.mappingSizer, 100 );
+   this.pageOperation.sizer.add( this.saveOnlyHeaderLabel );
+   this.pageOperation.sizer.add( this.saveOnlyHintLabel );
+   this.pageOperation.sizer.add( this.saveOnlySizer );
 
    this.pageSelection = new Control( this );
    this.pageSelection.sizer = new VerticalSizer;

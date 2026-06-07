@@ -53,7 +53,7 @@ Menu:
 
 Version:
 
-`2.6-beta9`
+`2.6-beta10`
 
 Purpose:
 
@@ -129,7 +129,7 @@ open images.
 
 #### Save && Overwrite
 
-`Save && Overwrite` is a separate action on the image selection step.
+`Save && Overwrite` is a separate save-only action on Step 1.
 
 It saves the checked open images to their current image names in the selected
 folder after one confirmation. If no folder is selected, it falls back to the
@@ -179,9 +179,17 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-2.6-beta12.zip`
+`packages/ChapelAstroUtilities-2.6-beta13.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 2.6-beta13
+
+- DEV beta package.
+- Updated `ImageRenameByFilter` to 2.6-beta10.
+- Moved the save-only `Save && Overwrite Selected` action onto Step 1 so
+  selected images can be saved immediately without continuing through the
+  wizard.
 
 ### Chapel Astro Utilities 2.6-beta12
 
