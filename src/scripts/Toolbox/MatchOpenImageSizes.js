@@ -23,7 +23,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define TITLE "MatchOpenImageSizes"
-#define VERSION "1.0.4-beta2"
+#define VERSION "1.0.4-beta3"
 
 function imageRenameByFilterScriptPath()
 {

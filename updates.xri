@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/ChapelAstroUtilities-2.6-beta5.zip"
-               sha1="ece8b4aa74cc005bb85cf3db4cd7494a32febe67"
+      <package fileName="packages/ChapelAstroUtilities-2.6-beta6.zip"
+               sha1="a94b79ae7595a2f98e86b1d2cc7160cb8778392f"
                type="script"
                releaseDate="20260607">
          <title>
-            Chapel Astro Utilities 2.6-beta5 DEV
+            Chapel Astro Utilities 2.6-beta6 DEV
          </title>
          <description>
             <p>
-               Installs ImageRenameByFilter 2.6-beta4 and MatchOpenImageSizes 1.0.4-beta2 under Script &gt; Chapel Astro Utilities.
-               DEV beta build: MatchOpenImageSizes no longer embeds ImageRenameByFilter directly, avoiding nested include load failures.
+               Installs ImageRenameByFilter 2.6-beta6 and MatchOpenImageSizes 1.0.4-beta3 under Script &gt; Chapel Astro Utilities.
+               DEV beta build: removes temporary include guards from ImageRenameByFilter and keeps MatchOpenImageSizes on the standalone Script launcher.
             </p>
          </description>
       </package>

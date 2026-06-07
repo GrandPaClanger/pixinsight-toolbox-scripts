@@ -10,10 +10,8 @@
 // Rename open image windows by matching configurable filename/view-id tokens to
 // short filter names. Mappings are persisted in PixInsight settings.
 
-#ifndef CHAPEL_ASTRO_INCLUDE_IMAGE_RENAME
 #feature-id    ImageRenameByFilter : Chapel Astro Utilities > ImageRenameByFilter
 #feature-info  Rename open master light images by filter mapping, with optional save-as output.
-#endif
 
 #include <pjsr/DataType.jsh>
 #include <pjsr/FrameStyle.jsh>
@@ -25,7 +23,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define IMAGE_RENAME_TITLE "ImageRenameByFilter"
-#define IMAGE_RENAME_VERSION "2.6-beta4"
+#define IMAGE_RENAME_VERSION "2.6-beta6"
 
 #define IMAGE_RENAME_SETTINGS_ROOT "GrandPaClanger/ImageRenameByFilter"
 
@@ -2751,6 +2749,4 @@ function runImageRenameByFilter()
    dialog.execute();
 }
 
-#ifndef CHAPEL_ASTRO_INCLUDE_IMAGE_RENAME
 runImageRenameByFilter();
-#endif
