@@ -22,12 +22,32 @@
 #include <pjsr/TextAlign.jsh>
 #include <pjsr/UndoFlag.jsh>
 
-#define CHAPEL_ASTRO_INCLUDE_IMAGE_RENAME
-#include "ImageRenameByFilter.js"
-#undef CHAPEL_ASTRO_INCLUDE_IMAGE_RENAME
-
 #define TITLE "MatchOpenImageSizes"
-#define VERSION "1.0.4-beta1"
+#define VERSION "1.0.4-beta2"
+
+function imageRenameByFilterScriptPath()
+{
+   return File.extractDrive( #__FILE__ ) +
+          File.extractDirectory( #__FILE__ ) +
+          "/ImageRenameByFilter.js";
+}
+
+function launchImageRenameByFilter()
+{
+   var scriptPath = imageRenameByFilterScriptPath();
+
+   if ( !File.exists( scriptPath ) )
+   {
+      (new MessageBox( "Could not find ImageRenameByFilter beside this script:\n\n" +
+                       scriptPath,
+                       TITLE, StdIcon_Error, StdButton_Ok )).execute();
+      return;
+   }
+
+   var script = new Script;
+   script.filePath = scriptPath;
+   script.executeGlobal();
+}
 
 function formatSize( image )
 {
@@ -231,7 +251,7 @@ function matchWindowsToReference( referenceWindow, confirm, launchRenameByFilter
    if ( launchRenameByFilter )
    {
       Console.writeln( "Opening ImageRenameByFilter." );
-      runImageRenameByFilter();
+      launchImageRenameByFilter();
    }
 }
 
