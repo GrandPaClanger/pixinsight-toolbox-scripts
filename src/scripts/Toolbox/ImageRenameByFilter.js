@@ -23,7 +23,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 var IMAGE_RENAME_TITLE = "ImageRenameByFilter";
-var IMAGE_RENAME_VERSION = "2.6-beta8";
+var IMAGE_RENAME_VERSION = "2.6-beta9";
 var IMAGE_RENAME_SETTINGS_ROOT = "GrandPaClanger/ImageRenameByFilter";
 
 var DEFAULT_MAPPINGS =
@@ -661,7 +661,7 @@ function showHelpDialog()
       "- Collapsed source images are stacked into a neat column when PixInsight exposes writable icon geometry.\n" +
       "- Open newly saved images reloads the saved files after the save operation.\n\n" +
       "[6] SAVE & OVERWRITE SELECTED\n" +
-      "- This is a separate overwrite save operation.\n" +
+      "- This is a separate overwrite save operation on the Select your images step.\n" +
       "- It saves selected open images to their current image names in the selected folder.\n" +
       "- If no folder is selected, it falls back to the image source folder.\n" +
       "- It overwrites after one confirmation, so check the Preview New column first.";
@@ -2203,8 +2203,6 @@ function ImageRenameByFilterDialog()
       dialog.applyButton.visible = wizardStep == 5;
       dialog.applyButton.defaultButton = wizardStep == 5;
       dialog.nextButton.defaultButton = wizardStep < 5;
-      dialog.overwriteActionLabel.visible = wizardStep == 5 && dialog.renameMode() != "single";
-      dialog.overwriteActionSizer.visible = wizardStep == 5 && dialog.renameMode() != "single";
       dialog.selectAllButton.text = dialog.renameMode() == "single" ?
          "Select First" :
          "Select All";
@@ -2646,17 +2644,8 @@ function ImageRenameByFilterDialog()
    this.selectionButtonSizer.spacing = 6;
    this.selectionButtonSizer.add( this.selectAllButton );
    this.selectionButtonSizer.add( this.unselectAllButton );
+   this.selectionButtonSizer.add( this.saveOverwriteButton );
    this.selectionButtonSizer.addStretch();
-
-   this.overwriteActionLabel = new Label( this );
-   this.overwriteActionLabel.text = "In-Place File Save";
-   this.overwriteActionLabel.frameStyle = FrameStyle_Box;
-   this.overwriteActionLabel.margin = 4;
-
-   this.overwriteActionSizer = new HorizontalSizer;
-   this.overwriteActionSizer.spacing = 6;
-   this.overwriteActionSizer.add( this.saveOverwriteButton );
-   this.overwriteActionSizer.addStretch();
 
    this.closeButton = new PushButton( this );
    this.closeButton.text = "Close";
@@ -2728,8 +2717,6 @@ function ImageRenameByFilterDialog()
    this.pageSummary.sizer.spacing = 8;
    this.pageSummary.sizer.add( this.summaryLabel );
    this.pageSummary.sizer.add( this.summaryTextLabel );
-   this.pageSummary.sizer.add( this.overwriteActionLabel );
-   this.pageSummary.sizer.add( this.overwriteActionSizer );
 
    wizardPages.push( this.pageOperation );
    wizardPages.push( this.pageSelection );
