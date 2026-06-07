@@ -22,8 +22,8 @@
 #include <pjsr/TextAlign.jsh>
 #include <pjsr/UndoFlag.jsh>
 
-#define TITLE "MatchOpenImageSizes"
-#define VERSION "1.0.4-beta3"
+var TITLE = "MatchOpenImageSizes";
+var VERSION = "1.0.4-beta4";
 
 function imageRenameByFilterScriptPath()
 {

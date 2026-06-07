@@ -22,10 +22,9 @@
 #include <pjsr/TextAlign.jsh>
 #include <pjsr/UndoFlag.jsh>
 
-#define IMAGE_RENAME_TITLE "ImageRenameByFilter"
-#define IMAGE_RENAME_VERSION "2.6-beta6"
-
-#define IMAGE_RENAME_SETTINGS_ROOT "GrandPaClanger/ImageRenameByFilter"
+var IMAGE_RENAME_TITLE = "ImageRenameByFilter";
+var IMAGE_RENAME_VERSION = "2.6-beta7";
+var IMAGE_RENAME_SETTINGS_ROOT = "GrandPaClanger/ImageRenameByFilter";
 
 var DEFAULT_MAPPINGS =
    "Nofilter,OSC\n" +

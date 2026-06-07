@@ -53,7 +53,7 @@ Menu:
 
 Version:
 
-`2.6-beta6`
+`2.6-beta7`
 
 Purpose:
 
@@ -143,7 +143,7 @@ Menu:
 
 Version:
 
-`1.0.4-beta3`
+`1.0.4-beta4`
 
 Purpose:
 
@@ -181,9 +181,17 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-2.6-beta6.zip`
+`packages/ChapelAstroUtilities-2.6-beta7.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 2.6-beta7
+
+- DEV beta package.
+- Updated `ImageRenameByFilter` to 2.6-beta7.
+- Updated `MatchOpenImageSizes` to 1.0.4-beta4.
+- Replaced script title/version `#define` macros with plain JavaScript
+  variables to avoid PixInsight preprocessor expansion errors.
 
 ### Chapel Astro Utilities 2.6-beta6
 
