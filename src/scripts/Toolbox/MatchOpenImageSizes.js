@@ -15,7 +15,7 @@
 #feature-info  Match open image window display size to a selected reference window.
 
 var TITLE = "MatchOpenImageSizes";
-var VERSION = "1.0.4-beta6";
+var VERSION = "1.0.4-beta7";
 
 var FrameStyle_Box = 1;
 var ResizeMode_AbsolutePixels = 1;
@@ -43,30 +43,6 @@ function VerticalSizer()
    this.__base__( true );
 }
 VerticalSizer.prototype = new Sizer;
-
-function imageRenameByFilterScriptPath()
-{
-   return File.extractDrive( #__FILE__ ) +
-          File.extractDirectory( #__FILE__ ) +
-          "/ImageRenameByFilter.js";
-}
-
-function launchImageRenameByFilter()
-{
-   var scriptPath = imageRenameByFilterScriptPath();
-
-   if ( !File.exists( scriptPath ) )
-   {
-      (new MessageBox( "Could not find ImageRenameByFilter beside this script:\n\n" +
-                       scriptPath,
-                       TITLE, StdIcon_Error, StdButton_Ok )).execute();
-      return;
-   }
-
-   var script = new Script;
-   script.filePath = scriptPath;
-   script.executeGlobal();
-}
 
 function formatSize( image )
 {
@@ -180,7 +156,7 @@ function copyReferenceFrame( targetWindow, referenceGeometry )
    return "";
 }
 
-function matchWindowsToReference( referenceWindow, confirm, launchRenameByFilter )
+function matchWindowsToReference( referenceWindow, confirm )
 {
    if ( referenceWindow.isNull )
       throw new Error( "No reference image window is available." );
@@ -267,11 +243,6 @@ function matchWindowsToReference( referenceWindow, confirm, launchRenameByFilter
                     " image window(s); copied frame for " +
                     frameCopyCount.toString() + " window(s)." );
 
-   if ( launchRenameByFilter )
-   {
-      Console.writeln( "Opening ImageRenameByFilter." );
-      launchImageRenameByFilter();
-   }
 }
 
 function mainWindowIds()
@@ -310,19 +281,10 @@ function defaultReferenceId()
    return "";
 }
 
-function exportParameters( referenceViewId, launchRenameByFilter )
+function exportParameters( referenceViewId )
 {
    Parameters.set( "version", VERSION );
    Parameters.set( "referenceViewId", referenceViewId );
-   Parameters.set( "launchRenameByFilter", launchRenameByFilter ? "true" : "false" );
-}
-
-function parametersLaunchRenameByFilter()
-{
-   if ( Parameters.has( "launchRenameByFilter" ) )
-      return Parameters.get( "launchRenameByFilter" ) == "true";
-
-   return false;
 }
 
 function MatchOpenImageSizesDialog()
@@ -360,12 +322,6 @@ function MatchOpenImageSizesDialog()
    this.referenceSizer.add( this.referenceLabel );
    this.referenceSizer.add( this.referenceCombo, 100 );
 
-   this.launchRenameCheckBox = new CheckBox( this );
-   this.launchRenameCheckBox.text = "Open ImageRenameByFilter after matching";
-   this.launchRenameCheckBox.checked = parametersLaunchRenameByFilter();
-   this.launchRenameCheckBox.toolTip =
-      "After matching open image sizes, automatically open the rename/filter wizard.";
-
    this.newInstanceButton = new ToolButton( this );
    this.newInstanceButton.icon = this.scaledResource( ":/process-interface/new-instance.png" );
    this.newInstanceButton.setScaledFixedSize( 24, 24 );
@@ -373,8 +329,7 @@ function MatchOpenImageSizesDialog()
       "New Instance: drag to the workspace first to create a process icon. Then drag that process icon to an image to use it as the reference.";
    this.newInstanceButton.onMousePress = function()
    {
-      exportParameters( dialog.referenceCombo.itemText( dialog.referenceCombo.currentItem ),
-                        dialog.launchRenameCheckBox.checked );
+      exportParameters( dialog.referenceCombo.itemText( dialog.referenceCombo.currentItem ) );
       dialog.newInstance();
    };
 
@@ -385,11 +340,10 @@ function MatchOpenImageSizesDialog()
    this.executeButton.onClick = function()
    {
       var id = dialog.referenceCombo.itemText( dialog.referenceCombo.currentItem );
-      exportParameters( id, dialog.launchRenameCheckBox.checked );
+      exportParameters( id );
       var referenceWindow = windowByMainViewId( id );
-      var launchRenameByFilter = dialog.launchRenameCheckBox.checked;
       dialog.ok();
-      matchWindowsToReference( referenceWindow, true, launchRenameByFilter );
+      matchWindowsToReference( referenceWindow, true );
    };
 
    this.cancelButton = new PushButton( this );
@@ -412,7 +366,6 @@ function MatchOpenImageSizesDialog()
    this.sizer.spacing = 8;
    this.sizer.add( this.infoLabel );
    this.sizer.add( this.referenceSizer );
-   this.sizer.add( this.launchRenameCheckBox );
    this.sizer.add( this.buttonSizer );
 
    this.adjustToContents();
@@ -432,9 +385,7 @@ function main()
 
    if ( Parameters.isViewTarget )
    {
-      matchWindowsToReference( Parameters.targetView.window,
-                               true,
-                               parametersLaunchRenameByFilter() );
+      matchWindowsToReference( Parameters.targetView.window, true );
       return;
    }
 
@@ -443,9 +394,7 @@ function main()
       var window = windowByMainViewId( Parameters.get( "referenceViewId" ) );
       if ( !window.isNull )
       {
-         matchWindowsToReference( window,
-                                  true,
-                                  parametersLaunchRenameByFilter() );
+         matchWindowsToReference( window, true );
          return;
       }
    }
