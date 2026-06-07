@@ -1,4 +1,5 @@
-// ImageRenameByFilter.js
+// ImageBatchManager
+// Installed as ImageRenameByFilter.js for update compatibility.
 //
 // PixInsight JavaScript Runtime script.
 //
@@ -10,7 +11,7 @@
 // Rename open image windows by matching configurable filename/view-id tokens to
 // short filter names. Mappings are persisted in PixInsight settings.
 
-#feature-id    ImageRenameByFilter : Chapel Astro Utilities > ImageRenameByFilter
+#feature-id    ImageBatchManager : Chapel Astro Utilities > ImageBatchManager
 #feature-info  Rename open master light images by filter mapping, with optional save-as output.
 
 #include <pjsr/DataType.jsh>
@@ -22,8 +23,8 @@
 #include <pjsr/TextAlign.jsh>
 #include <pjsr/UndoFlag.jsh>
 
-var IMAGE_RENAME_TITLE = "ImageRenameByFilter";
-var IMAGE_RENAME_VERSION = "3.0";
+var IMAGE_RENAME_TITLE = "ImageBatchManager";
+var IMAGE_RENAME_VERSION = "3.1";
 var IMAGE_RENAME_SETTINGS_ROOT = "GrandPaClanger/ImageRenameByFilter";
 
 var DEFAULT_MAPPINGS =
@@ -645,7 +646,7 @@ function countSelected( plan )
 function showHelpDialog()
 {
    var helpText =
-      "IMAGE RENAME BY FILTER " + IMAGE_RENAME_VERSION + "\n\n" +
+      "IMAGE BATCH MANAGER " + IMAGE_RENAME_VERSION + "\n\n" +
       "[1] RENAME MODES\n" +
       "- Rename By Filter Mappings: matches text in the image id, filename, or caption and renames to the mapped value.\n" +
       "- Append suffix to current names: adds the suffix to the current image id. Filter matching is ignored.\n" +
@@ -2528,7 +2529,7 @@ function ImageRenameByFilterDialog()
 
    this.helpButton = new PushButton( this );
    this.helpButton.text = "?";
-   this.helpButton.toolTip = "Show help for ImageRenameByFilter.";
+   this.helpButton.toolTip = "Show help for ImageBatchManager.";
    this.helpButton.onClick = function()
    {
       showHelpDialog();

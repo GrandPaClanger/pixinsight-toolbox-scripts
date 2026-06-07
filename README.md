@@ -45,15 +45,15 @@ menu after PixInsight refreshes scripts.
 
 ## Scripts
 
-### ImageRenameByFilter
+### ImageBatchManager
 
 Menu:
 
-`Script > Chapel Astro Utilities > ImageRenameByFilter`
+`Script > Chapel Astro Utilities > ImageBatchManager`
 
 Version:
 
-`3.0`
+`3.1`
 
 Purpose:
 
@@ -162,7 +162,7 @@ It also supports PixInsight process icons:
 
 Create the desktop process icon first, then drag that icon onto an image.
 
-After matching, run `ImageRenameByFilter` separately from the same Chapel Astro
+After matching, run `ImageBatchManager` separately from the same Chapel Astro
 Utilities menu when you are ready to rename the matched images.
 
 ## Repository Layout
@@ -175,13 +175,24 @@ Installed scripts:
 
 `src/scripts/Toolbox/ImageRenameByFilter.js`
 
+The script file keeps its original filename for update compatibility, but the
+PixInsight menu entry and dialog title are `ImageBatchManager`.
+
 `src/scripts/Toolbox/MatchOpenImageSizes.js`
 
 The update package is:
 
-`packages/ChapelAstroUtilities-3.0.zip`
+`packages/ChapelAstroUtilities-3.1.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 3.1
+
+- Live release package.
+- Renamed `ImageRenameByFilter` to `ImageBatchManager` in the PixInsight menu,
+  dialog title, help text, update feed, and documentation.
+- Kept the original script filename for update compatibility so existing
+  installations update in place instead of leaving an old duplicate script.
 
 ### Chapel Astro Utilities 3.0
 
