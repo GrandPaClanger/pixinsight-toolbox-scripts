@@ -23,7 +23,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 var IMAGE_RENAME_TITLE = "ImageRenameByFilter";
-var IMAGE_RENAME_VERSION = "2.6-beta7";
+var IMAGE_RENAME_VERSION = "2.6-beta8";
 var IMAGE_RENAME_SETTINGS_ROOT = "GrandPaClanger/ImageRenameByFilter";
 
 var DEFAULT_MAPPINGS =
@@ -540,6 +540,44 @@ function capturePreviewSelections( treeBox, plan )
    }
 
    return selections;
+}
+
+function syncPreviewSelections( treeBox, plan )
+{
+   try
+   {
+      for ( var i = 0; i < treeBox.numberOfChildren; ++i )
+      {
+         var node = treeBox.child( i );
+         if ( node != null && typeof node.__planIndex == "number" )
+            plan[node.__planIndex].selected = node.checked;
+      }
+   }
+   catch ( error )
+   {
+   }
+}
+
+function countPreviewSelections( treeBox, plan )
+{
+   var n = 0;
+
+   try
+   {
+      for ( var i = 0; i < treeBox.numberOfChildren; ++i )
+      {
+         var node = treeBox.child( i );
+         if ( node != null && typeof node.__planIndex == "number" && node.checked )
+            ++n;
+      }
+
+      return n;
+   }
+   catch ( error )
+   {
+   }
+
+   return countSelected( plan );
 }
 
 function enforceSinglePreviewSelection( treeBox, plan )
@@ -1997,13 +2035,7 @@ function ImageRenameByFilterDialog()
 
    this.selectedPreviewCount = function()
    {
-      var selected = 0;
-
-      for ( var i = 0; i < currentPlan.length; ++i )
-         if ( currentPlan[i].selected )
-            ++selected;
-
-      return selected;
+      return countPreviewSelections( dialog.previewTree, currentPlan );
    };
 
    this.stepTitle = function( step )
@@ -2083,12 +2115,18 @@ function ImageRenameByFilterDialog()
 
       if ( wizardStep == 1 && dialog.renameMode() == "single" )
       {
-         if ( dialog.selectedPreviewCount() != 1 )
+         var selectedCount = dialog.selectedPreviewCount();
+
+         if ( selectedCount != 1 )
          {
-            (new MessageBox( "Select exactly one image before continuing with Rename individual image.",
+            (new MessageBox( "Rename individual image can only process one image.\n\n" +
+                             "You currently have " + selectedCount.toString() +
+                             " images ticked. Untick all but one image before continuing.",
                              IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
             return false;
          }
+
+         syncPreviewSelections( dialog.previewTree, currentPlan );
 
          if ( trimString( dialog.singleRenameEdit.text ).length == 0 )
          {
@@ -2103,6 +2141,8 @@ function ImageRenameByFilterDialog()
 
    this.summaryText = function()
    {
+      syncPreviewSelections( dialog.previewTree, currentPlan );
+
       var modeText = dialog.renameMode() == "mapping" ?
          "Rename By Filter Mappings" :
          (dialog.renameMode() == "suffixOnly" ?
@@ -2134,6 +2174,7 @@ function ImageRenameByFilterDialog()
              "Selected images: " + selected.toString() + "\n" +
              "Ready to process: " + matched.toString() + "\n" +
              (dialog.renameMode() == "single" ?
+                "Only the one ticked image will be renamed.\n" +
                 "New single-image name: " + trimString( dialog.singleRenameEdit.text ) + "\n" :
                 "") +
              "Suffix: " + (suffix.length > 0 ? "_" + suffix : "(none)") + "\n" +
@@ -2638,10 +2679,10 @@ function ImageRenameByFilterDialog()
    this.nextButton.text = "Next";
    this.nextButton.onClick = function()
    {
-      dialog.refreshPreview();
-
       if ( !dialog.validateWizardStep() )
          return;
+
+      dialog.refreshPreview();
 
       wizardStep = dialog.nextWizardStep();
       dialog.updateWizard();

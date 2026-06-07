@@ -53,7 +53,7 @@ Menu:
 
 Version:
 
-`2.6-beta7`
+`2.6-beta8`
 
 Purpose:
 
@@ -179,9 +179,19 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-2.6-beta10.zip`
+`packages/ChapelAstroUtilities-2.6-beta11.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 2.6-beta11
+
+- DEV beta package.
+- Updated `ImageRenameByFilter` to 2.6-beta8.
+- Single-image rename now validates the visible preview tick boxes before
+  refreshing the preview, so Next refuses more than one selected image instead
+  of silently reducing the selection.
+- The single-image summary now states that only the one ticked image will be
+  renamed.
 
 ### Chapel Astro Utilities 2.6-beta10
 
