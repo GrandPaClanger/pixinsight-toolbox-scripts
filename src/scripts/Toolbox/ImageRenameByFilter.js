@@ -23,7 +23,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 var IMAGE_RENAME_TITLE = "ImageRenameByFilter";
-var IMAGE_RENAME_VERSION = "2.6-beta10";
+var IMAGE_RENAME_VERSION = "2.6-beta11";
 var IMAGE_RENAME_SETTINGS_ROOT = "GrandPaClanger/ImageRenameByFilter";
 
 var DEFAULT_MAPPINGS =
@@ -392,6 +392,16 @@ function buildPlan( mappings, suffix, previousSelections, renameMode )
             suffixOnly: true
          };
       }
+      else if ( renameMode == "saveOnly" )
+      {
+         newId = currentId;
+         mapping = {
+            match: "current name",
+            imageId: currentId,
+            line: 0,
+            saveOnly: true
+         };
+      }
       else if ( mapping != null )
          newId = allocateViewId( suffixViewId( mapping.imageId, suffix ), allocated, currentId );
 
@@ -640,6 +650,7 @@ function showHelpDialog()
       "- Rename By Filter Mappings: matches text in the image id, filename, or caption and renames to the mapped value.\n" +
       "- Append suffix to current names: adds the suffix to the current image id. Filter matching is ignored.\n" +
       "- Rename individual image: enter an ad-hoc name in Step 1, select exactly one image in Step 2, then use Apply Changes in the summary.\n" +
+      "- Save selected images only: select images in Step 2, then save and overwrite them without renaming.\n" +
       "- Select a mode before using Apply Changes.\n\n" +
       "[2] SINGLE IMAGE RENAME\n" +
       "- Tick exactly one image in the Preview list.\n" +
@@ -661,9 +672,8 @@ function showHelpDialog()
       "- Collapsed source images are stacked into a neat column when PixInsight exposes writable icon geometry.\n" +
       "- Open newly saved images reloads the saved files after the save operation.\n\n" +
       "[6] SAVE & OVERWRITE SELECTED\n" +
-      "- This is a separate overwrite save operation on Step 1.\n" +
-      "- It saves selected open images to their current image names in the selected folder.\n" +
-      "- If no folder is selected, it falls back to the image source folder.\n" +
+      "- Choose Save selected images only on Step 1, then tick images on Step 2.\n" +
+      "- It saves selected open images to their current image names in their source folders.\n" +
       "- It overwrites after one confirmation, so check the Preview New column first.";
 
    (new MessageBox( helpText, IMAGE_RENAME_TITLE + " Help", StdIcon_Information,
@@ -1783,6 +1793,10 @@ function ImageRenameByFilterDialog()
    this.singleRenameModeRadio.text = "Rename individual image";
    this.singleRenameModeRadio.checked = renameMode == "single";
 
+   this.saveOnlyModeRadio = new RadioButton( this );
+   this.saveOnlyModeRadio.text = "Save selected images only";
+   this.saveOnlyModeRadio.checked = renameMode == "saveOnly";
+
    this.modePromptLabel = new Label( this );
    this.modePromptLabel.textAlignment = TextAlign_Left | TextAlign_VertCenter;
 
@@ -1792,6 +1806,7 @@ function ImageRenameByFilterDialog()
    this.modeSizer.add( this.mappingModeRadio );
    this.modeSizer.add( this.suffixOnlyModeRadio );
    this.modeSizer.add( this.singleRenameModeRadio );
+   this.modeSizer.add( this.saveOnlyModeRadio );
    this.modeSizer.add( this.modePromptLabel );
    this.modeSizer.addStretch();
 
@@ -1963,6 +1978,9 @@ function ImageRenameByFilterDialog()
       if ( dialog.singleRenameModeRadio.checked )
          return "single";
 
+      if ( dialog.saveOnlyModeRadio.checked )
+         return "saveOnly";
+
       return "";
    };
 
@@ -2056,11 +2074,13 @@ function ImageRenameByFilterDialog()
    this.stepInstruction = function( step )
    {
       if ( step == 0 )
-         return "Choose Rename By Filter Mappings, Append suffix to current names, or Rename individual image. Enter the suffix or single-image name here when needed.";
+         return "Choose Rename By Filter Mappings, Append suffix to current names, Rename individual image, or Save selected images only. Enter the suffix or single-image name here when needed.";
       if ( step == 1 )
          return dialog.renameMode() == "single" ?
             "Tick exactly one open image window to rename." :
-            "Tick the open image windows to include in the batch.";
+            (dialog.renameMode() == "saveOnly" ?
+               "Tick the open image windows to save, then use Save && Overwrite Selected." :
+               "Tick the open image windows to include in the batch.");
       if ( step == 2 )
          return "Choose what should happen to the selected source images after a save.";
       if ( step == 3 )
@@ -2079,6 +2099,9 @@ function ImageRenameByFilterDialog()
    {
       if ( wizardStep == 1 && dialog.renameMode() == "single" )
          return 5;
+
+      if ( wizardStep == 1 && dialog.renameMode() == "saveOnly" )
+         return 1;
 
       if ( wizardStep == 3 && !dialog.saveCheckBox.checked )
          return 5;
@@ -2101,7 +2124,7 @@ function ImageRenameByFilterDialog()
    {
       if ( wizardStep == 0 && dialog.renameMode().length == 0 )
       {
-         (new MessageBox( "Choose Rename By Filter Mappings, Append suffix to current names, or Rename individual image before continuing.",
+         (new MessageBox( "Choose Rename By Filter Mappings, Append suffix to current names, Rename individual image, or Save selected images only before continuing.",
                           IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
          return false;
       }
@@ -2147,18 +2170,22 @@ function ImageRenameByFilterDialog()
          "Rename By Filter Mappings" :
          (dialog.renameMode() == "suffixOnly" ?
             "Append suffix to current names" :
-            "Rename individual image");
+            (dialog.renameMode() == "single" ?
+               "Rename individual image" :
+               "Save selected images only"));
       var selected = dialog.selectedPreviewCount();
       var matched = countMatched( currentPlan );
       var suffix = sanitizeOptionalSuffix( dialog.suffixEdit.text );
       var outputDirectory = trimString( dialog.outputEdit.text );
       var saveText = dialog.renameMode() == "single" ?
          "Single-image rename only. Files will not be saved, closed, or collapsed." :
+         (dialog.renameMode() == "saveOnly" ?
+         "Save-only overwrite to each image source folder. Images will not be renamed, closed, or collapsed." :
          (dialog.saveCheckBox.checked ?
          "Save renamed images to: " +
             (outputDirectory.length > 0 ? outputDirectory :
              "each image's source folder, where available") :
-         "Rename only. Images will not be saved, closed, or collapsed.");
+         "Rename only. Images will not be saved, closed, or collapsed."));
       var windowText = dialog.postSaveAction() == "collapse" ?
          "Collapse selected source images after save." :
          (dialog.postSaveAction() == "close" ?
@@ -2168,7 +2195,9 @@ function ImageRenameByFilterDialog()
          (dialog.openSavedCheckBox.checked ?
             "Reopen newly saved images." :
             "Do not reopen newly saved images.") :
-         "Reopen step skipped because this is rename-only.";
+         (dialog.renameMode() == "saveOnly" ?
+            "Reopen step skipped because this is save-only overwrite." :
+            "Reopen step skipped because this is rename-only.");
 
       return "Operation: " + modeText + "\n" +
              "Selected images: " + selected.toString() + "\n" +
@@ -2203,6 +2232,12 @@ function ImageRenameByFilterDialog()
       dialog.applyButton.visible = wizardStep == 5;
       dialog.applyButton.defaultButton = wizardStep == 5;
       dialog.nextButton.defaultButton = wizardStep < 5;
+      dialog.saveOverwriteButton.visible = wizardStep == 1 && dialog.renameMode() == "saveOnly";
+      dialog.saveOverwriteButton.defaultButton = wizardStep == 1 && dialog.renameMode() == "saveOnly";
+
+      if ( wizardStep == 1 && dialog.renameMode() == "saveOnly" )
+         dialog.nextButton.visible = false;
+
       dialog.selectAllButton.text = dialog.renameMode() == "single" ?
          "Select First" :
          "Select All";
@@ -2404,6 +2439,7 @@ function ImageRenameByFilterDialog()
       {
          dialog.suffixOnlyModeRadio.checked = false;
          dialog.singleRenameModeRadio.checked = false;
+         dialog.saveOnlyModeRadio.checked = false;
       }
       dialog.saveDialogSettings();
       dialog.updateApplyState();
@@ -2418,6 +2454,7 @@ function ImageRenameByFilterDialog()
       {
          dialog.mappingModeRadio.checked = false;
          dialog.singleRenameModeRadio.checked = false;
+         dialog.saveOnlyModeRadio.checked = false;
       }
       dialog.saveDialogSettings();
       dialog.updateApplyState();
@@ -2432,6 +2469,22 @@ function ImageRenameByFilterDialog()
       {
          dialog.mappingModeRadio.checked = false;
          dialog.suffixOnlyModeRadio.checked = false;
+         dialog.saveOnlyModeRadio.checked = false;
+      }
+      dialog.saveDialogSettings();
+      dialog.updateApplyState();
+      dialog.updateOperationVisibility();
+      dialog.refreshPreview();
+      dialog.updateWizard();
+   };
+
+   this.saveOnlyModeRadio.onCheck = function()
+   {
+      if ( dialog.saveOnlyModeRadio.checked )
+      {
+         dialog.mappingModeRadio.checked = false;
+         dialog.suffixOnlyModeRadio.checked = false;
+         dialog.singleRenameModeRadio.checked = false;
       }
       dialog.saveDialogSettings();
       dialog.updateApplyState();
@@ -2618,16 +2671,23 @@ function ImageRenameByFilterDialog()
    this.saveOverwriteButton.text = "Save && Overwrite Selected";
    this.saveOverwriteButton.icon = this.scaledResource( ":/icons/save.png" );
    this.saveOverwriteButton.toolTip =
-      "Save selected open images to their current image names in the selected folder, overwriting existing files after one confirmation. This does not rename, close, or collapse images.";
+      "Save selected open images to their current image names in their source folders, overwriting existing files after one confirmation. This does not rename, close, or collapse images.";
    this.saveOverwriteButton.onClick = function()
    {
       try
       {
+         if ( dialog.renameMode() != "saveOnly" )
+         {
+            (new MessageBox( "Choose Save selected images only on Step 1 before using this action.",
+                             IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
+            return;
+         }
+
          currentPlan = buildPlan( mappingRows,
                                   sanitizeOptionalSuffix( dialog.suffixEdit.text ),
                                   capturePreviewSelections( dialog.previewTree, currentPlan ),
                                   dialog.renameMode() );
-         overwriteSelectedCurrentFiles( currentPlan, trimString( dialog.outputEdit.text ) );
+         overwriteSelectedCurrentFiles( currentPlan, "" );
       }
       catch ( error )
       {
@@ -2644,22 +2704,8 @@ function ImageRenameByFilterDialog()
    this.selectionButtonSizer.spacing = 6;
    this.selectionButtonSizer.add( this.selectAllButton );
    this.selectionButtonSizer.add( this.unselectAllButton );
+   this.selectionButtonSizer.add( this.saveOverwriteButton );
    this.selectionButtonSizer.addStretch();
-
-   this.saveOnlyHeaderLabel = new Label( this );
-   this.saveOnlyHeaderLabel.text = "Save Only";
-   this.saveOnlyHeaderLabel.frameStyle = FrameStyle_Box;
-   this.saveOnlyHeaderLabel.margin = 4;
-
-   this.saveOnlyHintLabel = new Label( this );
-   this.saveOnlyHintLabel.text =
-      "Save selected open images immediately using their current names. This does not rename, close, or collapse images.";
-   this.saveOnlyHintLabel.wordWrapping = true;
-
-   this.saveOnlySizer = new HorizontalSizer;
-   this.saveOnlySizer.spacing = 6;
-   this.saveOnlySizer.add( this.saveOverwriteButton );
-   this.saveOnlySizer.addStretch();
 
    this.closeButton = new PushButton( this );
    this.closeButton.text = "Close";
@@ -2700,9 +2746,6 @@ function ImageRenameByFilterDialog()
    this.pageOperation.sizer.add( this.singleRenameLabel );
    this.pageOperation.sizer.add( this.singleRenameSizer );
    this.pageOperation.sizer.add( this.mappingSizer, 100 );
-   this.pageOperation.sizer.add( this.saveOnlyHeaderLabel );
-   this.pageOperation.sizer.add( this.saveOnlyHintLabel );
-   this.pageOperation.sizer.add( this.saveOnlySizer );
 
    this.pageSelection = new Control( this );
    this.pageSelection.sizer = new VerticalSizer;

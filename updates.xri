@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/ChapelAstroUtilities-2.6-beta13.zip"
-               sha1="f8634e85f93092453b0a1e9e3bb77318b79aaf67"
+      <package fileName="packages/ChapelAstroUtilities-2.6-beta14.zip"
+               sha1="82e8463ba299be8e640f35d78609a1243170579c"
                type="script"
                releaseDate="20260607">
          <title>
-            Chapel Astro Utilities 2.6-beta13 DEV
+            Chapel Astro Utilities 2.6-beta14 DEV
          </title>
          <description>
             <p>
-               Installs ImageRenameByFilter 2.6-beta10 and MatchOpenImageSizes 1.0.4-beta7 under Script &gt; Chapel Astro Utilities.
-               DEV beta build: Save &amp;&amp; Overwrite Selected now appears on Step 1 as a save-only action.
+               Installs ImageRenameByFilter 2.6-beta11 and MatchOpenImageSizes 1.0.4-beta7 under Script &gt; Chapel Astro Utilities.
+               DEV beta build: Save selected images only is now a Step 1 mode, with the overwrite save button shown after selecting images on Step 2.
             </p>
          </description>
       </package>

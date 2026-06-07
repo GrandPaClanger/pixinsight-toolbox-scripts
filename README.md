@@ -53,7 +53,7 @@ Menu:
 
 Version:
 
-`2.6-beta10`
+`2.6-beta11`
 
 Purpose:
 
@@ -129,11 +129,11 @@ open images.
 
 #### Save && Overwrite
 
-`Save && Overwrite` is a separate save-only action on Step 1.
+`Save && Overwrite` is available after choosing `Save selected images only`
+on Step 1 and selecting the images to save on Step 2.
 
-It saves the checked open images to their current image names in the selected
-folder after one confirmation. If no folder is selected, it falls back to the
-source image folder.
+It saves the checked open images to their current image names in their source
+folders after one confirmation. It does not rename, close, or collapse images.
 
 ### MatchOpenImageSizes
 
@@ -179,9 +179,18 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-2.6-beta13.zip`
+`packages/ChapelAstroUtilities-2.6-beta14.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 2.6-beta14
+
+- DEV beta package.
+- Updated `ImageRenameByFilter` to 2.6-beta11.
+- Changed save-only overwrite into a normal Step 1 mode.
+- The save button now appears on Step 2 after users have selected the images
+  to save, and save-only overwrite uses each image source folder rather than a
+  remembered output folder.
 
 ### Chapel Astro Utilities 2.6-beta13
 
