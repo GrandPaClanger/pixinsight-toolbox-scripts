@@ -143,7 +143,7 @@ Menu:
 
 Version:
 
-`1.0.4-beta4`
+`1.0.4-beta5`
 
 Purpose:
 
@@ -181,9 +181,17 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-2.6-beta7.zip`
+`packages/ChapelAstroUtilities-2.6-beta8.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 2.6-beta8
+
+- DEV beta package.
+- Updated `MatchOpenImageSizes` to 1.0.4-beta5.
+- Removed all PJSR `#include` directives from `MatchOpenImageSizes`; the
+  script now defines its small set of required constants locally to avoid the
+  PixInsight include parser failure seen on some installs.
 
 ### Chapel Astro Utilities 2.6-beta7
 

@@ -14,16 +14,21 @@
 #feature-id    MatchOpenImageSizes : Chapel Astro Utilities > MatchOpenImageSizes
 #feature-info  Match open image window display size to a selected reference window.
 
-#include <pjsr/FrameStyle.jsh>
-#include <pjsr/ResizeMode.jsh>
-#include <pjsr/Sizer.jsh>
-#include <pjsr/StdButton.jsh>
-#include <pjsr/StdIcon.jsh>
-#include <pjsr/TextAlign.jsh>
-#include <pjsr/UndoFlag.jsh>
-
 var TITLE = "MatchOpenImageSizes";
-var VERSION = "1.0.4-beta4";
+var VERSION = "1.0.4-beta5";
+
+var FrameStyle_Box = 1;
+var ResizeMode_AbsolutePixels = 1;
+var AbsoluteResizeMode_ForceWidthAndHeight = 0;
+var StdButton_Ok = 1;
+var StdButton_Yes = 3;
+var StdButton_No = 4;
+var StdIcon_Question = 1;
+var StdIcon_Information = 2;
+var StdIcon_Error = 4;
+var TextAlign_Right = 0x02;
+var TextAlign_VertCenter = 0x80;
+var UndoFlag_DefaultMode = 0x00000000;
 
 function imageRenameByFilterScriptPath()
 {
