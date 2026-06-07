@@ -143,7 +143,7 @@ Menu:
 
 Version:
 
-`1.0.4-beta5`
+`1.0.4-beta6`
 
 Purpose:
 
@@ -181,9 +181,16 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-2.6-beta8.zip`
+`packages/ChapelAstroUtilities-2.6-beta9.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 2.6-beta9
+
+- DEV beta package.
+- Updated `MatchOpenImageSizes` to 1.0.4-beta6.
+- Added local `HorizontalSizer` and `VerticalSizer` helper constructors so the
+  resize script remains include-free without losing its dialog layout classes.
 
 ### Chapel Astro Utilities 2.6-beta8
 

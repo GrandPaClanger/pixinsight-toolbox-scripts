@@ -15,7 +15,7 @@
 #feature-info  Match open image window display size to a selected reference window.
 
 var TITLE = "MatchOpenImageSizes";
-var VERSION = "1.0.4-beta5";
+var VERSION = "1.0.4-beta6";
 
 var FrameStyle_Box = 1;
 var ResizeMode_AbsolutePixels = 1;
@@ -29,6 +29,20 @@ var StdIcon_Error = 4;
 var TextAlign_Right = 0x02;
 var TextAlign_VertCenter = 0x80;
 var UndoFlag_DefaultMode = 0x00000000;
+
+function HorizontalSizer()
+{
+   this.__base__ = Sizer;
+   this.__base__( false );
+}
+HorizontalSizer.prototype = new Sizer;
+
+function VerticalSizer()
+{
+   this.__base__ = Sizer;
+   this.__base__( true );
+}
+VerticalSizer.prototype = new Sizer;
 
 function imageRenameByFilterScriptPath()
 {

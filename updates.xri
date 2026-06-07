@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/ChapelAstroUtilities-2.6-beta8.zip"
-               sha1="55e544ac61f4db485540608d157012e0a8313cf6"
+      <package fileName="packages/ChapelAstroUtilities-2.6-beta9.zip"
+               sha1="c567b4f11008083e85a3b37aadc66dac01415069"
                type="script"
                releaseDate="20260607">
          <title>
-            Chapel Astro Utilities 2.6-beta8 DEV
+            Chapel Astro Utilities 2.6-beta9 DEV
          </title>
          <description>
             <p>
-               Installs ImageRenameByFilter 2.6-beta7 and MatchOpenImageSizes 1.0.4-beta5 under Script &gt; Chapel Astro Utilities.
-               DEV beta build: removes all PJSR include directives from MatchOpenImageSizes to avoid include parser failures.
+               Installs ImageRenameByFilter 2.6-beta7 and MatchOpenImageSizes 1.0.4-beta6 under Script &gt; Chapel Astro Utilities.
+               DEV beta build: adds local sizer helper constructors so MatchOpenImageSizes remains include-free.
             </p>
          </description>
       </package>
