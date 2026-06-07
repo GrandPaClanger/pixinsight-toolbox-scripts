@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/ChapelAstroUtilities-2.6-beta3.zip"
-               sha1="d495c60dae253d8790f4c7f4e9b5901ae621a408"
+      <package fileName="packages/ChapelAstroUtilities-2.6-beta4.zip"
+               sha1="f6f3544d712ae416a4669c0f82ea174fdd6ac080"
                type="script"
                releaseDate="20260607">
          <title>
-            Chapel Astro Utilities 2.6-beta3 DEV
+            Chapel Astro Utilities 2.6-beta4 DEV
          </title>
          <description>
             <p>
-               Installs ImageRenameByFilter 2.6-beta3 and MatchOpenImageSizes 1.0.4-beta1 under Script &gt; Chapel Astro Utilities.
-               DEV beta build: MatchOpenImageSizes can now open ImageRenameByFilter automatically after a matching batch completes.
+               Installs ImageRenameByFilter 2.6-beta4 and MatchOpenImageSizes 1.0.4-beta1 under Script &gt; Chapel Astro Utilities.
+               DEV beta build: ImageRenameByFilter Step 1 now shows only the suffix or single-image name field when the relevant mode is selected.
             </p>
          </description>
       </package>

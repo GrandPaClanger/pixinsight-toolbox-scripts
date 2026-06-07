@@ -25,7 +25,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define IMAGE_RENAME_TITLE "ImageRenameByFilter"
-#define IMAGE_RENAME_VERSION "2.6-beta3"
+#define IMAGE_RENAME_VERSION "2.6-beta4"
 
 #define IMAGE_RENAME_SETTINGS_ROOT "GrandPaClanger/ImageRenameByFilter"
 
@@ -1945,13 +1945,30 @@ function ImageRenameByFilterDialog()
    this.updateOperationVisibility = function()
    {
       var mode = dialog.renameMode();
+      var suffixVisible = mode == "suffixOnly";
+      var mappingVisible = mode == "mapping";
+      var singleVisible = mode == "single";
 
       try
       {
-         dialog.suffixSizer.visible = mode == "suffixOnly";
-         dialog.mappingSizer.visible = mode == "mapping";
-         dialog.singleRenameLabel.visible = mode == "single";
-         dialog.singleRenameSizer.visible = mode == "single";
+         dialog.suffixLabel.visible = suffixVisible;
+         dialog.suffixEdit.visible = suffixVisible;
+         dialog.suffixPreviewLabel.visible = suffixVisible;
+
+         dialog.mappingLabel.visible = mappingVisible;
+         dialog.mappingTree.visible = mappingVisible;
+         dialog.matchLabel.visible = mappingVisible;
+         dialog.matchEdit.visible = mappingVisible;
+         dialog.nameLabel.visible = mappingVisible;
+         dialog.nameEdit.visible = mappingVisible;
+         dialog.updateMappingButton.visible = mappingVisible;
+         dialog.addMappingButton.visible = mappingVisible;
+         dialog.deleteMappingButton.visible = mappingVisible;
+
+         dialog.singleRenameLabel.visible = singleVisible;
+         dialog.singleRenameNameLabel.visible = singleVisible;
+         dialog.singleRenameEdit.visible = singleVisible;
+         dialog.singleRenameButton.visible = singleVisible;
       }
       catch ( error )
       {
@@ -2055,7 +2072,7 @@ function ImageRenameByFilterDialog()
    {
       if ( wizardStep == 0 && dialog.renameMode().length == 0 )
       {
-         (new MessageBox( "Choose Rename By Filter Mappings or Append suffix to current names before continuing.",
+         (new MessageBox( "Choose Rename By Filter Mappings, Append suffix to current names, or Rename individual image before continuing.",
                           IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
          return false;
       }
@@ -2708,15 +2725,15 @@ function ImageRenameByFilterDialog()
    this.sizer.add( this.pageSummary, 100 );
    this.sizer.add( this.buttonSizer );
 
-   this.adjustToContents();
-   this.setMinWidth( 760 );
-
    this.fillMappingTree();
    this.refreshPreview();
    this.updateApplyState();
    this.updateSaveOptionVisibility();
    this.updateOperationVisibility();
    this.updateWizard();
+
+   this.adjustToContents();
+   this.setMinWidth( 760 );
 }
 
 ImageRenameByFilterDialog.prototype = new Dialog;

@@ -53,7 +53,7 @@ Menu:
 
 Version:
 
-`2.6-beta3`
+`2.6-beta4`
 
 Purpose:
 
@@ -181,9 +181,16 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-2.6-beta3.zip`
+`packages/ChapelAstroUtilities-2.6-beta4.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 2.6-beta4
+
+- DEV beta package.
+- Updated `ImageRenameByFilter` to 2.6-beta4.
+- Step 1 now hides the suffix and ad-hoc new-name fields until the matching
+  mode is selected, showing only the relevant field for the chosen operation.
 
 ### Chapel Astro Utilities 2.6-beta3
 
