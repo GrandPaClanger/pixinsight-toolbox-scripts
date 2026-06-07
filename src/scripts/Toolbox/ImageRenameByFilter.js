@@ -10,8 +10,10 @@
 // Rename open image windows by matching configurable filename/view-id tokens to
 // short filter names. Mappings are persisted in PixInsight settings.
 
+#ifndef CHAPEL_ASTRO_INCLUDE_IMAGE_RENAME
 #feature-id    ImageRenameByFilter : Chapel Astro Utilities > ImageRenameByFilter
 #feature-info  Rename open master light images by filter mapping, with optional save-as output.
+#endif
 
 #include <pjsr/DataType.jsh>
 #include <pjsr/FrameStyle.jsh>
@@ -22,10 +24,10 @@
 #include <pjsr/TextAlign.jsh>
 #include <pjsr/UndoFlag.jsh>
 
-#define TITLE "ImageRenameByFilter"
-#define VERSION "2.6-beta2"
+#define IMAGE_RENAME_TITLE "ImageRenameByFilter"
+#define IMAGE_RENAME_VERSION "2.6-beta3"
 
-#define SETTINGS_ROOT "GrandPaClanger/ImageRenameByFilter"
+#define IMAGE_RENAME_SETTINGS_ROOT "GrandPaClanger/ImageRenameByFilter"
 
 var DEFAULT_MAPPINGS =
    "Nofilter,OSC\n" +
@@ -51,7 +53,7 @@ function settingReadString( key, fallback )
 {
    try
    {
-      var value = Settings.read( SETTINGS_ROOT + "/" + key, DataType_String );
+      var value = Settings.read( IMAGE_RENAME_SETTINGS_ROOT + "/" + key, DataType_String );
       if ( Settings.lastReadOK && typeof value == "string" && value.length > 0 )
          return value;
    }
@@ -66,7 +68,7 @@ function settingWriteString( key, value )
 {
    try
    {
-      Settings.write( SETTINGS_ROOT + "/" + key, DataType_String, value );
+      Settings.write( IMAGE_RENAME_SETTINGS_ROOT + "/" + key, DataType_String, value );
    }
    catch ( error )
    {
@@ -598,7 +600,7 @@ function countSelected( plan )
 function showHelpDialog()
 {
    var helpText =
-      "IMAGE RENAME BY FILTER " + VERSION + "\n\n" +
+      "IMAGE RENAME BY FILTER " + IMAGE_RENAME_VERSION + "\n\n" +
       "[1] RENAME MODES\n" +
       "- Rename By Filter Mappings: matches text in the image id, filename, or caption and renames to the mapped value.\n" +
       "- Append suffix to current names: adds the suffix to the current image id. Filter matching is ignored.\n" +
@@ -629,7 +631,7 @@ function showHelpDialog()
       "- If no folder is selected, it falls back to the image source folder.\n" +
       "- It overwrites after one confirmation, so check the Preview New column first.";
 
-   (new MessageBox( helpText, TITLE + " Help", StdIcon_Information,
+   (new MessageBox( helpText, IMAGE_RENAME_TITLE + " Help", StdIcon_Information,
                     StdButton_Ok )).execute();
 }
 
@@ -672,7 +674,7 @@ function overwriteSelectedCurrentFiles( plan, outputDirectory )
    if ( selected == 0 )
    {
       (new MessageBox( "Select at least one image in the preview before saving.",
-                       TITLE, StdIcon_Information, StdButton_Ok )).execute();
+                       IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
       return;
    }
 
@@ -690,12 +692,12 @@ function overwriteSelectedCurrentFiles( plan, outputDirectory )
       "This saves each selected open image to its current image name in " +
       targetDescription + ".";
 
-   if ( (new MessageBox( message, TITLE, StdIcon_Warning,
+   if ( (new MessageBox( message, IMAGE_RENAME_TITLE, StdIcon_Warning,
                          StdButton_Yes, StdButton_No )).execute() != StdButton_Yes )
       return;
 
    Console.show();
-   Console.writeln( "<end><cbr><br>" + TITLE + " " + VERSION );
+   Console.writeln( "<end><cbr><br>" + IMAGE_RENAME_TITLE + " " + IMAGE_RENAME_VERSION );
    Console.writeln( "Saving and overwriting selected image files." );
 
    for ( var j = 0; j < plan.length; ++j )
@@ -754,7 +756,7 @@ function renameSingleSelectedImage( plan, requestedId )
    cleanCaption( item.window, newId );
 
    Console.show();
-   Console.writeln( "<end><cbr><br>" + TITLE + " " + VERSION );
+   Console.writeln( "<end><cbr><br>" + IMAGE_RENAME_TITLE + " " + IMAGE_RENAME_VERSION );
    Console.writeln( "Renamed " + item.currentId + " -> " + newId + "." );
 }
 
@@ -780,7 +782,7 @@ function confirmOverwrites( plan, outputDirectory )
       overwriteCount.toString() + " output file(s) already exist.\n\n" +
       "Overwrite existing files for this batch?";
 
-   return (new MessageBox( overwriteMessage, TITLE, StdIcon_Warning,
+   return (new MessageBox( overwriteMessage, IMAGE_RENAME_TITLE, StdIcon_Warning,
                            StdButton_Yes, StdButton_No )).execute() == StdButton_Yes;
 }
 
@@ -1443,7 +1445,7 @@ function applyPlan( plan, saveImages, outputDirectory, postSaveAction, openSaved
    var collapsedWindows = new Array;
 
    Console.show();
-   Console.writeln( "<end><cbr><br>" + TITLE + " " + VERSION );
+   Console.writeln( "<end><cbr><br>" + IMAGE_RENAME_TITLE + " " + IMAGE_RENAME_VERSION );
 
    for ( var i = 0; i < plan.length; ++i )
    {
@@ -1575,9 +1577,9 @@ function applyPlan( plan, saveImages, outputDirectory, postSaveAction, openSaved
                     "; opened " + opened.toString() + "." );
 }
 
-function exportParameters( mappingsText, saveImages, outputDirectory, suffix, postSaveAction, openSavedImages, renameMode )
+function exportImageRenameParameters( mappingsText, saveImages, outputDirectory, suffix, postSaveAction, openSavedImages, renameMode )
 {
-   Parameters.set( "version", VERSION );
+   Parameters.set( "version", IMAGE_RENAME_VERSION );
    Parameters.set( "mappings", mappingsText );
    Parameters.set( "saveImages", saveImages ? "true" : "false" );
    Parameters.set( "outputDirectory", outputDirectory );
@@ -1659,7 +1661,7 @@ function ImageRenameByFilterDialog()
    var wizardStep = 0;
    var wizardPages = new Array;
 
-   this.windowTitle = TITLE + " " + VERSION;
+   this.windowTitle = IMAGE_RENAME_TITLE + " " + IMAGE_RENAME_VERSION;
 
    this.infoLabel = new Label( this );
    this.infoLabel.text =
@@ -2054,14 +2056,14 @@ function ImageRenameByFilterDialog()
       if ( wizardStep == 0 && dialog.renameMode().length == 0 )
       {
          (new MessageBox( "Choose Rename By Filter Mappings or Append suffix to current names before continuing.",
-                          TITLE, StdIcon_Information, StdButton_Ok )).execute();
+                          IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
          return false;
       }
 
       if ( wizardStep == 1 && dialog.selectedPreviewCount() == 0 )
       {
          (new MessageBox( "Select at least one image in the preview before continuing.",
-                          TITLE, StdIcon_Information, StdButton_Ok )).execute();
+                          IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
          return false;
       }
 
@@ -2070,14 +2072,14 @@ function ImageRenameByFilterDialog()
          if ( dialog.selectedPreviewCount() != 1 )
          {
             (new MessageBox( "Select exactly one image before continuing with Rename individual image.",
-                             TITLE, StdIcon_Information, StdButton_Ok )).execute();
+                             IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
             return false;
          }
 
          if ( trimString( dialog.singleRenameEdit.text ).length == 0 )
          {
             (new MessageBox( "Enter the new image name in Step 1 before continuing.",
-                             TITLE, StdIcon_Information, StdButton_Ok )).execute();
+                             IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
             return false;
          }
       }
@@ -2229,7 +2231,7 @@ function ImageRenameByFilterDialog()
       {
          currentPlan = new Array;
          dialog.previewTree.clear();
-         (new MessageBox( error.message, TITLE, StdIcon_Error, StdButton_Ok )).execute();
+         (new MessageBox( error.message, IMAGE_RENAME_TITLE, StdIcon_Error, StdButton_Ok )).execute();
       }
    };
 
@@ -2251,7 +2253,7 @@ function ImageRenameByFilterDialog()
       if ( match.length == 0 || name.length == 0 )
       {
          (new MessageBox( "Enter both a match value and an image name.",
-                          TITLE, StdIcon_Error, StdButton_Ok )).execute();
+                          IMAGE_RENAME_TITLE, StdIcon_Error, StdButton_Ok )).execute();
          return;
       }
 
@@ -2271,7 +2273,7 @@ function ImageRenameByFilterDialog()
       if ( selectedMappingIndex < 0 || selectedMappingIndex >= mappingRows.length )
       {
          (new MessageBox( "Select a mapping row to update.",
-                          TITLE, StdIcon_Information, StdButton_Ok )).execute();
+                          IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
          return;
       }
 
@@ -2281,7 +2283,7 @@ function ImageRenameByFilterDialog()
       if ( match.length == 0 || name.length == 0 )
       {
          (new MessageBox( "Enter both a match value and an image name.",
-                          TITLE, StdIcon_Error, StdButton_Ok )).execute();
+                          IMAGE_RENAME_TITLE, StdIcon_Error, StdButton_Ok )).execute();
          return;
       }
 
@@ -2297,7 +2299,7 @@ function ImageRenameByFilterDialog()
       if ( selectedMappingIndex < 0 || selectedMappingIndex >= mappingRows.length )
       {
          (new MessageBox( "Select a mapping row to delete.",
-                          TITLE, StdIcon_Information, StdButton_Ok )).execute();
+                          IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
          return;
       }
 
@@ -2474,11 +2476,11 @@ function ImageRenameByFilterDialog()
                              validViewIdMessage() );
 
          (new MessageBox( "The image name is valid.",
-                          TITLE, StdIcon_Information, StdButton_Ok )).execute();
+                          IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
       }
       catch ( error )
       {
-         (new MessageBox( error.message, TITLE, StdIcon_Error, StdButton_Ok )).execute();
+         (new MessageBox( error.message, IMAGE_RENAME_TITLE, StdIcon_Error, StdButton_Ok )).execute();
       }
    };
 
@@ -2498,7 +2500,7 @@ function ImageRenameByFilterDialog()
          if ( dialog.renameMode().length == 0 )
          {
             (new MessageBox( "Select a rename mode before applying.",
-                             TITLE, StdIcon_Information, StdButton_Ok )).execute();
+                             IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
             return;
          }
 
@@ -2515,7 +2517,7 @@ function ImageRenameByFilterDialog()
          if ( matched == 0 )
          {
             (new MessageBox( "No open image windows match the current mappings.",
-                             TITLE, StdIcon_Information, StdButton_Ok )).execute();
+                             IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
             return;
          }
 
@@ -2528,7 +2530,7 @@ function ImageRenameByFilterDialog()
                        (outputDirectory.length > 0 ? outputDirectory :
                          "each image's source folder, where available");
 
-         if ( (new MessageBox( message, TITLE, StdIcon_Question,
+         if ( (new MessageBox( message, IMAGE_RENAME_TITLE, StdIcon_Question,
                                StdButton_Yes, StdButton_No )).execute() != StdButton_Yes )
             return;
 
@@ -2555,7 +2557,7 @@ function ImageRenameByFilterDialog()
       }
       catch ( error )
       {
-         (new MessageBox( error.message, TITLE, StdIcon_Error, StdButton_Ok )).execute();
+         (new MessageBox( error.message, IMAGE_RENAME_TITLE, StdIcon_Error, StdButton_Ok )).execute();
       }
    };
 
@@ -2576,7 +2578,7 @@ function ImageRenameByFilterDialog()
       }
       catch ( error )
       {
-         (new MessageBox( error.message, TITLE, StdIcon_Error, StdButton_Ok )).execute();
+         (new MessageBox( error.message, IMAGE_RENAME_TITLE, StdIcon_Error, StdButton_Ok )).execute();
       }
    };
 
@@ -2719,12 +2721,12 @@ function ImageRenameByFilterDialog()
 
 ImageRenameByFilterDialog.prototype = new Dialog;
 
-function main()
+function runImageRenameByFilter()
 {
    if ( ImageWindow.windows.length == 0 )
    {
       (new MessageBox( "Open at least one image window before running this script.",
-                       TITLE, StdIcon_Error, StdButton_Ok )).execute();
+                       IMAGE_RENAME_TITLE, StdIcon_Error, StdButton_Ok )).execute();
       return;
    }
 
@@ -2732,4 +2734,6 @@ function main()
    dialog.execute();
 }
 
-main();
+#ifndef CHAPEL_ASTRO_INCLUDE_IMAGE_RENAME
+runImageRenameByFilter();
+#endif

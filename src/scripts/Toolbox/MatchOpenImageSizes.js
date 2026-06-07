@@ -22,8 +22,12 @@
 #include <pjsr/TextAlign.jsh>
 #include <pjsr/UndoFlag.jsh>
 
+#define CHAPEL_ASTRO_INCLUDE_IMAGE_RENAME
+#include "ImageRenameByFilter.js"
+#undef CHAPEL_ASTRO_INCLUDE_IMAGE_RENAME
+
 #define TITLE "MatchOpenImageSizes"
-#define VERSION "1.0.3"
+#define VERSION "1.0.4-beta1"
 
 function formatSize( image )
 {
@@ -137,7 +141,7 @@ function copyReferenceFrame( targetWindow, referenceGeometry )
    return "";
 }
 
-function matchWindowsToReference( referenceWindow, confirm )
+function matchWindowsToReference( referenceWindow, confirm, launchRenameByFilter )
 {
    if ( referenceWindow.isNull )
       throw new Error( "No reference image window is available." );
@@ -223,6 +227,12 @@ function matchWindowsToReference( referenceWindow, confirm )
    Console.writeln( "Done. Resampled " + resizeCount.toString() +
                     " image window(s); copied frame for " +
                     frameCopyCount.toString() + " window(s)." );
+
+   if ( launchRenameByFilter )
+   {
+      Console.writeln( "Opening ImageRenameByFilter." );
+      runImageRenameByFilter();
+   }
 }
 
 function mainWindowIds()
@@ -261,10 +271,19 @@ function defaultReferenceId()
    return "";
 }
 
-function exportParameters( referenceViewId )
+function exportParameters( referenceViewId, launchRenameByFilter )
 {
    Parameters.set( "version", VERSION );
    Parameters.set( "referenceViewId", referenceViewId );
+   Parameters.set( "launchRenameByFilter", launchRenameByFilter ? "true" : "false" );
+}
+
+function parametersLaunchRenameByFilter()
+{
+   if ( Parameters.has( "launchRenameByFilter" ) )
+      return Parameters.get( "launchRenameByFilter" ) == "true";
+
+   return false;
 }
 
 function MatchOpenImageSizesDialog()
@@ -302,6 +321,12 @@ function MatchOpenImageSizesDialog()
    this.referenceSizer.add( this.referenceLabel );
    this.referenceSizer.add( this.referenceCombo, 100 );
 
+   this.launchRenameCheckBox = new CheckBox( this );
+   this.launchRenameCheckBox.text = "Open ImageRenameByFilter after matching";
+   this.launchRenameCheckBox.checked = parametersLaunchRenameByFilter();
+   this.launchRenameCheckBox.toolTip =
+      "After matching open image sizes, automatically open the rename/filter wizard.";
+
    this.newInstanceButton = new ToolButton( this );
    this.newInstanceButton.icon = this.scaledResource( ":/process-interface/new-instance.png" );
    this.newInstanceButton.setScaledFixedSize( 24, 24 );
@@ -309,7 +334,8 @@ function MatchOpenImageSizesDialog()
       "New Instance: drag to the workspace first to create a process icon. Then drag that process icon to an image to use it as the reference.";
    this.newInstanceButton.onMousePress = function()
    {
-      exportParameters( dialog.referenceCombo.itemText( dialog.referenceCombo.currentItem ) );
+      exportParameters( dialog.referenceCombo.itemText( dialog.referenceCombo.currentItem ),
+                        dialog.launchRenameCheckBox.checked );
       dialog.newInstance();
    };
 
@@ -320,10 +346,11 @@ function MatchOpenImageSizesDialog()
    this.executeButton.onClick = function()
    {
       var id = dialog.referenceCombo.itemText( dialog.referenceCombo.currentItem );
-      exportParameters( id );
+      exportParameters( id, dialog.launchRenameCheckBox.checked );
       var referenceWindow = windowByMainViewId( id );
+      var launchRenameByFilter = dialog.launchRenameCheckBox.checked;
       dialog.ok();
-      matchWindowsToReference( referenceWindow, true );
+      matchWindowsToReference( referenceWindow, true, launchRenameByFilter );
    };
 
    this.cancelButton = new PushButton( this );
@@ -346,6 +373,7 @@ function MatchOpenImageSizesDialog()
    this.sizer.spacing = 8;
    this.sizer.add( this.infoLabel );
    this.sizer.add( this.referenceSizer );
+   this.sizer.add( this.launchRenameCheckBox );
    this.sizer.add( this.buttonSizer );
 
    this.adjustToContents();
@@ -365,7 +393,9 @@ function main()
 
    if ( Parameters.isViewTarget )
    {
-      matchWindowsToReference( Parameters.targetView.window, true );
+      matchWindowsToReference( Parameters.targetView.window,
+                               true,
+                               parametersLaunchRenameByFilter() );
       return;
    }
 
@@ -374,7 +404,9 @@ function main()
       var window = windowByMainViewId( Parameters.get( "referenceViewId" ) );
       if ( !window.isNull )
       {
-         matchWindowsToReference( window, true );
+         matchWindowsToReference( window,
+                                  true,
+                                  parametersLaunchRenameByFilter() );
          return;
       }
    }

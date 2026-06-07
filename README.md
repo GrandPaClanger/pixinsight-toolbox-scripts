@@ -53,7 +53,7 @@ Menu:
 
 Version:
 
-`2.6-beta2`
+`2.6-beta3`
 
 Purpose:
 
@@ -143,7 +143,7 @@ Menu:
 
 Version:
 
-`1.0.3`
+`1.0.4-beta1`
 
 Purpose:
 
@@ -162,6 +162,11 @@ It also supports PixInsight process icons:
 
 Create the desktop process icon first, then drag that icon onto an image.
 
+Optional workflow handoff:
+
+- Enable `Open ImageRenameByFilter after matching` to open the rename/filter
+  wizard automatically after the matching batch completes.
+
 ## Repository Layout
 
 PixInsight scans scripts under:
@@ -176,9 +181,18 @@ Installed scripts:
 
 The update package is:
 
-`packages/ChapelAstroUtilities-2.6-beta2.zip`
+`packages/ChapelAstroUtilities-2.6-beta3.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 2.6-beta3
+
+- DEV beta package.
+- Updated `ImageRenameByFilter` to 2.6-beta3.
+- Updated `MatchOpenImageSizes` to 1.0.4-beta1.
+- Added an optional `Open ImageRenameByFilter after matching` handoff from
+  `MatchOpenImageSizes` so the resize/match workflow can move directly into
+  the rename wizard.
 
 ### Chapel Astro Utilities 2.6-beta2
 
