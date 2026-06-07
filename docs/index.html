@@ -658,7 +658,7 @@
       <div class="hero-inner">
         <div class="hero-copy">
           <h1>Clean, consistent PixInsight workspaces.</h1>
-          <p>Chapel Astro Utilities batch-processes open PixInsight images: turn long stacked master frame names into readable identifiers, save batches deliberately, and line up open image windows to a chosen reference.</p>
+          <p>Chapel Astro Utilities batch-processes open PixInsight images with clear wizard-led tools: turn long stacked master frame names into readable identifiers, save batches deliberately, and line up open image windows to a chosen reference.</p>
           <div class="hero-actions">
             <a class="button primary" href="#install">Install in PixInsight</a>
             <a class="button secondary" href="#guide">Read the user guide</a>
@@ -696,7 +696,7 @@
           <article class="benefit">
             <div class="icon">2</div>
             <h3>Reduce naming friction</h3>
-            <p>Batch-rename stacked masters such as filter-tagged luminance, red, hydrogen, or OSC frames into clean identifiers that are easy to scan in the left image tabs.</p>
+            <p>Batch-rename mono stacked masters such as filter-tagged luminance, red, or hydrogen frames into clean identifiers. OSC workflows are covered too, with a default NoFilter to OSC mapping.</p>
           </article>
           <article class="benefit">
             <div class="icon">3</div>
@@ -725,7 +725,7 @@
           </article>
           <article class="workflow">
             <h3>2. Shorten long file names</h3>
-            <p>Match words such as <code>Red</code>, <code>Hydrogen</code>, or <code>Nofilter</code> in the file path, caption, or image ID and batch-rename them to concise identifiers such as <code>R</code>, <code>H</code>, or <code>OSC</code>.</p>
+            <p>Follow the wizard to match words such as <code>Red</code>, <code>Hydrogen</code>, or <code>Nofilter</code> in the file path, caption, or image ID and batch-rename them to concise identifiers such as <code>R</code>, <code>H</code>, or <code>OSC</code>.</p>
           </article>
           <article class="workflow">
             <h3>3. Append file name suffixes</h3>
@@ -758,9 +758,11 @@
         <div class="guide-grid">
           <article class="guide-block">
             <h3>ImageRenameByFilter</h3>
-            <p>A batch naming and save workflow for open image windows. It is especially useful straight after stacking, when master frames inherit long file names from the integration process.</p>
+            <p>A wizard-led batch naming and save workflow for open image windows. It is especially useful straight after stacking, when mono master frames inherit long file names from the integration process, and it also handles OSC data through editable mappings.</p>
             <ul>
+              <li>Guides rename, selection, save, reopen, and summary steps through a simple wizard.</li>
               <li>Batch-maps filename, caption, or view-id text to short filter names.</li>
+              <li>Targets mono filter sets first, with default LRGB/SHO-style mappings plus NoFilter to OSC for one-shot colour images.</li>
               <li>Stores editable user mappings between sessions.</li>
               <li>Batch-appends PixInsight-safe processing suffixes to current names.</li>
               <li>Renames one selected image with an ad-hoc identifier.</li>
@@ -778,7 +780,6 @@
               <li>Resamples images whose pixel dimensions differ from the reference.</li>
               <li>Leaves the reference image unchanged.</li>
               <li>Supports PixInsight process icons for repeated reference-based use.</li>
-              <li>Can open ImageRenameByFilter automatically after the matching batch completes.</li>
             </ul>
           </article>
         </div>
@@ -818,14 +819,15 @@
       <div class="section-inner">
         <div class="section-heading">
           <h2>User guide.</h2>
-          <p>The short version: choose the images, choose the operation, check the preview, then apply or save.</p>
+          <p>The short version: the wizard asks what you want to do, which images are involved, what should happen to open windows, where to save, and then shows a final summary before anything changes.</p>
         </div>
         <div class="guide-grid">
           <article class="guide-block">
             <h3>ImageRenameByFilter</h3>
             <ul>
-              <li><strong>Choose a mode:</strong> select either <code>Rename By Filter Mappings</code> or <code>Append suffix to current names</code>. Apply stays disabled until a mode is selected.</li>
+              <li><strong>Choose a mode:</strong> the wizard starts by asking whether to use filter mappings, append a suffix, or rename one image. Apply stays disabled until a mode is selected.</li>
               <li><strong>Edit mappings:</strong> add, update, or delete rows in the mapping table. More specific matches win before generic ones.</li>
+              <li><strong>Mono first, OSC ready:</strong> filter renaming is aimed at mono master lights such as L, R, G, B, H, O, and S, but OSC users can map NoFilter or their own camera naming convention to <code>OSC</code>.</li>
               <li><strong>Use valid names:</strong> output identifiers must start with a letter or underscore and only contain letters, digits, or underscores.</li>
               <li><strong>Select the batch:</strong> checked preview rows are processed. Collapsed windows are unchecked by default when PixInsight exposes that state.</li>
               <li><strong>Apply Rename / Append:</strong> batch-renames open images. If saving is not enabled, images are not closed, collapsed, or saved.</li>
