@@ -23,7 +23,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 #define TITLE "ImageRenameByFilter"
-#define VERSION "2.5"
+#define VERSION "2.6-beta1"
 
 #define SETTINGS_ROOT "GrandPaClanger/ImageRenameByFilter"
 
@@ -1625,6 +1625,8 @@ function ImageRenameByFilterDialog()
    var renameMode = parametersRenameMode();
    var updatingOutputDirectory = false;
    var outputDirectoryManuallyChanged = false;
+   var wizardStep = 0;
+   var wizardPages = new Array;
 
    this.windowTitle = TITLE + " " + VERSION;
 
@@ -1634,6 +1636,14 @@ function ImageRenameByFilterDialog()
    this.infoLabel.wordWrapping = true;
    this.infoLabel.frameStyle = FrameStyle_Box;
    this.infoLabel.margin = 6;
+
+   this.wizardStepLabel = new Label( this );
+   this.wizardStepLabel.frameStyle = FrameStyle_Box;
+   this.wizardStepLabel.margin = 6;
+   this.wizardStepLabel.wordWrapping = true;
+
+   this.wizardInstructionLabel = new Label( this );
+   this.wizardInstructionLabel.wordWrapping = true;
 
    this.mappingLabel = new Label( this );
    this.mappingLabel.text = "Rename mappings";
@@ -1789,13 +1799,18 @@ function ImageRenameByFilterDialog()
    this.postSaveSizer.spacing = 6;
    this.postSaveSizer.add( this.postSaveLabel );
    this.postSaveSizer.add( this.postSaveCombo, 100 );
-   this.postSaveSizer.add( this.openSavedCheckBox );
 
    this.renameOnlyNoteLabel = new Label( this );
    this.renameOnlyNoteLabel.text =
       "Rename-only operations will not save, close, or collapse images.";
    this.renameOnlyNoteLabel.wordWrapping = true;
    this.renameOnlyNoteLabel.textAlignment = TextAlign_Left | TextAlign_VertCenter;
+
+   this.windowOptionsNoteLabel = new Label( this );
+   this.windowOptionsNoteLabel.text =
+      "These window options are applied only when images are saved. Rename-only operations leave source images open.";
+   this.windowOptionsNoteLabel.wordWrapping = true;
+   this.windowOptionsNoteLabel.textAlignment = TextAlign_Left | TextAlign_VertCenter;
 
    this.previewTree = new TreeBox( this );
    this.previewTree.numberOfColumns = 4;
@@ -1839,6 +1854,15 @@ function ImageRenameByFilterDialog()
    this.singleRenameSizer.add( this.singleRenameEdit, 100 );
    this.singleRenameSizer.add( this.singleRenameButton );
 
+   this.summaryLabel = new Label( this );
+   this.summaryLabel.text = "Summary";
+   this.summaryLabel.frameStyle = FrameStyle_Box;
+   this.summaryLabel.margin = 4;
+
+   this.summaryTextLabel = new Label( this );
+   this.summaryTextLabel.wordWrapping = true;
+   this.summaryTextLabel.textAlignment = TextAlign_Left | TextAlign_VertCenter;
+
    this.mappingsText = function()
    {
       return mappingsToText( mappingRows );
@@ -1881,17 +1905,9 @@ function ImageRenameByFilterDialog()
    {
       var saveVisible = dialog.saveCheckBox.checked;
 
-      try
-      {
-         dialog.openSavedCheckBox.visible = saveVisible;
-      }
-      catch ( error1 )
-      {
-      }
-
       dialog.postSaveLabel.text = "After save:";
-      dialog.postSaveLabel.enabled = saveVisible;
-      dialog.postSaveCombo.enabled = saveVisible;
+      dialog.postSaveLabel.enabled = true;
+      dialog.postSaveCombo.enabled = true;
       dialog.openSavedCheckBox.enabled = saveVisible;
       dialog.renameOnlyNoteLabel.visible = !saveVisible;
       dialog.renameOnlyNoteLabel.enabled = !saveVisible;
@@ -1906,6 +1922,154 @@ function ImageRenameByFilterDialog()
          return "close";
 
       return "leave";
+   };
+
+   this.selectedPreviewCount = function()
+   {
+      var selected = 0;
+
+      for ( var i = 0; i < currentPlan.length; ++i )
+         if ( currentPlan[i].selected )
+            ++selected;
+
+      return selected;
+   };
+
+   this.stepTitle = function( step )
+   {
+      if ( step == 0 )
+         return "Step 1 of 6: What do you want to do?";
+      if ( step == 1 )
+         return "Step 2 of 6: Select your images";
+      if ( step == 2 )
+         return "Step 3 of 6: Select window options for open images";
+      if ( step == 3 )
+         return "Step 4 of 6: Save options and path";
+      if ( step == 4 )
+         return "Step 5 of 6: Reopen saved images";
+      return "Step 6 of 6: Summary and process";
+   };
+
+   this.stepInstruction = function( step )
+   {
+      if ( step == 0 )
+         return "Choose Rename By Filter Mappings or Append suffix to current names. Edit mappings or suffix before continuing.";
+      if ( step == 1 )
+         return "Tick the open image windows to include in the batch.";
+      if ( step == 2 )
+         return "Choose what should happen to the selected source images after a save.";
+      if ( step == 3 )
+         return "Choose rename-only, or save renamed images to the selected folder.";
+      if ( step == 4 )
+         return "Choose whether saved images should be reopened after the batch completes.";
+      return "Review the task. Use Process to run the selected batch operation.";
+   };
+
+   this.lastWizardStepBeforeSummary = function()
+   {
+      return dialog.saveCheckBox.checked ? 4 : 3;
+   };
+
+   this.nextWizardStep = function()
+   {
+      if ( wizardStep == 3 && !dialog.saveCheckBox.checked )
+         return 5;
+
+      return Math.min( 5, wizardStep + 1 );
+   };
+
+   this.previousWizardStep = function()
+   {
+      if ( wizardStep == 5 && !dialog.saveCheckBox.checked )
+         return 3;
+
+      return Math.max( 0, wizardStep - 1 );
+   };
+
+   this.validateWizardStep = function()
+   {
+      if ( wizardStep == 0 && dialog.renameMode().length == 0 )
+      {
+         (new MessageBox( "Choose Rename By Filter Mappings or Append suffix to current names before continuing.",
+                          TITLE, StdIcon_Information, StdButton_Ok )).execute();
+         return false;
+      }
+
+      if ( wizardStep == 1 && dialog.selectedPreviewCount() == 0 )
+      {
+         (new MessageBox( "Select at least one image in the preview before continuing.",
+                          TITLE, StdIcon_Information, StdButton_Ok )).execute();
+         return false;
+      }
+
+      return true;
+   };
+
+   this.summaryText = function()
+   {
+      var modeText = dialog.renameMode() == "mapping" ?
+         "Rename By Filter Mappings" :
+         "Append suffix to current names";
+      var selected = dialog.selectedPreviewCount();
+      var matched = countMatched( currentPlan );
+      var suffix = sanitizeOptionalSuffix( dialog.suffixEdit.text );
+      var outputDirectory = trimString( dialog.outputEdit.text );
+      var saveText = dialog.saveCheckBox.checked ?
+         "Save renamed images to: " +
+            (outputDirectory.length > 0 ? outputDirectory :
+             "each image's source folder, where available") :
+         "Rename only. Images will not be saved, closed, or collapsed.";
+      var windowText = dialog.postSaveAction() == "collapse" ?
+         "Collapse selected source images after save." :
+         (dialog.postSaveAction() == "close" ?
+            "Close selected source images after save." :
+            "Leave selected source images open after save.");
+      var reopenText = dialog.saveCheckBox.checked ?
+         (dialog.openSavedCheckBox.checked ?
+            "Reopen newly saved images." :
+            "Do not reopen newly saved images.") :
+         "Reopen step skipped because this is rename-only.";
+
+      return "Operation: " + modeText + "\n" +
+             "Selected images: " + selected.toString() + "\n" +
+             "Ready to process: " + matched.toString() + "\n" +
+             "Suffix: " + (suffix.length > 0 ? "_" + suffix : "(none)") + "\n" +
+             saveText + "\n" +
+             windowText + "\n" +
+             reopenText;
+   };
+
+   this.updateWizard = function()
+   {
+      for ( var i = 0; i < wizardPages.length; ++i )
+      {
+         try
+         {
+            wizardPages[i].visible = i == wizardStep;
+         }
+         catch ( error )
+         {
+         }
+      }
+
+      dialog.wizardStepLabel.text = dialog.stepTitle( wizardStep );
+      dialog.wizardInstructionLabel.text = dialog.stepInstruction( wizardStep );
+      dialog.backButton.enabled = wizardStep > 0;
+      dialog.nextButton.visible = wizardStep < 5;
+      dialog.applyButton.visible = wizardStep == 5;
+      dialog.applyButton.defaultButton = wizardStep == 5;
+      dialog.nextButton.defaultButton = wizardStep < 5;
+
+      if ( wizardStep == 3 && !dialog.saveCheckBox.checked )
+         dialog.nextButton.text = "Next: Summary";
+      else if ( wizardStep == 4 )
+         dialog.nextButton.text = "Next: Summary";
+      else
+         dialog.nextButton.text = "Next";
+
+      dialog.summaryTextLabel.text = dialog.summaryText();
+      dialog.updateApplyState();
+      dialog.adjustToContents();
    };
 
    this.fillMappingTree = function()
@@ -2059,6 +2223,7 @@ function ImageRenameByFilterDialog()
                    currentPlan,
                    dialog.saveCheckBox.checked,
                    trimString( dialog.outputEdit.text ) );
+      dialog.updateWizard();
    };
 
    this.saveCheckBox.onCheck = function()
@@ -2066,12 +2231,14 @@ function ImageRenameByFilterDialog()
       dialog.saveDialogSettings();
       dialog.updateSaveOptionVisibility();
       dialog.refreshPreview();
+      dialog.updateWizard();
    };
 
    this.suffixEdit.onTextUpdated = function()
    {
       dialog.saveDialogSettings();
       dialog.refreshPreview();
+      dialog.updateWizard();
    };
 
    this.mappingModeRadio.onCheck = function()
@@ -2081,6 +2248,7 @@ function ImageRenameByFilterDialog()
       dialog.saveDialogSettings();
       dialog.updateApplyState();
       dialog.refreshPreview();
+      dialog.updateWizard();
    };
 
    this.suffixOnlyModeRadio.onCheck = function()
@@ -2090,16 +2258,19 @@ function ImageRenameByFilterDialog()
       dialog.saveDialogSettings();
       dialog.updateApplyState();
       dialog.refreshPreview();
+      dialog.updateWizard();
    };
 
    this.postSaveCombo.onItemSelected = function()
    {
       dialog.saveDialogSettings();
+      dialog.updateWizard();
    };
 
    this.openSavedCheckBox.onCheck = function()
    {
       dialog.saveDialogSettings();
+      dialog.updateWizard();
    };
 
    this.resetButton = new PushButton( this );
@@ -2301,35 +2472,101 @@ function ImageRenameByFilterDialog()
       dialog.cancel();
    };
 
+   this.backButton = new PushButton( this );
+   this.backButton.text = "Back";
+   this.backButton.onClick = function()
+   {
+      wizardStep = dialog.previousWizardStep();
+      dialog.updateWizard();
+   };
+
+   this.nextButton = new PushButton( this );
+   this.nextButton.text = "Next";
+   this.nextButton.onClick = function()
+   {
+      dialog.refreshPreview();
+
+      if ( !dialog.validateWizardStep() )
+         return;
+
+      wizardStep = dialog.nextWizardStep();
+      dialog.updateWizard();
+   };
+
+   this.pageOperation = new Control( this );
+   this.pageOperation.sizer = new VerticalSizer;
+   this.pageOperation.sizer.spacing = 8;
+   this.pageOperation.sizer.add( this.optionsHeaderLabel );
+   this.pageOperation.sizer.add( this.modeSizer );
+   this.pageOperation.sizer.add( this.suffixSizer );
+   this.pageOperation.sizer.add( this.mappingSizer, 100 );
+
+   this.pageSelection = new Control( this );
+   this.pageSelection.sizer = new VerticalSizer;
+   this.pageSelection.sizer.spacing = 8;
+   this.pageSelection.sizer.add( this.previewSizer, 100 );
+   this.pageSelection.sizer.add( this.selectionActionLabel );
+   this.pageSelection.sizer.add( this.selectionButtonSizer );
+
+   this.pageWindowOptions = new Control( this );
+   this.pageWindowOptions.sizer = new VerticalSizer;
+   this.pageWindowOptions.sizer.spacing = 8;
+   this.pageWindowOptions.sizer.add( this.postSaveSizer );
+   this.pageWindowOptions.sizer.add( this.windowOptionsNoteLabel );
+
+   this.pageSaveOptions = new Control( this );
+   this.pageSaveOptions.sizer = new VerticalSizer;
+   this.pageSaveOptions.sizer.spacing = 8;
+   this.pageSaveOptions.sizer.add( this.saveCheckBox );
+   this.pageSaveOptions.sizer.add( this.folderSizer );
+   this.pageSaveOptions.sizer.add( this.renameOnlyNoteLabel );
+
+   this.pageReopen = new Control( this );
+   this.pageReopen.sizer = new VerticalSizer;
+   this.pageReopen.sizer.spacing = 8;
+   this.pageReopen.sizer.add( this.openSavedCheckBox );
+
+   this.pageSummary = new Control( this );
+   this.pageSummary.sizer = new VerticalSizer;
+   this.pageSummary.sizer.spacing = 8;
+   this.pageSummary.sizer.add( this.summaryLabel );
+   this.pageSummary.sizer.add( this.summaryTextLabel );
+   this.pageSummary.sizer.add( this.singleRenameLabel );
+   this.pageSummary.sizer.add( this.singleRenameSizer );
+   this.pageSummary.sizer.add( this.renameActionLabel );
+   this.pageSummary.sizer.add( this.renameActionSizer );
+   this.pageSummary.sizer.add( this.overwriteActionLabel );
+   this.pageSummary.sizer.add( this.overwriteActionSizer );
+
+   wizardPages.push( this.pageOperation );
+   wizardPages.push( this.pageSelection );
+   wizardPages.push( this.pageWindowOptions );
+   wizardPages.push( this.pageSaveOptions );
+   wizardPages.push( this.pageReopen );
+   wizardPages.push( this.pageSummary );
+
    this.buttonSizer = new HorizontalSizer;
    this.buttonSizer.spacing = 6;
    this.buttonSizer.add( this.resetButton );
    this.buttonSizer.add( this.refreshButton );
    this.buttonSizer.add( this.helpButton );
    this.buttonSizer.addStretch();
+   this.buttonSizer.add( this.backButton );
+   this.buttonSizer.add( this.nextButton );
    this.buttonSizer.add( this.closeButton );
 
    this.sizer = new VerticalSizer;
    this.sizer.margin = 8;
    this.sizer.spacing = 8;
    this.sizer.add( this.infoLabel );
-   this.sizer.add( this.mappingSizer );
-   this.sizer.add( this.optionsHeaderLabel );
-   this.sizer.add( this.modeSizer );
-   this.sizer.add( this.suffixSizer );
-   this.sizer.add( this.saveCheckBox );
-   this.sizer.add( this.folderSizer );
-   this.sizer.add( this.postSaveSizer );
-   this.sizer.add( this.renameOnlyNoteLabel );
-   this.sizer.add( this.previewSizer, 100 );
-   this.sizer.add( this.selectionActionLabel );
-   this.sizer.add( this.selectionButtonSizer );
-   this.sizer.add( this.singleRenameLabel );
-   this.sizer.add( this.singleRenameSizer );
-   this.sizer.add( this.renameActionLabel );
-   this.sizer.add( this.renameActionSizer );
-   this.sizer.add( this.overwriteActionLabel );
-   this.sizer.add( this.overwriteActionSizer );
+   this.sizer.add( this.wizardStepLabel );
+   this.sizer.add( this.wizardInstructionLabel );
+   this.sizer.add( this.pageOperation, 100 );
+   this.sizer.add( this.pageSelection, 100 );
+   this.sizer.add( this.pageWindowOptions, 100 );
+   this.sizer.add( this.pageSaveOptions, 100 );
+   this.sizer.add( this.pageReopen, 100 );
+   this.sizer.add( this.pageSummary, 100 );
    this.sizer.add( this.buttonSizer );
 
    this.adjustToContents();
@@ -2339,6 +2576,7 @@ function ImageRenameByFilterDialog()
    this.refreshPreview();
    this.updateApplyState();
    this.updateSaveOptionVisibility();
+   this.updateWizard();
 }
 
 ImageRenameByFilterDialog.prototype = new Dialog;

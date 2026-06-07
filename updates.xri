@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/ChapelAstroUtilities-2.5.zip"
-               sha1="6edba6c34ce94d8e83667f6d49823c2b51e26dc5"
+      <package fileName="packages/ChapelAstroUtilities-2.6-beta1.zip"
+               sha1="006e73ec6aca209f001b20f352fe949afd1a8fff"
                type="script"
-               releaseDate="20260606">
+               releaseDate="20260607">
          <title>
-            Chapel Astro Utilities 2.5
+            Chapel Astro Utilities 2.6-beta1 DEV
          </title>
          <description>
             <p>
-               Installs ImageRenameByFilter 2.5 and MatchOpenImageSizes 1.0.3 under Script &gt; Chapel Astro Utilities.
-               Adds all-rights-reserved copyright notices to the distributed script files.
+               Installs ImageRenameByFilter 2.6-beta1 and MatchOpenImageSizes 1.0.3 under Script &gt; Chapel Astro Utilities.
+               DEV beta build: ImageRenameByFilter uses a wizard flow for operation choice, image selection, window options, save options, reopen options, and final summary/process.
             </p>
          </description>
       </package>
