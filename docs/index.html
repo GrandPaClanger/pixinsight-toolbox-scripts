@@ -290,6 +290,182 @@
       color: #526068;
     }
 
+    .tool-spotlight {
+      background:
+        radial-gradient(circle at 82% 18%, rgba(20, 169, 157, 0.17), transparent 34%),
+        var(--bg);
+    }
+
+    .spotlight-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(460px, 1.1fr);
+      gap: 54px;
+      align-items: center;
+    }
+
+    .spotlight-copy h2 {
+      margin-bottom: 18px;
+      font-size: clamp(36px, 5vw, 62px);
+      line-height: 1;
+    }
+
+    .spotlight-copy p {
+      max-width: 580px;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .spotlight-points {
+      display: grid;
+      gap: 12px;
+      margin: 28px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .spotlight-points li {
+      position: relative;
+      padding-left: 28px;
+      color: #d5dddf;
+    }
+
+    .spotlight-points li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      font-weight: 900;
+    }
+
+    .stf-window {
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 14px;
+      background: #e9ecef;
+      color: #20272b;
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.38);
+    }
+
+    .stf-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-bottom: 1px solid #cbd0d4;
+      background: #f7f8f9;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .stf-titlebar::before {
+      content: "";
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #664ce8, #2678dc);
+      box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.28);
+    }
+
+    .stf-body {
+      padding: 18px;
+    }
+
+    .stf-intro {
+      margin-bottom: 14px;
+      color: #49555c;
+      font-size: 13px;
+    }
+
+    .stf-panel {
+      padding: 14px;
+      border: 1px solid #c9ced2;
+      border-radius: 7px;
+      background: #f7f8f9;
+    }
+
+    .stf-panel + .stf-panel {
+      margin-top: 12px;
+    }
+
+    .stf-panel-title {
+      margin-bottom: 10px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .stf-row {
+      display: grid;
+      grid-template-columns: 26px 1fr 90px 96px;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 0;
+      border-top: 1px solid #dfe3e6;
+      font-size: 12px;
+    }
+
+    .stf-row:first-of-type {
+      border-top: 0;
+    }
+
+    .stf-check {
+      width: 15px;
+      height: 15px;
+      border: 1px solid #7b858b;
+      border-radius: 3px;
+      background: #277bda;
+      box-shadow: inset 0 0 0 3px #fff;
+    }
+
+    .stf-options,
+    .stf-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .stf-radio {
+      padding-left: 22px;
+      position: relative;
+      font-size: 12px;
+    }
+
+    .stf-radio::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 1px;
+      width: 13px;
+      height: 13px;
+      border: 1px solid #68747a;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .stf-radio.active::before {
+      box-shadow: inset 0 0 0 3px #fff;
+      background: #277bda;
+    }
+
+    .stf-actions {
+      margin-top: 14px;
+    }
+
+    .stf-button {
+      padding: 8px 12px;
+      border: 1px solid #aeb5ba;
+      border-radius: 5px;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .stf-button.primary {
+      border-color: #2374c6;
+      background: #277bda;
+      color: #fff;
+    }
+
     .dark-band {
       background: var(--bg-2);
     }
@@ -570,8 +746,13 @@
       .screenshot-row,
       .install-layout,
       .guide-grid,
+      .spotlight-layout,
       .safety-grid {
         grid-template-columns: 1fr;
+      }
+
+      .spotlight-layout {
+        gap: 34px;
       }
 
       section {
@@ -603,6 +784,15 @@
 
       .hero-copy {
         max-width: 350px;
+      }
+
+      .stf-row {
+        grid-template-columns: 24px 1fr;
+      }
+
+      .stf-row span:nth-child(3),
+      .stf-row span:nth-child(4) {
+        display: none;
       }
 
       .hero-copy p {
@@ -644,6 +834,7 @@
       </a>
       <div class="nav-links">
         <a href="#benefits">Benefits</a>
+        <a href="#batch-stf">Batch STF</a>
         <a href="#workflows">Workflows</a>
         <a href="#tools">Tools</a>
         <a href="#install">Install</a>
@@ -690,18 +881,18 @@
         <div class="benefits">
           <article class="benefit">
             <div class="icon">1</div>
+            <h3>Reveal linear images</h3>
+            <p>Apply a linked or unlinked automatic ScreenTransferFunction to selected open images without changing their pixel data.</p>
+          </article>
+          <article class="benefit">
+            <div class="icon">2</div>
             <h3>Line up open images</h3>
             <p>Use one image as the reference, then batch-match the other open windows to its zoom, frame size, and pixel dimensions when needed.</p>
           </article>
           <article class="benefit">
-            <div class="icon">2</div>
-            <h3>Reduce naming friction</h3>
-            <p>Batch-rename mono stacked masters such as filter-tagged luminance, red, or hydrogen frames into clean identifiers. OSC workflows are covered too, with a default NoFilter to OSC mapping.</p>
-          </article>
-          <article class="benefit">
             <div class="icon">3</div>
-            <h3>Track processing stages</h3>
-            <p>Batch-append suffixes such as <code>PreNoiseX</code>, <code>PostCrop</code>, or <code>PreStretch</code> without rebuilding mappings or touching unrelated images.</p>
+            <h3>Reduce naming friction</h3>
+            <p>Batch-rename mono stacked masters into clean filter identifiers, then append processing-stage suffixes as the workflow develops.</p>
           </article>
           <article class="benefit">
             <div class="icon">4</div>
@@ -712,28 +903,78 @@
       </div>
     </section>
 
+    <section id="batch-stf" class="tool-spotlight">
+      <div class="section-inner spotlight-layout">
+        <div class="spotlight-copy">
+          <h2>Inspect a whole image set in one pass.</h2>
+          <p>BatchSTFStretch brings PixInsight's familiar automatic screen stretch to a selectable batch. Check the images you want, choose how RGB channels should be treated, and apply or reset the display stretch together.</p>
+          <ul class="spotlight-points">
+            <li>Linked mode preserves the relative RGB channel balance.</li>
+            <li>Unlinked mode calculates an independent stretch per channel.</li>
+            <li>Select All, Select None, and Refresh keep large sessions manageable.</li>
+            <li>Reset Screen Transfer returns selected images to an identity STF.</li>
+            <li>The operation changes only the display—not the underlying pixels.</li>
+          </ul>
+        </div>
+        <div class="stf-window" aria-label="Illustration of the BatchSTFStretch dialog">
+          <div class="stf-titlebar">BatchSTFStretch 1.0.0</div>
+          <div class="stf-body">
+            <p class="stf-intro">Select the open images to receive an automatic screen stretch.</p>
+            <div class="stf-panel">
+              <div class="stf-panel-title">Image Selection</div>
+              <div class="stf-row">
+                <span class="stf-check" aria-hidden="true"></span><strong>Luminance</strong><span>Monochrome</span><span>6248 × 4176</span>
+              </div>
+              <div class="stf-row">
+                <span class="stf-check" aria-hidden="true"></span><strong>RGB_Master</strong><span>Color</span><span>6248 × 4176</span>
+              </div>
+              <div class="stf-row">
+                <span class="stf-check" aria-hidden="true"></span><strong>Hydrogen</strong><span>Monochrome</span><span>6248 × 4176</span>
+              </div>
+              <div class="stf-actions">
+                <span class="stf-button">Select All</span>
+                <span class="stf-button">Select None</span>
+                <span class="stf-button">Refresh</span>
+              </div>
+            </div>
+            <div class="stf-panel">
+              <div class="stf-panel-title">Stretch Mode</div>
+              <div class="stf-options">
+                <span class="stf-radio active">Linked</span>
+                <span class="stf-radio">Unlinked</span>
+              </div>
+            </div>
+            <div class="stf-actions">
+              <span class="stf-button primary">Apply Auto Stretch</span>
+              <span class="stf-button">Reset Screen Transfer</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="workflows" class="dark-band">
       <div class="section-inner">
         <div class="section-heading">
           <h2>Recommended workflow order.</h2>
-          <p>Start by making the open windows comparable, then batch-clean the names, batch-mark processing stages, and handle any one-off corrections.</p>
+          <p>Make linear images visible, align the workspace for comparison, then clean the names and save each processing stage deliberately.</p>
         </div>
         <div class="workflow-grid">
           <article class="workflow">
-            <h3>1. Resize images to reference</h3>
+            <h3>1. Apply a batch screen stretch</h3>
+            <p>Select the linear images you want to inspect, choose linked or unlinked channel handling, and apply an automatic STF without altering image pixels.</p>
+          </article>
+          <article class="workflow">
+            <h3>2. Resize images to reference</h3>
             <p>Select a reference image and batch-match the other open windows to its zoom and frame. If their pixel dimensions differ, the utility resamples them to the reference dimensions.</p>
           </article>
           <article class="workflow">
-            <h3>2. Shorten long file names</h3>
+            <h3>3. Shorten long file names</h3>
             <p>Follow the wizard to match words such as <code>Red</code>, <code>Hydrogen</code>, or <code>Nofilter</code> in the file path, caption, or image ID and batch-rename them to concise identifiers such as <code>R</code>, <code>H</code>, or <code>OSC</code>.</p>
           </article>
           <article class="workflow">
-            <h3>3. Append file name suffixes</h3>
-            <p>After a crop, gradient correction, or noise reduction pass, batch-append a PixInsight-safe suffix to the currently open names. The filter mapping can be ignored when the current name is already the truth.</p>
-          </article>
-          <article class="workflow">
-            <h3>4. Rename individual image</h3>
-            <p>Need to correct just one image? Select a single preview row, enter a valid identifier, and rename the side tab and top caption without running a batch operation.</p>
+            <h3>4. Mark and save processing stages</h3>
+            <p>Append suffixes such as <code>PreNoiseX</code> or <code>PostCrop</code>, then save source-backed images in place or choose a folder for newly created images.</p>
           </article>
         </div>
         <div class="screenshot-row">
