@@ -337,133 +337,19 @@
       font-weight: 900;
     }
 
-    .stf-window {
+    .stf-screenshot {
+      margin: 0;
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.16);
       border-radius: 14px;
-      background: #e9ecef;
-      color: #20272b;
+      background: #d9dbde;
       box-shadow: 0 28px 70px rgba(0, 0, 0, 0.38);
     }
 
-    .stf-titlebar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 16px;
-      border-bottom: 1px solid #cbd0d4;
-      background: #f7f8f9;
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .stf-titlebar::before {
-      content: "";
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #664ce8, #2678dc);
-      box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.28);
-    }
-
-    .stf-body {
-      padding: 18px;
-    }
-
-    .stf-intro {
-      margin-bottom: 14px;
-      color: #49555c;
-      font-size: 13px;
-    }
-
-    .stf-panel {
-      padding: 14px;
-      border: 1px solid #c9ced2;
-      border-radius: 7px;
-      background: #f7f8f9;
-    }
-
-    .stf-panel + .stf-panel {
-      margin-top: 12px;
-    }
-
-    .stf-panel-title {
-      margin-bottom: 10px;
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .stf-row {
-      display: grid;
-      grid-template-columns: 26px 1fr 90px 96px;
-      gap: 8px;
-      align-items: center;
-      padding: 8px 0;
-      border-top: 1px solid #dfe3e6;
-      font-size: 12px;
-    }
-
-    .stf-row:first-of-type {
-      border-top: 0;
-    }
-
-    .stf-check {
-      width: 15px;
-      height: 15px;
-      border: 1px solid #7b858b;
-      border-radius: 3px;
-      background: #277bda;
-      box-shadow: inset 0 0 0 3px #fff;
-    }
-
-    .stf-options,
-    .stf-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .stf-radio {
-      padding-left: 22px;
-      position: relative;
-      font-size: 12px;
-    }
-
-    .stf-radio::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 1px;
-      width: 13px;
-      height: 13px;
-      border: 1px solid #68747a;
-      border-radius: 50%;
-      background: #fff;
-    }
-
-    .stf-radio.active::before {
-      box-shadow: inset 0 0 0 3px #fff;
-      background: #277bda;
-    }
-
-    .stf-actions {
-      margin-top: 14px;
-    }
-
-    .stf-button {
-      padding: 8px 12px;
-      border: 1px solid #aeb5ba;
-      border-radius: 5px;
-      background: #fff;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .stf-button.primary {
-      border-color: #2374c6;
-      background: #277bda;
-      color: #fff;
+    .stf-screenshot img {
+      display: block;
+      width: 100%;
+      height: auto;
     }
 
     .dark-band {
@@ -786,15 +672,6 @@
         max-width: 350px;
       }
 
-      .stf-row {
-        grid-template-columns: 24px 1fr;
-      }
-
-      .stf-row span:nth-child(3),
-      .stf-row span:nth-child(4) {
-        display: none;
-      }
-
       .hero-copy p {
         max-width: 340px;
         font-size: 18px;
@@ -916,40 +793,9 @@
             <li>The operation changes only the display—not the underlying pixels.</li>
           </ul>
         </div>
-        <div class="stf-window" aria-label="Illustration of the BatchSTFStretch dialog">
-          <div class="stf-titlebar">BatchSTFStretch 1.0.0</div>
-          <div class="stf-body">
-            <p class="stf-intro">Select the open images to receive an automatic screen stretch.</p>
-            <div class="stf-panel">
-              <div class="stf-panel-title">Image Selection</div>
-              <div class="stf-row">
-                <span class="stf-check" aria-hidden="true"></span><strong>Luminance</strong><span>Monochrome</span><span>6248 × 4176</span>
-              </div>
-              <div class="stf-row">
-                <span class="stf-check" aria-hidden="true"></span><strong>RGB_Master</strong><span>Color</span><span>6248 × 4176</span>
-              </div>
-              <div class="stf-row">
-                <span class="stf-check" aria-hidden="true"></span><strong>Hydrogen</strong><span>Monochrome</span><span>6248 × 4176</span>
-              </div>
-              <div class="stf-actions">
-                <span class="stf-button">Select All</span>
-                <span class="stf-button">Select None</span>
-                <span class="stf-button">Refresh</span>
-              </div>
-            </div>
-            <div class="stf-panel">
-              <div class="stf-panel-title">Stretch Mode</div>
-              <div class="stf-options">
-                <span class="stf-radio active">Linked</span>
-                <span class="stf-radio">Unlinked</span>
-              </div>
-            </div>
-            <div class="stf-actions">
-              <span class="stf-button primary">Apply Auto Stretch</span>
-              <span class="stf-button">Reset Screen Transfer</span>
-            </div>
-          </div>
-        </div>
+        <figure class="stf-screenshot">
+          <img src="assets/batch-stf-stretch.png" alt="BatchSTFStretch 1.0.0 dialog in PixInsight showing image selection, linked and unlinked stretch modes, Apply Auto Stretch, and Reset Screen Transfer controls" loading="lazy" decoding="async">
+        </figure>
       </div>
     </section>
 
