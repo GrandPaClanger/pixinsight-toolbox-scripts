@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/ChapelAstroUtilities-3.1.zip"
-               sha1="ef1b6a555de0eb7c232b6aa963679feea267d6c6"
+      <package fileName="packages/ChapelAstroUtilities-3.2.zip"
+               sha1="2e5f4148f95999d3a88a2d0fa53bf3d36ea9ef88"
                type="script"
-               releaseDate="20260607">
+               releaseDate="20260618">
          <title>
-            Chapel Astro Utilities 3.1
+            Chapel Astro Utilities 3.2
          </title>
          <description>
             <p>
-               Installs ImageBatchManager 3.1 and MatchOpenImageSizes 1.0.4 under Script &gt; Chapel Astro Utilities.
-               Version 3.1 renames ImageRenameByFilter to ImageBatchManager to reflect the wider batch rename, append, individual rename, and save-only overwrite workflow.
+               Installs BatchSTFStretch 1.0.0, ImageBatchManager 3.2, and MatchOpenImageSizes 1.0.4 under Script &gt; Chapel Astro Utilities.
+               ImageBatchManager save-only asks for a destination folder for newly created images while preserving existing source folders for opened images.
             </p>
          </description>
       </package>
