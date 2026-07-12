@@ -206,9 +206,16 @@ PixInsight menu entry and dialog title are `ImageBatchManager`.
 
 The update package is:
 
-`packages/ChapelAstroUtilities-3.2.zip`
+`packages/ChapelAstroUtilities-3.2.1.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 3.2.1
+
+- Live patch release.
+- Updated ImageBatchManager to 3.2.1.
+- Append-suffix saves now preserve FITS header keywords in the saved output
+  file.
 
 ### Chapel Astro Utilities 3.2
 

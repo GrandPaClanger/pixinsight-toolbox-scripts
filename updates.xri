@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/ChapelAstroUtilities-3.2.zip"
-               sha1="2e5f4148f95999d3a88a2d0fa53bf3d36ea9ef88"
+      <package fileName="packages/ChapelAstroUtilities-3.2.1.zip"
+               sha1="7bcb27bffa914be760bf71e5c9212cde80304a9c"
                type="script"
-               releaseDate="20260618">
+               releaseDate="20260712">
          <title>
-            Chapel Astro Utilities 3.2
+            Chapel Astro Utilities 3.2.1
          </title>
          <description>
             <p>
-               Installs BatchSTFStretch 1.0.0, ImageBatchManager 3.2, and MatchOpenImageSizes 1.0.4 under Script &gt; Chapel Astro Utilities.
-               ImageBatchManager save-only asks for a destination folder for newly created images while preserving existing source folders for opened images.
+               Installs BatchSTFStretch 1.0.0, ImageBatchManager 3.2.1, and MatchOpenImageSizes 1.0.4 under Script &gt; Chapel Astro Utilities.
+               ImageBatchManager append-suffix saves now preserve FITS header keywords in the saved output file.
             </p>
          </description>
       </package>
