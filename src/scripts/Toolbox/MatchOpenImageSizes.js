@@ -15,7 +15,7 @@
 #feature-info  Match open image window display size to a selected reference window.
 
 var TITLE = "MatchOpenImageSizes";
-var VERSION = "1.1.1";
+var VERSION = "1.2.0";
 
 var FrameStyle_Box = 1;
 var ResizeMode_AbsolutePixels = 1;
@@ -189,7 +189,136 @@ function channelGroup( window )
    return { name: "Other", order: 0 };
 }
 
-function arrangeMatchedWindows( windows, screenRect )
+function placeWindowInTile( window, tileRect )
+{
+   window.geometry = tileRect;
+   window.zoomToFit();
+
+   // zoomToFit() may resize the frame, so restore the exact tile geometry.
+   window.geometry = tileRect;
+}
+
+function bestMonitorGrid( itemCount, screenRect, frameAspect )
+{
+   var margin = 12;
+   var gap = 10;
+   var reservedHeight = 120;
+   var availableWidth = Math.max( 1, screenRect.width - 2*margin );
+   var availableHeight = Math.max( 1, screenRect.height - reservedHeight - 2*margin );
+   var best = null;
+
+   for ( var columns = 1; columns <= itemCount; ++columns )
+   {
+      var rows = Math.ceil( itemCount/columns );
+      var rawWidth = Math.floor( (availableWidth - (columns - 1)*gap)/columns );
+      var rawHeight = Math.floor( (availableHeight - (rows - 1)*gap)/rows );
+      var width = rawWidth;
+      var height = rawHeight;
+
+      if ( width/height > frameAspect )
+         width = Math.floor( height*frameAspect );
+      else
+         height = Math.floor( width/frameAspect );
+
+      var area = width*height;
+      if ( best == null || area > best.area )
+         best = {
+            columns: columns,
+            rows: rows,
+            width: width,
+            height: height,
+            area: area
+         };
+   }
+
+   return best;
+}
+
+function arrangeGroupsAcrossMonitors( groups, screenRects, frameAspect )
+{
+   while ( groups.length > screenRects.length )
+   {
+      var extra = groups.pop();
+      var destination = groups[groups.length - 1];
+      destination.name += "+" + extra.name;
+      destination.items = destination.items.concat( extra.items );
+   }
+
+   if ( groups.length == 1 && screenRects.length > 1 )
+   {
+      var source = groups[0];
+      var splitGroups = new Array;
+      var offset = 0;
+
+      for ( var s = 0; s < screenRects.length && offset < source.items.length; ++s )
+      {
+         var remainingItems = source.items.length - offset;
+         var remainingScreens = screenRects.length - s;
+         var count = Math.ceil( remainingItems/remainingScreens );
+         splitGroups.push( {
+            name: source.name,
+            items: source.items.slice( offset, offset + count )
+         } );
+         offset += count;
+      }
+
+      groups = splitGroups;
+   }
+
+   var layouts = new Array;
+   var cellWidth = 0;
+   var cellHeight = 0;
+
+   for ( var i = 0; i < groups.length; ++i )
+   {
+      var layout = bestMonitorGrid( groups[i].items.length,
+                                    screenRects[i], frameAspect );
+      layouts.push( layout );
+      cellWidth = cellWidth == 0 ? layout.width : Math.min( cellWidth, layout.width );
+      cellHeight = cellHeight == 0 ? layout.height : Math.min( cellHeight, layout.height );
+   }
+
+   if ( cellWidth < 160 || cellHeight < 120 )
+      throw new Error( "The multi-monitor desktop is too small to arrange the image windows." );
+
+   var margin = 12;
+   var gap = 10;
+   var reservedHeight = 120;
+
+   for ( var g = 0; g < groups.length; ++g )
+   {
+      var items = groups[g].items;
+      var screen = screenRects[g];
+      var columns = layouts[g].columns;
+      var rowCount = Math.ceil( items.length/columns );
+      var availableHeight = Math.max( 1, screen.height - reservedHeight - 2*margin );
+      var blockHeight = rowCount*cellHeight + (rowCount - 1)*gap;
+      var startY = screen.y0 + margin + Math.floor( (availableHeight - blockHeight)/2 );
+
+      for ( var row = 0; row < rowCount; ++row )
+      {
+         var first = row*columns;
+         var count = Math.min( columns, items.length - first );
+         var rowWidth = count*cellWidth + (count - 1)*gap;
+         var startX = screen.x0 + margin +
+            Math.floor( (screen.width - 2*margin - rowWidth)/2 );
+
+         for ( var col = 0; col < count; ++col )
+         {
+            var x = startX + col*(cellWidth + gap);
+            var y = startY + row*(cellHeight + gap);
+            placeWindowInTile( items[first + col].window,
+                               new Rect( x, y, x + cellWidth, y + cellHeight ) );
+         }
+      }
+
+      Console.writeln( "Arranged " + groups[g].name + " group on monitor " +
+                       (g + 1).toString() + ": " +
+                       items.length.toString() + " window(s)." );
+   }
+}
+
+function arrangeMatchedWindows( windows, screenRects, frameAspect )
 {
    if ( windows.length == 0 )
       return;
@@ -225,6 +354,13 @@ function arrangeMatchedWindows( windows, screenRect )
       rows.push( { name: groupNames[g], items: group } );
    }
 
+   if ( screenRects.length > 1 )
+   {
+      arrangeGroupsAcrossMonitors( rows, screenRects, frameAspect );
+      return;
+   }
+
+   var screenRect = screenRects[0];
    var columns = 1;
    for ( var r = 0; r < rows.length; ++r )
       columns = Math.max( columns, rows[r].items.length );
@@ -253,12 +389,7 @@ function arrangeMatchedWindows( windows, screenRect )
          var x = startX + col*(cellWidth + gap);
          var window = items[col].window;
          var tileRect = new Rect( x, y, x + cellWidth, y + cellHeight );
-
-         window.geometry = tileRect;
-         window.zoomToFit();
-
-         // zoomToFit() may resize the frame, so restore the exact tile geometry.
-         window.geometry = tileRect;
+         placeWindowInTile( window, tileRect );
       }
 
       Console.writeln( "Arranged " + rows[row].name + " group: " +
@@ -272,7 +403,90 @@ function currentAvailableScreenRect()
    return new Rect( probe.availableScreenRect );
 }
 
-function matchWindowsToReference( referenceWindow, confirm, arrangeWindows, screenRect )
+function windowsMonitorRects()
+{
+   if ( System.platform != "Windows" )
+      throw new Error( "Automatic multi-monitor detection is currently available on Windows only." );
+
+   var command =
+      "Add-Type -AssemblyName System.Windows.Forms; " +
+      "[System.Windows.Forms.Screen]::AllScreens | ForEach-Object { " +
+      "$r=$_.WorkingArea; Write-Output " +
+      "($r.Left.ToString()+','+$r.Top.ToString()+','+" +
+      "$r.Width.ToString()+','+$r.Height.ToString()) }";
+   var process = new ExternalProcess( "powershell.exe",
+      ["-NoProfile", "-NonInteractive", "-Command", command] );
+
+   if ( !process.waitForFinished() )
+      throw new Error( "Timed out while detecting monitors." );
+
+   var output = process.stdout.utf8ToString().trim();
+   if ( process.exitCode != 0 || output.length == 0 )
+      throw new Error( "Windows did not return monitor geometry." );
+
+   var rects = new Array;
+   var lines = output.split( /\r?\n/ );
+
+   for ( var i = 0; i < lines.length; ++i )
+   {
+      var fields = lines[i].trim().split( "," );
+      if ( fields.length != 4 )
+         continue;
+
+      var x = parseInt( fields[0], 10 );
+      var y = parseInt( fields[1], 10 );
+      var width = parseInt( fields[2], 10 );
+      var height = parseInt( fields[3], 10 );
+
+      if ( isFinite( x ) && isFinite( y ) && width > 0 && height > 0 )
+         rects.push( new Rect( x, y, x + width, y + height ) );
+   }
+
+   rects.sort( function( a, b )
+   {
+      return a.x0 != b.x0 ? a.x0 - b.x0 : a.y0 - b.y0;
+   } );
+
+   if ( rects.length == 0 )
+      throw new Error( "No usable monitor rectangles were detected." );
+
+   return rects;
+}
+
+function layoutScreenRects( currentScreenRect, useAllMonitors )
+{
+   if ( !useAllMonitors )
+      return [currentScreenRect];
+
+   try
+   {
+      var rects = windowsMonitorRects();
+      if ( rects.length > 1 )
+      {
+         Console.writeln( "Detected " + rects.length.toString() +
+                          " monitors for window arrangement." );
+         for ( var i = 0; i < rects.length; ++i )
+            Console.writeln( "Monitor " + (i + 1).toString() + ": x=" +
+                             rects[i].x0.toString() + ", y=" +
+                             rects[i].y0.toString() + ", " +
+                             rects[i].width.toString() + " x " +
+                             rects[i].height.toString() + "." );
+         return rects;
+      }
+
+      Console.warningln( "Only one monitor was detected; using the current screen." );
+   }
+   catch ( error )
+   {
+      Console.warningln( "Multi-monitor detection failed: " + error.message +
+                         " Using the current screen." );
+   }
+
+   return [currentScreenRect];
+}
+
+function matchWindowsToReference( referenceWindow, confirm, arrangeWindows,
+                                  useAllMonitors, screenRect )
 {
    if ( referenceWindow.isNull )
       throw new Error( "No reference image window is available." );
@@ -316,7 +530,8 @@ function matchWindowsToReference( referenceWindow, confirm, arrangeWindows, scre
          "Images with different pixel dimensions will be resampled." +
          (arrangeWindows ?
             "\n\nAll matched windows, including the reference window, will then be " +
-            "arranged in SHO and LRGB groups and zoomed to fit." : "");
+            "arranged in SHO and LRGB groups and zoomed to fit." +
+            (useAllMonitors ? " The groups will be distributed across all detected monitors." : "") : "");
 
       if ( (new MessageBox( message, TITLE, StdIcon_Question,
                             StdButton_Yes, StdButton_No )).execute() != StdButton_Yes )
@@ -365,8 +580,10 @@ function matchWindowsToReference( referenceWindow, confirm, arrangeWindows, scre
    {
       try
       {
+         var currentScreen = screenRect != null ? screenRect : currentAvailableScreenRect();
          arrangeMatchedWindows( matchedWindows,
-                                screenRect != null ? screenRect : currentAvailableScreenRect() );
+                                layoutScreenRects( currentScreen, useAllMonitors ),
+                                referenceWidth/referenceHeight );
       }
       catch ( layoutError )
       {
@@ -417,16 +634,22 @@ function defaultReferenceId()
    return "";
 }
 
-function exportParameters( referenceViewId, arrangeWindows )
+function exportParameters( referenceViewId, arrangeWindows, useAllMonitors )
 {
    Parameters.set( "version", VERSION );
    Parameters.set( "referenceViewId", referenceViewId );
    Parameters.set( "arrangeWindows", arrangeWindows );
+   Parameters.set( "useAllMonitors", useAllMonitors );
 }
 
 function parameterArrangeWindows()
 {
    return Parameters.has( "arrangeWindows" ) && Parameters.getBoolean( "arrangeWindows" );
+}
+
+function parameterUseAllMonitors()
+{
+   return Parameters.has( "useAllMonitors" ) && Parameters.getBoolean( "useAllMonitors" );
 }
 
 function MatchOpenImageSizesDialog()
@@ -469,6 +692,17 @@ function MatchOpenImageSizesDialog()
    this.arrangeCheckBox.checked = parameterArrangeWindows();
    this.arrangeCheckBox.toolTip =
       "Arrange matched image windows in compact SHO and LRGB groups using the available screen space, then zoom each image to fit.";
+   this.arrangeCheckBox.onCheck = function( checked )
+   {
+      dialog.allMonitorsCheckBox.enabled = checked;
+   };
+
+   this.allMonitorsCheckBox = new CheckBox( this );
+   this.allMonitorsCheckBox.text = "Use all monitors";
+   this.allMonitorsCheckBox.checked = parameterUseAllMonitors();
+   this.allMonitorsCheckBox.enabled = this.arrangeCheckBox.checked;
+   this.allMonitorsCheckBox.toolTip =
+      "Detect all Windows monitors and arrange filter groups on separate screens. If detection fails, the current screen is used.";
 
    this.newInstanceButton = new ToolButton( this );
    this.newInstanceButton.icon = this.scaledResource( ":/process-interface/new-instance.png" );
@@ -478,7 +712,8 @@ function MatchOpenImageSizesDialog()
    this.newInstanceButton.onMousePress = function()
    {
       exportParameters( dialog.referenceCombo.itemText( dialog.referenceCombo.currentItem ),
-                        dialog.arrangeCheckBox.checked );
+                        dialog.arrangeCheckBox.checked,
+                        dialog.allMonitorsCheckBox.checked );
       dialog.newInstance();
    };
 
@@ -490,11 +725,13 @@ function MatchOpenImageSizesDialog()
    {
       var id = dialog.referenceCombo.itemText( dialog.referenceCombo.currentItem );
       var arrangeWindows = dialog.arrangeCheckBox.checked;
+      var useAllMonitors = dialog.allMonitorsCheckBox.checked;
       var screenRect = new Rect( dialog.availableScreenRect );
-      exportParameters( id, arrangeWindows );
+      exportParameters( id, arrangeWindows, useAllMonitors );
       var referenceWindow = windowByMainViewId( id );
       dialog.ok();
-      matchWindowsToReference( referenceWindow, true, arrangeWindows, screenRect );
+      matchWindowsToReference( referenceWindow, true, arrangeWindows,
+                               useAllMonitors, screenRect );
    };
 
    this.cancelButton = new PushButton( this );
@@ -518,6 +755,7 @@ function MatchOpenImageSizesDialog()
    this.sizer.add( this.infoLabel );
    this.sizer.add( this.referenceSizer );
    this.sizer.add( this.arrangeCheckBox );
+   this.sizer.add( this.allMonitorsCheckBox );
    this.sizer.add( this.buttonSizer );
 
    this.adjustToContents();
@@ -538,7 +776,7 @@ function main()
    if ( Parameters.isViewTarget )
    {
       matchWindowsToReference( Parameters.targetView.window, true,
-                               parameterArrangeWindows(), null );
+                               parameterArrangeWindows(), parameterUseAllMonitors(), null );
       return;
    }
 
@@ -547,7 +785,8 @@ function main()
       var window = windowByMainViewId( Parameters.get( "referenceViewId" ) );
       if ( !window.isNull )
       {
-         matchWindowsToReference( window, true, parameterArrangeWindows(), null );
+         matchWindowsToReference( window, true, parameterArrangeWindows(),
+                                  parameterUseAllMonitors(), null );
          return;
       }
    }

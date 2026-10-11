@@ -165,7 +165,7 @@ Menu:
 
 Version:
 
-`1.1.1`
+`1.2.0`
 
 Purpose:
 
@@ -180,6 +180,12 @@ to tile all matched windows at one equal size. Narrowband windows are grouped
 and ordered as S, H, O; broadband windows are grouped and ordered as L, R, G,
 B. Unrecognised names are placed in a separate row. The setting is off by
 default, so the existing matching behaviour is unchanged unless it is selected.
+
+On Windows, `Use all monitors` detects each monitor's usable working area and
+places filter groups on separate screens. With two monitors, SHO and LRGB are
+kept together on their own displays. Window frames remain equal in size and no
+window is deliberately placed across a monitor boundary. If monitor detection
+fails, arrangement falls back to the monitor containing the script dialog.
 
 It also supports PixInsight process icons:
 
@@ -212,9 +218,16 @@ PixInsight menu entry and dialog title are `ImageBatchManager`.
 
 The update package is:
 
-`packages/ChapelAstroUtilities-3.3.1.zip`
+`packages/ChapelAstroUtilities-3.4.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 3.4
+
+- Updated MatchOpenImageSizes to 1.2.0.
+- Added opt-in Windows multi-monitor detection and arrangement.
+- SHO and LRGB groups can now occupy separate monitors while retaining equal
+  outer window dimensions.
 
 ### Chapel Astro Utilities 3.3.1
 
