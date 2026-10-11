@@ -15,7 +15,7 @@
 #feature-info  Match open image window display size to a selected reference window.
 
 var TITLE = "MatchOpenImageSizes";
-var VERSION = "1.2.0";
+var VERSION = "1.2.1";
 
 var FrameStyle_Box = 1;
 var ResizeMode_AbsolutePixels = 1;
@@ -192,9 +192,14 @@ function channelGroup( window )
 function placeWindowInTile( window, tileRect )
 {
    window.geometry = tileRect;
-   window.zoomToFit();
+   var viewportRect = window.visibleViewportRect;
+   var viewportWidth = Math.max( 1, viewportRect.width );
+   var viewportHeight = Math.max( 1, viewportRect.height );
+   var image = window.mainView.image;
+   var divisor = Math.max( image.width/viewportWidth,
+                           image.height/viewportHeight );
 
-   // zoomToFit() may resize the frame, so restore the exact tile geometry.
+   window.zoomFactor = divisor <= 1 ? 1 : -Math.ceil( divisor );
    window.geometry = tileRect;
 }
 
@@ -405,7 +410,7 @@ function currentAvailableScreenRect()
 
 function windowsMonitorRects()
 {
-   if ( System.platform != "Windows" )
+   if ( CoreApplication.platform != "Windows" )
       throw new Error( "Automatic multi-monitor detection is currently available on Windows only." );
 
    var command =

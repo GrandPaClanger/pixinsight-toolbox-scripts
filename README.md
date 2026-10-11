@@ -165,7 +165,7 @@ Menu:
 
 Version:
 
-`1.2.0`
+`1.2.1`
 
 Purpose:
 
@@ -218,9 +218,16 @@ PixInsight menu entry and dialog title are `ImageBatchManager`.
 
 The update package is:
 
-`packages/ChapelAstroUtilities-3.4.zip`
+`packages/ChapelAstroUtilities-3.4.1.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 3.4.1
+
+- Updated MatchOpenImageSizes to 1.2.1.
+- Fixed Windows platform detection on PixInsight 1.9.4.
+- Replaced frame-resizing `zoomToFit()` calls with an exact zoom calculation
+  based on each tiled window's visible viewport.
 
 ### Chapel Astro Utilities 3.4
 
