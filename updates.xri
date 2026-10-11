@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/ChapelAstroUtilities-3.3.zip"
-               sha1="85a379943dc8f4894bd0c4ea438f6a140fc91c3d"
+      <package fileName="packages/ChapelAstroUtilities-3.3.1.zip"
+               sha1="923936e9df64695c49f13d5bebc41d98e338eb67"
                type="script"
                releaseDate="20261011">
          <title>
-            Chapel Astro Utilities 3.3
+            Chapel Astro Utilities 3.3.1
          </title>
          <description>
             <p>
-               Installs BatchSTFStretch 1.0.0, ImageBatchManager 3.2.1, and MatchOpenImageSizes 1.1.0 under Script &gt; Chapel Astro Utilities.
-               MatchOpenImageSizes can optionally arrange equal-size SHO and LRGB window groups across the available screen.
+               Installs BatchSTFStretch 1.0.0, ImageBatchManager 3.2.1, and MatchOpenImageSizes 1.1.1 under Script &gt; Chapel Astro Utilities.
+               Fixes window arrangement on PixInsight builds exposing only the zero-argument PJSR form of ImageWindow.zoomToFit().
             </p>
          </description>
       </package>

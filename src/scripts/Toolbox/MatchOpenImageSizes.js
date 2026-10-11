@@ -15,7 +15,7 @@
 #feature-info  Match open image window display size to a selected reference window.
 
 var TITLE = "MatchOpenImageSizes";
-var VERSION = "1.1.0";
+var VERSION = "1.1.1";
 
 var FrameStyle_Box = 1;
 var ResizeMode_AbsolutePixels = 1;
@@ -255,7 +255,7 @@ function arrangeMatchedWindows( windows, screenRect )
          var tileRect = new Rect( x, y, x + cellWidth, y + cellHeight );
 
          window.geometry = tileRect;
-         window.zoomToFit( false, false );
+         window.zoomToFit();
 
          // zoomToFit() may resize the frame, so restore the exact tile geometry.
          window.geometry = tileRect;
