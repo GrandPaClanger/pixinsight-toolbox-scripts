@@ -165,15 +165,21 @@ Menu:
 
 Version:
 
-`1.0.4`
+`1.1.0`
 
 Purpose:
 
 Matches all other open image windows to a selected reference image window. The
-reference window is not changed. The script copies the reference zoom and
+reference image data is not changed. The script copies the reference zoom and
 attempts to copy the window frame size where PixInsight exposes writable
 image-window geometry. Images with different pixel dimensions are resampled to
 the reference dimensions.
+
+The optional `Arrange matched images` setting uses the available screen space
+to tile all matched windows at one equal size. Narrowband windows are grouped
+and ordered as S, H, O; broadband windows are grouped and ordered as L, R, G,
+B. Unrecognised names are placed in a separate row. The setting is off by
+default, so the existing matching behaviour is unchanged unless it is selected.
 
 It also supports PixInsight process icons:
 
@@ -206,9 +212,16 @@ PixInsight menu entry and dialog title are `ImageBatchManager`.
 
 The update package is:
 
-`packages/ChapelAstroUtilities-3.2.1.zip`
+`packages/ChapelAstroUtilities-3.3.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 3.3
+
+- Updated MatchOpenImageSizes to 1.1.0.
+- Added an optional equal-size window arrangement that groups SHO and LRGB
+  images into separate, ordered rows using the available screen space.
+- Kept the established matching workflow unchanged when arrangement is off.
 
 ### Chapel Astro Utilities 3.2.1
 
