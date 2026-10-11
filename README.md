@@ -45,6 +45,16 @@ menu after PixInsight refreshes scripts.
 
 ## Scripts
 
+### StarRecombine
+
+Combines stretched starless and stars-only images into a new `Recombined`
+image, preserving both originals. Includes a 0–200% star-intensity slider,
+an image preview, and a draggable 100% view for checking individual stars.
+
+Run `src/scripts/Toolbox/StarRecombine.js` through **Script > Execute Script
+File**. This standalone addition is not yet in the published update package.
+See [the usage guide](docs/StarRecombine.md).
+
 ### BatchSTFStretch
 
 Menu:
@@ -218,9 +228,15 @@ PixInsight menu entry and dialog title are `ImageBatchManager`.
 
 The update package is:
 
-`packages/ChapelAstroUtilities-3.4.1.zip`
+`packages/ChapelAstroUtilities-3.5.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 3.5
+
+- Added StarRecombine 1.0.0 to combine starless and stars-only images into a new image.
+- Added a 0–200% star intensity control, preview, and draggable 100% view.
+- Preserves both sources and chooses a numbered output name when Recombined exists.
 
 ### Chapel Astro Utilities 3.4.1
 

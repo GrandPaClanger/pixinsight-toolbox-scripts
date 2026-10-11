@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/ChapelAstroUtilities-3.4.1.zip"
-               sha1="753a249f2ce2f0af8a54200831dfd48ed00d4a8d"
+      <package fileName="packages/ChapelAstroUtilities-3.5.zip"
+               sha1="4e6e642278a5ed153dc4f462373e4a766d4e46c9"
                type="script"
                releaseDate="20261011">
          <title>
-            Chapel Astro Utilities 3.4.1
+            Chapel Astro Utilities 3.5
          </title>
          <description>
             <p>
-               Installs BatchSTFStretch 1.0.0, ImageBatchManager 3.2.1, and MatchOpenImageSizes 1.2.1 under Script &gt; Chapel Astro Utilities.
-               Fixes PixInsight 1.9.4 Windows detection and calculates fit-to-frame zoom from the actual visible viewport.
+               Installs BatchSTFStretch 1.0.0, ImageBatchManager 3.2.1, MatchOpenImageSizes 1.2.1, and StarRecombine 1.0.0 under Script &gt; Chapel Astro Utilities.
+               Adds starless and stars-only recombination with adjustable star intensity and an image preview, preserving both original images.
             </p>
          </description>
       </package>

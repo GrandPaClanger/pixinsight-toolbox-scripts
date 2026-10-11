@@ -840,10 +840,21 @@
       <div class="section-inner">
         <div class="section-heading">
           <h2>What each utility does.</h2>
-          <p>All three scripts live under the same PixInsight menu, but they solve different workspace problems.</p>
+          <p>All four scripts live under the same PixInsight menu, but they solve different workspace problems.</p>
         </div>
         <div class="guide-grid">
-          <article class="guide-block">
+                    <article class="guide-block">
+            <h3>StarRecombine</h3>
+            <p>Combine stretched starless and stars-only images into a new Recombined image while preserving both originals.</p>
+            <ul>
+              <li><strong>Run:</strong> open <code>Script &gt; Chapel Astro Utilities &gt; StarRecombine</code>.</li>
+              <li><strong>Select sources:</strong> choose aligned starless and stars-only images with matching dimensions and colour channels.</li>
+              <li><strong>Preview:</strong> click Preview, then adjust star intensity from 0–200%. 100% reproduces the original screen-blend formula.</li>
+              <li><strong>Inspect stars:</strong> enable 100% view and drag the preview to pan.</li>
+              <li><strong>Create:</strong> click Create Recombined. Existing output names receive a numbered suffix. Save the new image separately.</li>
+            </ul>
+          </article>
+<article class="guide-block">
             <h3>BatchSTFStretch</h3>
             <p>A selectable batch utility for making linear images visible without changing their pixel data.</p>
             <ul>
@@ -922,7 +933,18 @@
           <p>Choose the utility for the job, select the open images involved, and use the focused controls below to stretch, rename, save, or align them.</p>
         </div>
         <div class="guide-grid">
-          <article class="guide-block">
+                    <article class="guide-block">
+            <h3>StarRecombine</h3>
+            <p>Combine stretched starless and stars-only images into a new Recombined image while preserving both originals.</p>
+            <ul>
+              <li><strong>Run:</strong> open <code>Script &gt; Chapel Astro Utilities &gt; StarRecombine</code>.</li>
+              <li><strong>Select sources:</strong> choose aligned starless and stars-only images with matching dimensions and colour channels.</li>
+              <li><strong>Preview:</strong> click Preview, then adjust star intensity from 0–200%. 100% reproduces the original screen-blend formula.</li>
+              <li><strong>Inspect stars:</strong> enable 100% view and drag the preview to pan.</li>
+              <li><strong>Create:</strong> click Create Recombined. Existing output names receive a numbered suffix. Save the new image separately.</li>
+            </ul>
+          </article>
+<article class="guide-block">
             <h3>BatchSTFStretch</h3>
             <ul>
               <li><strong>Select images:</strong> tick only the open images whose screen display should change, or use Select All and Select None.</li>
@@ -1028,7 +1050,7 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <span>Chapel Astro Utilities for PixInsight</span>
-      <span>Current package: Chapel Astro Utilities 3.4.1</span>
+      <span>Current package: Chapel Astro Utilities 3.5</span>
       <span>Copyright &copy; 2026 Ian Steane. All rights reserved.</span>
     </div>
   </footer>
