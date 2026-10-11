@@ -228,9 +228,14 @@ PixInsight menu entry and dialog title are `ImageBatchManager`.
 
 The update package is:
 
-`packages/ChapelAstroUtilities-3.5.zip`
+`packages/ChapelAstroUtilities-3.5.1.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 3.5.1
+
+- Updated StarRecombine to 1.0.1.
+- Replaced ES6 class syntax with traditional PJSR constructors for compatibility with PixInsight script engines that reject class declarations.
 
 ### Chapel Astro Utilities 3.5
 

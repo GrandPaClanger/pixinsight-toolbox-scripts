@@ -3,8 +3,10 @@
 #feature-id StarRecombine : Chapel Astro Utilities > StarRecombine
 #feature-info Recombine starless and stars-only images with an adjustable preview.
 
-class HorizontalSizer extends Sizer { constructor() { super( false ); } }
-class VerticalSizer extends Sizer { constructor() { super( true ); } }
+function HorizontalSizer() { this.__base__ = Sizer; this.__base__( false ); }
+HorizontalSizer.prototype = new Sizer;
+function VerticalSizer() { this.__base__ = Sizer; this.__base__( true ); }
+VerticalSizer.prototype = new Sizer;
 
 function availableId( base )
 {
@@ -68,7 +70,7 @@ function recombine( a, b, percent, base, show )
 function initializeStarRecombineDialog()
 {
    var self = this;
-   this.windowTitle = "StarRecombine 1.0.0";
+   this.windowTitle = "StarRecombine 1.0.1";
    this.bitmap = null;
    this.previewKey = "";
    this.busy = false;
@@ -221,10 +223,13 @@ function initializeStarRecombineDialog()
    this.sizer.add( this.actualSize ); this.sizer.add( this.status ); this.sizer.add( this.buttons );
    this.adjustToContents();
 }
-class StarRecombineDialog extends Dialog
+function StarRecombineDialog()
 {
-   constructor() { super(); initializeStarRecombineDialog.call( this ); }
+   this.__base__ = Dialog;
+   this.__base__();
+   initializeStarRecombineDialog.call( this );
 }
+StarRecombineDialog.prototype = new Dialog;
 
 function main()
 {
