@@ -228,9 +228,14 @@ PixInsight menu entry and dialog title are `ImageBatchManager`.
 
 The update package is:
 
-`packages/ChapelAstroUtilities-3.5.1.zip`
+`packages/ChapelAstroUtilities-3.5.2.zip`
 
 ## Change Log
+
+### Chapel Astro Utilities 3.5.2
+
+- Updated StarRecombine to 1.0.2.
+- Fixed preview background painting by passing the Brush object required by Graphics.fillRect().
 
 ### Chapel Astro Utilities 3.5.1
 

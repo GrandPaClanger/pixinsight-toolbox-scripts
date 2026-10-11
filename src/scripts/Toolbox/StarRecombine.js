@@ -70,7 +70,7 @@ function recombine( a, b, percent, base, show )
 function initializeStarRecombineDialog()
 {
    var self = this;
-   this.windowTitle = "StarRecombine 1.0.1";
+   this.windowTitle = "StarRecombine 1.0.2";
    this.bitmap = null;
    this.previewKey = "";
    this.busy = false;
@@ -122,7 +122,7 @@ function initializeStarRecombineDialog()
       var g = new Graphics( this );
       try
       {
-         g.fillRect( this.boundsRect, 0xff181818 );
+         g.fillRect( this.boundsRect, new Brush( 0xff181818 ) );
          if ( self.bitmap != null )
          {
             var scale = self.actualSize.checked ? 1 :

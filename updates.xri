@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/ChapelAstroUtilities-3.5.1.zip"
-               sha1="83dc12dd8e5bcf921767d84408cadebddce78297"
+      <package fileName="packages/ChapelAstroUtilities-3.5.2.zip"
+               sha1="fb2116f7c5419421d2477da0bc789bec902f1552"
                type="script"
                releaseDate="20261011">
          <title>
-            Chapel Astro Utilities 3.5.1
+            Chapel Astro Utilities 3.5.2
          </title>
          <description>
             <p>
-               Installs BatchSTFStretch 1.0.0, ImageBatchManager 3.2.1, MatchOpenImageSizes 1.2.1, and StarRecombine 1.0.1 under Script &gt; Chapel Astro Utilities.
-               Fixes StarRecombine compatibility with PixInsight script engines that reject ES6 class syntax.
+               Installs BatchSTFStretch 1.0.0, ImageBatchManager 3.2.1, MatchOpenImageSizes 1.2.1, and StarRecombine 1.0.2 under Script &gt; Chapel Astro Utilities.
+               Fixes StarRecombine preview background painting with the Brush object required by Graphics.fillRect().
             </p>
          </description>
       </package>
