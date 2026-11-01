@@ -49,7 +49,7 @@ menu after PixInsight refreshes scripts.
 
 Menu: `Script > Chapel Astro Utilities > SHO to RGB Stars`
 
-Version: `1.0.1`
+Version: `1.0.2`
 
 Creates a new 64-bit floating-point RGB image from three open monochrome main
 views (Ha, OIII and SII):
@@ -59,7 +59,7 @@ views (Ha, OIII and SII):
 - Blue: `OIII`
 
 1. Open your already aligned monochrome Ha, OIII and SII images.
-2. Select each image in its corresponding field. Starless inputs are accepted
+2. Select each image in its corresponding field, displayed in SHO order: SII, Ha, OIII. Starless inputs are accepted
    and produce a starless RGB result; stars-only inputs produce RGB stars.
 3. Leave the suggested output ID or enter an unused one, then click
    **Create RGB Image**.
@@ -263,7 +263,7 @@ PixInsight menu entry and dialog title are `ImageBatchManager`.
 
 The update package is:
 
-`packages/ChapelAstroUtilities-3.6.1.zip`
+`packages/ChapelAstroUtilities-3.6.2.zip`
 
 ## Validation
 
@@ -272,6 +272,11 @@ tests with PJSR doubles. PixInsight runtime acceptance checks are documented in
 `tests/PIXINSIGHT-MANUAL.md`; these remain to be performed in PixInsight.
 
 ## Change Log
+
+### Chapel Astro Utilities 3.6.2
+
+- Reorders SHO to RGB Stars 1.0.2 selectors to SII, Ha, OIII (SHO).
+- Keeps the channel formulas unchanged.
 
 ### Chapel Astro Utilities 3.6.1
 

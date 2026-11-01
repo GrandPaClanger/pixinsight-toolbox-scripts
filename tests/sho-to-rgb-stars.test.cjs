@@ -98,8 +98,12 @@ test('GUI creates RGB from selected starless images without a confirmation step'
   c.Sizer.prototype.add = c.Sizer.prototype.addStretch = function () {};
   c.Dialog.prototype.setFixedWidth = c.Dialog.prototype.adjustToContents = function () {};
   c.Dialog.prototype.ok = function () { this.completed = true; };
+  const labels = [];
   for (const name of ['Label', 'Edit', 'PushButton'])
-    c[name] = function () { this.setFixedWidth = function () {}; };
+    c[name] = function () {
+      this.setFixedWidth = function () {};
+      if (name === 'Label') labels.push(this);
+    };
   c.ComboBox = function () {
     this.items = [];
     this.addItem = text => this.items.push(text);
@@ -108,8 +112,12 @@ test('GUI creates RGB from selected starless images without a confirmation step'
   c.Console = { writeln() {} };
   c.MessageBox = function (message) { throw Error(message); };
   const dialog = new c.SHOToRGBStarsDialog();
+  assert.deepEqual(labels.slice(1, 4).map(label => label.text), ['SII:', 'Ha:', 'OIII:']);
   dialog.selectors.forEach((selector, i) => { selector.currentItem = i + 1; });
   dialog.createButton.onClick();
   assert.equal(dialog.completed, true);
+  const rgb = c.ImageWindow.windows[3].mainView.image.samples;
+  for (const [i, expected] of [0.62, 0.61, 0.7].entries())
+    assert.ok(Math.abs(rgb[i] - expected) < 1e-12);
   assert.equal(c.ImageWindow.windows.length, 4);
 });

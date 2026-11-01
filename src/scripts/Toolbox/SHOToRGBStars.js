@@ -5,7 +5,7 @@
 #feature-info  Combine aligned monochrome Ha, OIII and SII views into a new synthetic RGB image.
 
 var TITLE = "SHO to RGB Stars";
-var VERSION = "1.0.1";
+var VERSION = "1.0.2";
 
 function HorizontalSizer()
 {
@@ -122,7 +122,9 @@ function SHOToRGBStarsDialog()
    this.sizer.add( this.info );
 
    this.selectors = [];
-   var names = ["Ha:", "OIII:", "SII:"];
+   var names = ["SII:", "Ha:", "OIII:"];
+   // Display SHO order; retain Ha/OIII/SII indexing for the channel math.
+   var sourceIndices = [2, 0, 1];
    var windows = ImageWindow.windows;
    for ( var c = 0; c < 3; ++c )
    {
@@ -138,7 +140,7 @@ function SHOToRGBStarsDialog()
       combo.currentItem = 0;
       row.add( label );
       row.add( combo, 100 );
-      this.selectors.push( combo );
+      this.selectors[sourceIndices[c]] = combo;
       this.sizer.add( row );
    }
 

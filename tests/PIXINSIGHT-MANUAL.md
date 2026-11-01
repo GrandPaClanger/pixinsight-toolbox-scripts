@@ -5,7 +5,7 @@ installation when checking this release.
 
 1. Execute `src/scripts/Toolbox/SHOToRGBStars.js`. With fewer than three images,
    check the clear startup error. With three images, check that all labels,
-   selectors and buttons fit at your display scale.
+   selectors and buttons fit at your display scale. Check the selector order is SII, Ha, OIII.
 2. Create three same-size monochrome constant images: Ha=0.2, OIII=0.7,
    SII=0.9. Select them in the respective fields.
    Create the output; inspect samples: R=0.62, G=0.61, B=0.7 (within source
