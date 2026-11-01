@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/ChapelAstroUtilities-3.6.zip"
-               sha1="a80c63ad24e7d87fee8e53282c7b0dada17e8775"
+      <package fileName="packages/ChapelAstroUtilities-3.6.1.zip"
+               sha1="07f0bc9a5bed4f6e465c60acf32616d3eaed9348"
                type="script"
                releaseDate="20261101">
          <title>
-            Chapel Astro Utilities 3.6
+            Chapel Astro Utilities 3.6.1
          </title>
          <description>
             <p>
-               Installs SHO to RGB Stars 1.0.0, BatchSTFStretch 1.0.0, ImageBatchManager 3.2.1, MatchOpenImageSizes 1.2.1, and StarRecombine 1.0.2 under Script &gt; Chapel Astro Utilities.
-               Adds SHO to RGB Stars: combines aligned monochrome Ha, OIII and SII sources into a separate RGB image, with source validation and star-content guidance.
+               Installs SHO to RGB Stars 1.0.1, BatchSTFStretch 1.0.0, ImageBatchManager 3.2.1, MatchOpenImageSizes 1.2.1, and StarRecombine 1.0.2 under Script &gt; Chapel Astro Utilities.
+               Simplifies SHO to RGB Stars: select Ha, OIII and SII to create RGB directly. Accepts starless images and removes the alignment/star-content confirmation.
             </p>
          </description>
       </package>

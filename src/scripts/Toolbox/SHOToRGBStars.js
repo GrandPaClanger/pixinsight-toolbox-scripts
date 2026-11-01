@@ -5,7 +5,7 @@
 #feature-info  Combine aligned monochrome Ha, OIII and SII views into a new synthetic RGB image.
 
 var TITLE = "SHO to RGB Stars";
-var VERSION = "1.0.0";
+var VERSION = "1.0.1";
 
 function HorizontalSizer()
 {
@@ -51,7 +51,7 @@ function validateSources( ids, outputId )
       if ( image.width <= 0 || image.height <= 0 )
          throw new Error( "Source '" + ids[i] + "' has no image pixels." );
       if ( i > 0 && ( image.width != views[0].image.width || image.height != views[0].image.height ) )
-         throw new Error( "Source dimensions differ. Register and crop all three images to the same pixel geometry first (including drizzle scale)." );
+         throw new Error( "Source dimensions differ. Select three images with the same width and height." );
       views.push( view );
    }
    return views;
@@ -115,9 +115,9 @@ function SHOToRGBStarsDialog()
    this.sizer.spacing = 8;
 
    this.info = new Label( this );
-   this.info.text = "Select aligned monochrome main images. Use stars-only Ha, OIII and SII for a stars-only result. Full masters also retain nebulosity. Starless sources cannot recreate missing stars.\n\n" +
-      "R = 0.4*Ha + 0.6*SII\nG = 0.4*OIII + 0.3*Ha + 0.3*SII\nB = OIII\n\n" +
-      "Synthetic colour is approximate. Use consistently processed sources, preferably linear. No stretch, rescale or clipping is applied.";
+   this.info.text = "Select your monochrome Ha, OIII and SII images to create a new RGB image.\n" +
+      "Starless inputs produce a starless RGB result.\n\n" +
+      "R = 0.4*Ha + 0.6*SII\nG = 0.4*OIII + 0.3*Ha + 0.3*SII\nB = OIII";
    this.info.wordWrapping = true;
    this.sizer.add( this.info );
 
@@ -152,18 +152,12 @@ function SHOToRGBStarsDialog()
    outputRow.add( this.outputEdit, 100 );
    this.sizer.add( outputRow );
 
-   this.confirm = new CheckBox( this );
-   this.confirm.text = "Sources contain stars and share the same alignment, crop and pixel scale";
-   this.confirm.toolTip = "Equal dimensions cannot prove registration or detect starless data. Check these conditions yourself before creating the image.";
-   this.sizer.add( this.confirm );
    this.createButton = new PushButton( this );
    this.createButton.text = "Create RGB Image";
    this.createButton.onClick = function()
    {
       try
       {
-         if ( !dialog.confirm.checked )
-            throw new Error( "Confirm that the sources contain stars and have matching alignment, crop and pixel scale. Starless data cannot restore stars." );
          var ids = [];
          for ( var i = 0; i < 3; ++i )
             ids.push( dialog.selectors[i].currentItem > 0 ?
@@ -200,7 +194,7 @@ function main()
 {
    if ( ImageWindow.windows.length < 3 )
    {
-      (new MessageBox( "Open three aligned monochrome Ha, OIII and SII images first.", TITLE, 4, 1 )).execute();
+      (new MessageBox( "Open three monochrome Ha, OIII and SII images first.", TITLE, 4, 1 )).execute();
       return;
    }
    (new SHOToRGBStarsDialog).execute();

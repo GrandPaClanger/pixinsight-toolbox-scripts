@@ -91,3 +91,25 @@ test('failed or cancelled PixelMath removes only its partial output', () => {
     assert.equal(c.ImageWindow.windows.length, 3);
   }
 });
+
+
+test('GUI creates RGB from selected starless images without a confirmation step', () => {
+  const c = runtime();
+  c.Sizer.prototype.add = c.Sizer.prototype.addStretch = function () {};
+  c.Dialog.prototype.setFixedWidth = c.Dialog.prototype.adjustToContents = function () {};
+  c.Dialog.prototype.ok = function () { this.completed = true; };
+  for (const name of ['Label', 'Edit', 'PushButton'])
+    c[name] = function () { this.setFixedWidth = function () {}; };
+  c.ComboBox = function () {
+    this.items = [];
+    this.addItem = text => this.items.push(text);
+    this.itemText = index => this.items[index];
+  };
+  c.Console = { writeln() {} };
+  c.MessageBox = function (message) { throw Error(message); };
+  const dialog = new c.SHOToRGBStarsDialog();
+  dialog.selectors.forEach((selector, i) => { selector.currentItem = i + 1; });
+  dialog.createButton.onClick();
+  assert.equal(dialog.completed, true);
+  assert.equal(c.ImageWindow.windows.length, 4);
+});
