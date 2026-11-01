@@ -330,7 +330,7 @@
     }
 
     .spotlight-points li::before {
-      content: "✓";
+      content: "âœ“";
       position: absolute;
       left: 0;
       color: var(--gold);
@@ -790,7 +790,7 @@
             <li>Unlinked mode calculates an independent stretch per channel.</li>
             <li>Select All, Select None, and Refresh keep large sessions manageable.</li>
             <li>Reset Screen Transfer returns selected images to an identity STF.</li>
-            <li>The operation changes only the display—not the underlying pixels.</li>
+            <li>The operation changes only the displayâ€”not the underlying pixels.</li>
           </ul>
         </div>
         <figure class="stf-screenshot">
@@ -844,12 +844,19 @@
         </div>
         <div class="guide-grid">
                     <article class="guide-block">
+            <h3>SHO to RGB Stars</h3>
+            <p>Choose aligned monochrome Ha, OIII and SII main images, enter an unused output ID, confirm alignment and star content, then click Create RGB Image.</p>
+            <p>R = 0.4*Ha + 0.6*SII; G = 0.4*OIII + 0.3*Ha + 0.3*SII; B = OIII.</p>
+            <p>Use stars-only sources for stars-only output. Full masters retain nebulosity. Starless sources cannot recreate missing stars. Dimensions are checked; alignment, crop and pixel scale require your confirmation.</p>
+            <p>Creates a separate unsaved 64-bit RGB image without stretching, rescaling or clipping. Sources stay unchanged. Stretch and adjust saturation before combining with a starless image. Synthetic colours are approximate.</p>
+          </article>
+          <article class="guide-block">
             <h3>StarRecombine</h3>
             <p>Combine stretched starless and stars-only images into a new Recombined image while preserving both originals.</p>
             <ul>
               <li><strong>Run:</strong> open <code>Script &gt; Chapel Astro Utilities &gt; StarRecombine</code>.</li>
               <li><strong>Select sources:</strong> choose aligned starless and stars-only images with matching dimensions and colour channels.</li>
-              <li><strong>Preview:</strong> click Preview, then adjust star intensity from 0–200%. 100% reproduces the original screen-blend formula.</li>
+              <li><strong>Preview:</strong> click Preview, then adjust star intensity from 0â€“200%. 100% reproduces the original screen-blend formula.</li>
               <li><strong>Inspect stars:</strong> enable 100% view and drag the preview to pan.</li>
               <li><strong>Create:</strong> click Create Recombined. Existing output names receive a numbered suffix. Save the new image separately.</li>
             </ul>
@@ -939,7 +946,7 @@
             <ul>
               <li><strong>Run:</strong> open <code>Script &gt; Chapel Astro Utilities &gt; StarRecombine</code>.</li>
               <li><strong>Select sources:</strong> choose aligned starless and stars-only images with matching dimensions and colour channels.</li>
-              <li><strong>Preview:</strong> click Preview, then adjust star intensity from 0–200%. 100% reproduces the original screen-blend formula.</li>
+              <li><strong>Preview:</strong> click Preview, then adjust star intensity from 0â€“200%. 100% reproduces the original screen-blend formula.</li>
               <li><strong>Inspect stars:</strong> enable 100% view and drag the preview to pan.</li>
               <li><strong>Create:</strong> click Create Recombined. Existing output names receive a numbered suffix. Save the new image separately.</li>
             </ul>

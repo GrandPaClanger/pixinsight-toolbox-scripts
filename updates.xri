@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/ChapelAstroUtilities-3.5.2.zip"
-               sha1="fb2116f7c5419421d2477da0bc789bec902f1552"
+      <package fileName="packages/ChapelAstroUtilities-3.6.zip"
+               sha1="a80c63ad24e7d87fee8e53282c7b0dada17e8775"
                type="script"
-               releaseDate="20261011">
+               releaseDate="20261101">
          <title>
-            Chapel Astro Utilities 3.5.2
+            Chapel Astro Utilities 3.6
          </title>
          <description>
             <p>
-               Installs BatchSTFStretch 1.0.0, ImageBatchManager 3.2.1, MatchOpenImageSizes 1.2.1, and StarRecombine 1.0.2 under Script &gt; Chapel Astro Utilities.
-               Fixes StarRecombine preview background painting with the Brush object required by Graphics.fillRect().
+               Installs SHO to RGB Stars 1.0.0, BatchSTFStretch 1.0.0, ImageBatchManager 3.2.1, MatchOpenImageSizes 1.2.1, and StarRecombine 1.0.2 under Script &gt; Chapel Astro Utilities.
+               Adds SHO to RGB Stars: combines aligned monochrome Ha, OIII and SII sources into a separate RGB image, with source validation and star-content guidance.
             </p>
          </description>
       </package>

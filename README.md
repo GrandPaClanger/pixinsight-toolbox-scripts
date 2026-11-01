@@ -45,14 +45,51 @@ menu after PixInsight refreshes scripts.
 
 ## Scripts
 
+### SHO to RGB Stars
+
+Menu: `Script > Chapel Astro Utilities > SHO to RGB Stars`
+
+Version: `1.0.0`
+
+Creates a new 64-bit floating-point RGB image from three open monochrome main
+views (Ha, OIII and SII):
+
+- Red: `0.4*Ha + 0.6*SII`
+- Green: `0.4*OIII + 0.3*Ha + 0.3*SII`
+- Blue: `OIII`
+
+1. Open registered Ha, OIII and SII images with identical dimensions, pixel
+   scale and crop. Prefer consistently processed linear sources.
+2. For a stars-only result, extract stars from each channel first and select
+   those stars-only images. Full masters also retain nebulosity. **Starless
+   sources cannot recreate missing stars.** The utility cannot detect whether
+   sources contain stars or verify registration from dimensions alone.
+3. Select the three distinct sources, enter an unused output ID (a unique
+   `SHO_RGB_Stars` name is suggested), and confirm the alignment/star conditions.
+4. Click **Create RGB Image**. Stretch the result as needed, then adjust
+   saturation and combine with your separately processed starless image.
+
+Only main views are supported; previews, RGB, complex and alpha-bearing images
+are rejected. Different drizzle scales or image sizes must be corrected before
+combination. No registration, star extraction, colour calibration, stretch,
+normalization or clipping is performed. Synthetic colours are approximate and
+are not a replacement for broadband RGB measurements. Screen stretches on the
+sources do not affect the underlying PixelMath calculation.
+
+Sources remain unchanged. The result is a separate unsaved image; no files are
+written. Errors leave the dialog open and discard any partially created output.
+The script can also be run with `Script > Execute Script File` using
+`src/scripts/Toolbox/SHOToRGBStars.js` before installing a package.
+
+
 ### StarRecombine
 
 Combines stretched starless and stars-only images into a new `Recombined`
-image, preserving both originals. Includes a 0–200% star-intensity slider,
+image, preserving both originals. Includes a 0â€“200% star-intensity slider,
 an image preview, and a draggable 100% view for checking individual stars.
 
 Run `src/scripts/Toolbox/StarRecombine.js` through **Script > Execute Script
-File**. This standalone addition is not yet in the published update package.
+File**. It is also included in the published update package.
 See [the usage guide](docs/StarRecombine.md).
 
 ### BatchSTFStretch
@@ -228,9 +265,23 @@ PixInsight menu entry and dialog title are `ImageBatchManager`.
 
 The update package is:
 
-`packages/ChapelAstroUtilities-3.5.2.zip`
+`packages/ChapelAstroUtilities-3.6.zip`
+
+## Validation
+
+Run `node --test tests/sho-to-rgb-stars.test.cjs` for SHO to RGB Stars contract
+tests with PJSR doubles. PixInsight runtime acceptance checks are documented in
+`tests/PIXINSIGHT-MANUAL.md`; these remain to be performed in PixInsight.
 
 ## Change Log
+
+### Chapel Astro Utilities 3.6
+
+- Adds SHO to RGB Stars 1.0.0 with Ha/OIII/SII selection and the balanced RGB formula.
+- Validates monochrome sources, matching dimensions and distinct output IDs.
+- Requires confirmation of alignment and star content; starless data cannot restore stars.
+- Preserves existing utilities and adds usage documentation and contract tests.
+
 
 ### Chapel Astro Utilities 3.5.2
 
@@ -245,7 +296,7 @@ The update package is:
 ### Chapel Astro Utilities 3.5
 
 - Added StarRecombine 1.0.0 to combine starless and stars-only images into a new image.
-- Added a 0–200% star intensity control, preview, and draggable 100% view.
+- Added a 0â€“200% star intensity control, preview, and draggable 100% view.
 - Preserves both sources and chooses a numbered output name when Recombined exists.
 
 ### Chapel Astro Utilities 3.4.1
