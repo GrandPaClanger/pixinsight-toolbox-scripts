@@ -118,7 +118,7 @@ Menu:
 
 Version:
 
-`3.2.3`
+`3.2.4`
 
 Purpose:
 
@@ -173,6 +173,22 @@ Both fields are required. Names retain the usual PixInsight identifier
 sanitization and collision handling. Continue through the same image selection,
 save options, and summary steps as Append. Saving creates copies and preserves
 source images and FITS headers as in Append mode.
+
+#### Wildcard Rename
+
+Choose Wildcard Rename after Amend Suffix Name. Enter Find text / pattern and
+Replace with, then follow the same image selection, save, reopen and summary
+steps as Append and Amend.
+
+For example, find `AstroImagePrimer` and replace with `Fitted` to change
+`AstroImagePrimer_B_Oiii_PostLinearFit` to `Fitted_B_Oiii_PostLinearFit`.
+Matching is case-sensitive and replaces the first matching portion of each
+current image name. `*` matches any number of characters and `?` matches one;
+other characters are literal. The rest of the name and repeated underscores
+are preserved. Unmatched images are excluded. Leave replacement empty to remove
+the match; empty resulting names are rejected. Invalid identifier characters
+become underscores and existing names receive a numeric collision suffix.
+Saving creates copies with the same source and FITS-header handling as Append.
 
 #### Preview Selection
 
@@ -274,7 +290,7 @@ PixInsight menu entry and dialog title are `ImageBatchManager`.
 
 The update package is:
 
-`packages/ChapelAstroUtilities-3.6.4.zip`
+`packages/ChapelAstroUtilities-3.6.5.zip`
 
 ## Validation
 
@@ -283,6 +299,12 @@ tests with PJSR doubles. PixInsight runtime acceptance checks are documented in
 `tests/PIXINSIGHT-MANUAL.md`; these remain to be performed in PixInsight.
 
 ## Change Log
+
+### Chapel Astro Utilities 3.6.5
+
+- Updates ImageBatchManager to 3.2.4 with Wildcard Rename after Amend Suffix Name.
+- Adds text replacement with `*` and `?` patterns through the existing batch wizard.
+
 
 ### Chapel Astro Utilities 3.6.4
 

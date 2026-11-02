@@ -24,7 +24,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 var IMAGE_RENAME_TITLE = "ImageBatchManager";
-var IMAGE_RENAME_VERSION = "3.2.3";
+var IMAGE_RENAME_VERSION = "3.2.4";
 var IMAGE_RENAME_SETTINGS_ROOT = "GrandPaClanger/ImageRenameByFilter";
 
 var DEFAULT_MAPPINGS =
@@ -381,7 +381,32 @@ function amendSuffixViewId( id, separator, suffix )
    return /^[A-Za-z_]/.test( result ) ? result : "_" + result;
 }
 
-function buildPlan( mappings, suffix, previousSelections, renameMode, separator )
+function wildcardRenameViewId( id, findText, replacement )
+{
+   if ( findText.length == 0 )
+      throw new Error( "Enter text or a wildcard pattern to find." );
+   var pattern = "";
+   for ( var i = 0; i < findText.length; ++i )
+   {
+      var c = findText.charAt( i );
+      if ( c == "*" )
+         pattern += ".*";
+      else if ( c == "?" )
+         pattern += ".";
+      else
+         pattern += /[\\^$.*+?()[\]{}|]/.test( c ) ? "\\" + c : c;
+   }
+   var match = (new RegExp( pattern )).exec( id );
+   if ( match == null )
+      return null;
+   var result = trimString( id.substring( 0, match.index ) + replacement +
+      id.substring( match.index + match[0].length ) ).replace( /[^A-Za-z0-9_]/g, "_" );
+   if ( result.length == 0 )
+      throw new Error( "Wildcard Rename would produce an empty name for " + id + "." );
+   return /^[A-Za-z_]/.test( result ) ? result : "_" + result;
+}
+
+function buildPlan( mappings, suffix, previousSelections, renameMode, separator, findText, replacement )
 {
    var windows = ImageWindow.windows;
    var allocated = existingViewIds();
@@ -407,6 +432,16 @@ function buildPlan( mappings, suffix, previousSelections, renameMode, separator 
             line: 0,
             suffixOnly: true
          };
+      }
+      else if ( renameMode == "wildcard" )
+      {
+         var renamedId = wildcardRenameViewId( currentId, findText, replacement );
+         mapping = null;
+         if ( renamedId != null )
+         {
+            newId = allocateViewId( renamedId, allocated, currentId, true );
+            mapping = { match: findText, imageId: currentId, line: 0, suffixOnly: true };
+         }
       }
       else if ( renameMode == "saveOnly" )
       {
@@ -664,6 +699,7 @@ function showHelpDialog()
       "IMAGE BATCH MANAGER " + IMAGE_RENAME_VERSION + "\n\n" +
       "[1] RENAME MODES\n" +
       "- Rename By Filter Mappings: matches text in the image id, filename, or caption and renames to the mapped value.\n" +
+      "- Wildcard Rename: replaces the first matching portion of current names. * matches any number of characters; ? matches one. Case-sensitive. Uses the Append workflow.\n" +
       "- Amend Suffix Name: replaces text after the first separator (default _), or appends when absent. Uses the Append workflow.\n" +
       "- Append suffix to current names: adds the suffix to the current image id. Filter matching is ignored.\n" +
       "- Rename individual image: enter an ad-hoc name in Step 1, select exactly one image in Step 2, then use Apply Changes in the summary.\n" +
@@ -1680,7 +1716,7 @@ function applyPlan( plan, saveImages, outputDirectory, postSaveAction, openSaved
                     "; opened " + opened.toString() + "." );
 }
 
-function exportImageRenameParameters( mappingsText, saveImages, outputDirectory, suffix, postSaveAction, openSavedImages, renameMode, separator )
+function exportImageRenameParameters( mappingsText, saveImages, outputDirectory, suffix, postSaveAction, openSavedImages, renameMode, separator, wildcardFind, wildcardReplacement )
 {
    Parameters.set( "version", IMAGE_RENAME_VERSION );
    Parameters.set( "mappings", mappingsText );
@@ -1691,6 +1727,8 @@ function exportImageRenameParameters( mappingsText, saveImages, outputDirectory,
    Parameters.set( "postSaveAction", postSaveAction );
    Parameters.set( "openSavedImages", openSavedImages ? "true" : "false" );
    Parameters.set( "renameMode", renameMode );
+   Parameters.set( "wildcardFind", wildcardFind === undefined ? "" : wildcardFind );
+   Parameters.set( "wildcardReplacement", wildcardReplacement === undefined ? "" : wildcardReplacement );
 }
 
 function parametersMappingsText()
@@ -1852,6 +1890,10 @@ function ImageRenameByFilterDialog()
    this.amendSuffixModeRadio.text = "Amend Suffix Name";
    this.amendSuffixModeRadio.checked = renameMode == "amendSuffix";
 
+   this.wildcardModeRadio = new RadioButton( this );
+   this.wildcardModeRadio.text = "Wildcard Rename";
+   this.wildcardModeRadio.checked = renameMode == "wildcard";
+
    this.singleRenameModeRadio = new RadioButton( this );
    this.singleRenameModeRadio.text = "Rename individual image";
    this.singleRenameModeRadio.checked = renameMode == "single";
@@ -1869,10 +1911,28 @@ function ImageRenameByFilterDialog()
    this.modeSizer.add( this.mappingModeRadio );
    this.modeSizer.add( this.suffixOnlyModeRadio );
    this.modeSizer.add( this.amendSuffixModeRadio );
+   this.modeSizer.add( this.wildcardModeRadio );
    this.modeSizer.add( this.singleRenameModeRadio );
    this.modeSizer.add( this.saveOnlyModeRadio );
    this.modeSizer.add( this.modePromptLabel );
    this.modeSizer.addStretch();
+
+   this.wildcardFindLabel = new Label( this );
+   this.wildcardFindLabel.text = "Find text / pattern:";
+   this.wildcardFindEdit = new Edit( this );
+   this.wildcardFindEdit.text = Parameters.has( "wildcardFind" ) ? Parameters.get( "wildcardFind" ) : "";
+   this.wildcardFindEdit.toolTip = "Case-sensitive. Replaces the first matching portion of each current name. * matches any number of characters; ? matches one. Other characters are literal.";
+   this.wildcardReplacementLabel = new Label( this );
+   this.wildcardReplacementLabel.text = "Replace with:";
+   this.wildcardReplacementEdit = new Edit( this );
+   this.wildcardReplacementEdit.text = Parameters.has( "wildcardReplacement" ) ? Parameters.get( "wildcardReplacement" ) : "";
+   this.wildcardReplacementEdit.toolTip = "Replacement text; the rest of the name is preserved. Leave empty to remove the matching text.";
+   this.wildcardSizer = new HorizontalSizer;
+   this.wildcardSizer.spacing = 6;
+   this.wildcardSizer.add( this.wildcardFindLabel );
+   this.wildcardSizer.add( this.wildcardFindEdit, 100 );
+   this.wildcardSizer.add( this.wildcardReplacementLabel );
+   this.wildcardSizer.add( this.wildcardReplacementEdit, 100 );
 
    this.separatorLabel = new Label( this );
    this.separatorLabel.text = "Separator:";
@@ -2056,6 +2116,9 @@ function ImageRenameByFilterDialog()
       if ( dialog.amendSuffixModeRadio.checked )
          return "amendSuffix";
 
+      if ( dialog.wildcardModeRadio.checked )
+         return "wildcard";
+
       if ( dialog.singleRenameModeRadio.checked )
          return "single";
 
@@ -2085,6 +2148,10 @@ function ImageRenameByFilterDialog()
 
       try
       {
+         dialog.wildcardFindLabel.visible = mode == "wildcard";
+         dialog.wildcardFindEdit.visible = mode == "wildcard";
+         dialog.wildcardReplacementLabel.visible = mode == "wildcard";
+         dialog.wildcardReplacementEdit.visible = mode == "wildcard";
          dialog.separatorLabel.visible = mode == "amendSuffix";
          dialog.separatorEdit.visible = mode == "amendSuffix";
          dialog.suffixLabel.text = mode == "amendSuffix" ? "New suffix:" : "Suffix:";
@@ -2158,7 +2225,7 @@ function ImageRenameByFilterDialog()
    this.stepInstruction = function( step )
    {
       if ( step == 0 )
-         return "Choose Rename By Filter Mappings, Append suffix to current names, Amend Suffix Name, Rename individual image, or Save selected images only. Enter the suffix or single-image name here when needed.";
+         return "Choose Rename By Filter Mappings, Append suffix to current names, Amend Suffix Name, Wildcard Rename, Rename individual image, or Save selected images only. Enter the suffix or single-image name here when needed.";
       if ( step == 1 )
          return dialog.renameMode() == "single" ?
             "Tick exactly one open image window to rename." :
@@ -2208,7 +2275,7 @@ function ImageRenameByFilterDialog()
    {
       if ( wizardStep == 0 && dialog.renameMode().length == 0 )
       {
-         (new MessageBox( "Choose Rename By Filter Mappings, Append suffix to current names, Amend Suffix Name, Rename individual image, or Save selected images only before continuing.",
+         (new MessageBox( "Choose Rename By Filter Mappings, Append suffix to current names, Amend Suffix Name, Wildcard Rename, Rename individual image, or Save selected images only before continuing.",
                           IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
          return false;
       }
@@ -2217,6 +2284,13 @@ function ImageRenameByFilterDialog()
            (dialog.separatorEdit.text.length == 0 || trimString( dialog.suffixEdit.text ).length == 0) )
       {
          (new MessageBox( "Enter a separator and the new suffix text before continuing.",
+                          IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
+         return false;
+      }
+
+      if ( wizardStep == 0 && dialog.renameMode() == "wildcard" && dialog.wildcardFindEdit.text.length == 0 )
+      {
+         (new MessageBox( "Enter text or a wildcard pattern to find before continuing.",
                           IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
          return false;
       }
@@ -2258,7 +2332,7 @@ function ImageRenameByFilterDialog()
    {
       syncPreviewSelections( dialog.previewTree, currentPlan );
 
-      var modeText = dialog.renameMode() == "mapping" ?
+      var modeText = dialog.renameMode() == "wildcard" ? "Wildcard Rename" : dialog.renameMode() == "mapping" ?
          "Rename By Filter Mappings" :
          (dialog.renameMode() == "suffixOnly" ?
             "Append suffix to current names" :
@@ -2299,7 +2373,9 @@ function ImageRenameByFilterDialog()
                 "Only the one ticked image will be renamed.\n" +
                 "New single-image name: " + trimString( dialog.singleRenameEdit.text ) + "\n" :
                 "") +
-             "Suffix: " + (suffix.length > 0 ? (dialog.renameMode() == "amendSuffix" ? dialog.separatorEdit.text : "_") + suffix : "(none)") + "\n" +
+             (dialog.renameMode() == "wildcard" ?
+                "Find: " + dialog.wildcardFindEdit.text + "\nReplace with: " + dialog.wildcardReplacementEdit.text + "\n" : "") +
+             (dialog.renameMode() == "wildcard" ? "" : "Suffix: " + (suffix.length > 0 ? (dialog.renameMode() == "amendSuffix" ? dialog.separatorEdit.text : "_") + suffix : "(none)") + "\n") +
              saveText + "\n" +
              (dialog.renameMode() == "single" ? "" : windowText + "\n") +
              reopenText;
@@ -2383,6 +2459,12 @@ function ImageRenameByFilterDialog()
                (dialog.renameMode() == "amendSuffix" ? dialog.separatorEdit.text : "_") + effectiveSuffix : "";
          setControlBold( dialog.suffixEdit, effectiveSuffix.length > 0 );
          setControlBold( dialog.suffixPreviewLabel, effectiveSuffix.length > 0 );
+         if ( dialog.renameMode() == "wildcard" && dialog.wildcardFindEdit.text.length == 0 )
+         {
+            currentPlan = new Array;
+            dialog.previewTree.clear();
+            return;
+         }
          if ( dialog.renameMode() == "amendSuffix" &&
               (dialog.separatorEdit.text.length == 0 || effectiveSuffix.length == 0) )
          {
@@ -2393,7 +2475,8 @@ function ImageRenameByFilterDialog()
          currentPlan = buildPlan( mappingRows,
                                   effectiveSuffix,
                                   previousSelections,
-                                  dialog.renameMode(), dialog.separatorEdit.text );
+                                  dialog.renameMode(), dialog.separatorEdit.text,
+                                  dialog.wildcardFindEdit.text, dialog.wildcardReplacementEdit.text );
 
          if ( !outputDirectoryManuallyChanged )
          {
@@ -2530,6 +2613,8 @@ function ImageRenameByFilterDialog()
    };
 
    this.separatorEdit.onTextUpdated = this.suffixEdit.onTextUpdated;
+   this.wildcardFindEdit.onTextUpdated = this.suffixEdit.onTextUpdated;
+   this.wildcardReplacementEdit.onTextUpdated = this.suffixEdit.onTextUpdated;
 
    this.singleRenameEdit.onTextUpdated = function()
    {
@@ -2542,6 +2627,7 @@ function ImageRenameByFilterDialog()
       {
          dialog.suffixOnlyModeRadio.checked = false;
          dialog.amendSuffixModeRadio.checked = false;
+         dialog.wildcardModeRadio.checked = false;
          dialog.singleRenameModeRadio.checked = false;
          dialog.saveOnlyModeRadio.checked = false;
       }
@@ -2557,6 +2643,7 @@ function ImageRenameByFilterDialog()
       if ( dialog.suffixOnlyModeRadio.checked )
       {
          dialog.amendSuffixModeRadio.checked = false;
+         dialog.wildcardModeRadio.checked = false;
          dialog.mappingModeRadio.checked = false;
          dialog.singleRenameModeRadio.checked = false;
          dialog.saveOnlyModeRadio.checked = false;
@@ -2572,8 +2659,25 @@ function ImageRenameByFilterDialog()
    {
       if ( dialog.amendSuffixModeRadio.checked )
       {
+         dialog.wildcardModeRadio.checked = false;
          dialog.mappingModeRadio.checked = false;
          dialog.suffixOnlyModeRadio.checked = false;
+         dialog.singleRenameModeRadio.checked = false;
+         dialog.saveOnlyModeRadio.checked = false;
+      }
+      dialog.saveDialogSettings();
+      dialog.updateOperationVisibility();
+      dialog.refreshPreview();
+      dialog.updateWizard();
+   };
+
+   this.wildcardModeRadio.onCheck = function()
+   {
+      if ( dialog.wildcardModeRadio.checked )
+      {
+         dialog.mappingModeRadio.checked = false;
+         dialog.suffixOnlyModeRadio.checked = false;
+         dialog.amendSuffixModeRadio.checked = false;
          dialog.singleRenameModeRadio.checked = false;
          dialog.saveOnlyModeRadio.checked = false;
       }
@@ -2590,6 +2694,7 @@ function ImageRenameByFilterDialog()
          dialog.mappingModeRadio.checked = false;
          dialog.suffixOnlyModeRadio.checked = false;
          dialog.amendSuffixModeRadio.checked = false;
+         dialog.wildcardModeRadio.checked = false;
          dialog.saveOnlyModeRadio.checked = false;
       }
       dialog.saveDialogSettings();
@@ -2606,6 +2711,7 @@ function ImageRenameByFilterDialog()
          dialog.mappingModeRadio.checked = false;
          dialog.suffixOnlyModeRadio.checked = false;
          dialog.amendSuffixModeRadio.checked = false;
+         dialog.wildcardModeRadio.checked = false;
          dialog.singleRenameModeRadio.checked = false;
       }
       dialog.saveDialogSettings();
@@ -2723,7 +2829,8 @@ function ImageRenameByFilterDialog()
          currentPlan = buildPlan( mappingRows,
                                   dialog.suffixText(),
                                   capturePreviewSelections( dialog.previewTree, currentPlan ),
-                                  dialog.renameMode(), dialog.separatorEdit.text );
+                                  dialog.renameMode(), dialog.separatorEdit.text,
+                                  dialog.wildcardFindEdit.text, dialog.wildcardReplacementEdit.text );
 
          if ( dialog.renameMode().length == 0 )
          {
@@ -2744,14 +2851,14 @@ function ImageRenameByFilterDialog()
          var matched = countMatched( currentPlan );
          if ( matched == 0 )
          {
-            (new MessageBox( "No open image windows match the current mappings.",
+            (new MessageBox( "No selected image windows match the current operation.",
                              IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
             return;
          }
 
          var outputDirectory = trimString( dialog.outputEdit.text );
          var message =
-            "Rename " + matched.toString() + " image window(s) using the current mappings?";
+            "Rename " + matched.toString() + " image window(s) using the selected operation?";
 
          if ( dialog.saveCheckBox.checked )
             message += "\n\nImages will also be saved to:\n" +
@@ -2808,7 +2915,8 @@ function ImageRenameByFilterDialog()
          currentPlan = buildPlan( mappingRows,
                                   dialog.suffixText(),
                                   capturePreviewSelections( dialog.previewTree, currentPlan ),
-                                  dialog.renameMode(), dialog.separatorEdit.text );
+                                  dialog.renameMode(), dialog.separatorEdit.text,
+                                  dialog.wildcardFindEdit.text, dialog.wildcardReplacementEdit.text );
          overwriteSelectedCurrentFiles( currentPlan, "" );
       }
       catch ( error )
@@ -2865,6 +2973,7 @@ function ImageRenameByFilterDialog()
    this.pageOperation.sizer.add( this.optionsHeaderLabel );
    this.pageOperation.sizer.add( this.modeSizer );
    this.pageOperation.sizer.add( this.suffixSizer );
+   this.pageOperation.sizer.add( this.wildcardSizer );
    this.pageOperation.sizer.add( this.singleRenameLabel );
    this.pageOperation.sizer.add( this.singleRenameSizer );
    this.pageOperation.sizer.add( this.mappingSizer, 100 );
