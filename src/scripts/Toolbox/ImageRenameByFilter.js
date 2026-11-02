@@ -24,7 +24,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 var IMAGE_RENAME_TITLE = "ImageBatchManager";
-var IMAGE_RENAME_VERSION = "3.2.1";
+var IMAGE_RENAME_VERSION = "3.2.2";
 var IMAGE_RENAME_SETTINGS_ROOT = "GrandPaClanger/ImageRenameByFilter";
 
 var DEFAULT_MAPPINGS =
@@ -368,7 +368,19 @@ function allocateViewId( requestedId, allocated, currentId )
    return candidate;
 }
 
-function buildPlan( mappings, suffix, previousSelections, renameMode )
+function amendSuffixViewId( id, separator, suffix )
+{
+   if ( separator.length == 0 )
+      throw new Error( "Enter a separator for Amend Suffix Name." );
+   if ( trimString( suffix ).length == 0 )
+      throw new Error( "Enter the new suffix text for Amend Suffix Name." );
+
+   var position = id.lastIndexOf( separator );
+   var base = position >= 0 ? id.substring( 0, position ) : id;
+   return sanitizeViewId( base + separator + sanitizeOptionalSuffix( suffix ) );
+}
+
+function buildPlan( mappings, suffix, previousSelections, renameMode, separator )
 {
    var windows = ImageWindow.windows;
    var allocated = existingViewIds();
@@ -383,9 +395,11 @@ function buildPlan( mappings, suffix, previousSelections, renameMode )
       var newId = "";
       var selected = !isCollapsedWindow( window );
 
-      if ( renameMode == "suffixOnly" )
+      if ( renameMode == "suffixOnly" || renameMode == "amendSuffix" )
       {
-         newId = allocateViewId( suffixViewId( currentId, suffix ), allocated, currentId );
+         newId = allocateViewId( renameMode == "amendSuffix" ?
+            amendSuffixViewId( currentId, separator === undefined ? "_" : separator, suffix ) :
+            suffixViewId( currentId, suffix ), allocated, currentId );
          mapping = {
             match: "current name",
             imageId: currentId,
@@ -649,6 +663,7 @@ function showHelpDialog()
       "IMAGE BATCH MANAGER " + IMAGE_RENAME_VERSION + "\n\n" +
       "[1] RENAME MODES\n" +
       "- Rename By Filter Mappings: matches text in the image id, filename, or caption and renames to the mapped value.\n" +
+      "- Amend Suffix Name: replaces text after the last separator (default _), or appends when absent. Uses the Append workflow.\n" +
       "- Append suffix to current names: adds the suffix to the current image id. Filter matching is ignored.\n" +
       "- Rename individual image: enter an ad-hoc name in Step 1, select exactly one image in Step 2, then use Apply Changes in the summary.\n" +
       "- Save selected images only: select images in Step 2, then save and overwrite them without renaming.\n" +
@@ -1664,13 +1679,14 @@ function applyPlan( plan, saveImages, outputDirectory, postSaveAction, openSaved
                     "; opened " + opened.toString() + "." );
 }
 
-function exportImageRenameParameters( mappingsText, saveImages, outputDirectory, suffix, postSaveAction, openSavedImages, renameMode )
+function exportImageRenameParameters( mappingsText, saveImages, outputDirectory, suffix, postSaveAction, openSavedImages, renameMode, separator )
 {
    Parameters.set( "version", IMAGE_RENAME_VERSION );
    Parameters.set( "mappings", mappingsText );
    Parameters.set( "saveImages", saveImages ? "true" : "false" );
    Parameters.set( "outputDirectory", outputDirectory );
    Parameters.set( "suffix", suffix );
+   Parameters.set( "suffixSeparator", separator === undefined ? "_" : separator );
    Parameters.set( "postSaveAction", postSaveAction );
    Parameters.set( "openSavedImages", openSavedImages ? "true" : "false" );
    Parameters.set( "renameMode", renameMode );
@@ -1831,6 +1847,10 @@ function ImageRenameByFilterDialog()
    this.suffixOnlyModeRadio.text = "Append suffix to current names";
    this.suffixOnlyModeRadio.checked = renameMode == "suffixOnly";
 
+   this.amendSuffixModeRadio = new RadioButton( this );
+   this.amendSuffixModeRadio.text = "Amend Suffix Name";
+   this.amendSuffixModeRadio.checked = renameMode == "amendSuffix";
+
    this.singleRenameModeRadio = new RadioButton( this );
    this.singleRenameModeRadio.text = "Rename individual image";
    this.singleRenameModeRadio.checked = renameMode == "single";
@@ -1847,10 +1867,17 @@ function ImageRenameByFilterDialog()
    this.modeSizer.add( this.modeLabel );
    this.modeSizer.add( this.mappingModeRadio );
    this.modeSizer.add( this.suffixOnlyModeRadio );
+   this.modeSizer.add( this.amendSuffixModeRadio );
    this.modeSizer.add( this.singleRenameModeRadio );
    this.modeSizer.add( this.saveOnlyModeRadio );
    this.modeSizer.add( this.modePromptLabel );
    this.modeSizer.addStretch();
+
+   this.separatorLabel = new Label( this );
+   this.separatorLabel.text = "Separator:";
+   this.separatorEdit = new Edit( this );
+   this.separatorEdit.text = Parameters.has( "suffixSeparator" ) ? Parameters.get( "suffixSeparator" ) : "_";
+   this.separatorEdit.toolTip = "Replace the text after the last occurrence of this separator. If absent, append the separator and new suffix.";
 
    this.suffixLabel = new Label( this );
    this.suffixLabel.text = "Suffix:";
@@ -1865,6 +1892,8 @@ function ImageRenameByFilterDialog()
 
    this.suffixSizer = new HorizontalSizer;
    this.suffixSizer.spacing = 6;
+   this.suffixSizer.add( this.separatorLabel );
+   this.suffixSizer.add( this.separatorEdit );
    this.suffixSizer.add( this.suffixLabel );
    this.suffixSizer.add( this.suffixEdit, 100 );
    this.suffixSizer.add( this.suffixPreviewLabel );
@@ -2017,6 +2046,9 @@ function ImageRenameByFilterDialog()
       if ( dialog.suffixOnlyModeRadio.checked )
          return "suffixOnly";
 
+      if ( dialog.amendSuffixModeRadio.checked )
+         return "amendSuffix";
+
       if ( dialog.singleRenameModeRadio.checked )
          return "single";
 
@@ -2040,12 +2072,15 @@ function ImageRenameByFilterDialog()
    this.updateOperationVisibility = function()
    {
       var mode = dialog.renameMode();
-      var suffixVisible = mode == "suffixOnly";
+      var suffixVisible = mode == "suffixOnly" || mode == "amendSuffix";
       var mappingVisible = mode == "mapping";
       var singleVisible = mode == "single";
 
       try
       {
+         dialog.separatorLabel.visible = mode == "amendSuffix";
+         dialog.separatorEdit.visible = mode == "amendSuffix";
+         dialog.suffixLabel.text = mode == "amendSuffix" ? "New suffix:" : "Suffix:";
          dialog.suffixLabel.visible = suffixVisible;
          dialog.suffixEdit.visible = suffixVisible;
          dialog.suffixPreviewLabel.visible = suffixVisible;
@@ -2116,7 +2151,7 @@ function ImageRenameByFilterDialog()
    this.stepInstruction = function( step )
    {
       if ( step == 0 )
-         return "Choose Rename By Filter Mappings, Append suffix to current names, Rename individual image, or Save selected images only. Enter the suffix or single-image name here when needed.";
+         return "Choose Rename By Filter Mappings, Append suffix to current names, Amend Suffix Name, Rename individual image, or Save selected images only. Enter the suffix or single-image name here when needed.";
       if ( step == 1 )
          return dialog.renameMode() == "single" ?
             "Tick exactly one open image window to rename." :
@@ -2166,7 +2201,15 @@ function ImageRenameByFilterDialog()
    {
       if ( wizardStep == 0 && dialog.renameMode().length == 0 )
       {
-         (new MessageBox( "Choose Rename By Filter Mappings, Append suffix to current names, Rename individual image, or Save selected images only before continuing.",
+         (new MessageBox( "Choose Rename By Filter Mappings, Append suffix to current names, Amend Suffix Name, Rename individual image, or Save selected images only before continuing.",
+                          IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
+         return false;
+      }
+
+      if ( wizardStep == 0 && dialog.renameMode() == "amendSuffix" &&
+           (dialog.separatorEdit.text.length == 0 || trimString( dialog.suffixEdit.text ).length == 0) )
+      {
+         (new MessageBox( "Enter a separator and the new suffix text before continuing.",
                           IMAGE_RENAME_TITLE, StdIcon_Information, StdButton_Ok )).execute();
          return false;
       }
@@ -2212,9 +2255,10 @@ function ImageRenameByFilterDialog()
          "Rename By Filter Mappings" :
          (dialog.renameMode() == "suffixOnly" ?
             "Append suffix to current names" :
+            (dialog.renameMode() == "amendSuffix" ? "Amend Suffix Name" :
             (dialog.renameMode() == "single" ?
                "Rename individual image" :
-               "Save selected images only"));
+               "Save selected images only")));
       var selected = dialog.selectedPreviewCount();
       var matched = countMatched( currentPlan );
       var suffix = sanitizeOptionalSuffix( dialog.suffixEdit.text );
@@ -2248,7 +2292,7 @@ function ImageRenameByFilterDialog()
                 "Only the one ticked image will be renamed.\n" +
                 "New single-image name: " + trimString( dialog.singleRenameEdit.text ) + "\n" :
                 "") +
-             "Suffix: " + (suffix.length > 0 ? "_" + suffix : "(none)") + "\n" +
+             "Suffix: " + (suffix.length > 0 ? (dialog.renameMode() == "amendSuffix" ? dialog.separatorEdit.text : "_") + suffix : "(none)") + "\n" +
              saveText + "\n" +
              (dialog.renameMode() == "single" ? "" : windowText + "\n") +
              reopenText;
@@ -2328,13 +2372,21 @@ function ImageRenameByFilterDialog()
          var previousSelections = capturePreviewSelections( dialog.previewTree, currentPlan );
          var effectiveSuffix = sanitizeOptionalSuffix( dialog.suffixEdit.text );
          dialog.suffixPreviewLabel.text =
-            effectiveSuffix.length > 0 ? "Suffix active: _" + effectiveSuffix : "";
+            effectiveSuffix.length > 0 ? "Suffix active: " +
+               (dialog.renameMode() == "amendSuffix" ? dialog.separatorEdit.text : "_") + effectiveSuffix : "";
          setControlBold( dialog.suffixEdit, effectiveSuffix.length > 0 );
          setControlBold( dialog.suffixPreviewLabel, effectiveSuffix.length > 0 );
+         if ( dialog.renameMode() == "amendSuffix" &&
+              (dialog.separatorEdit.text.length == 0 || effectiveSuffix.length == 0) )
+         {
+            currentPlan = new Array;
+            dialog.previewTree.clear();
+            return;
+         }
          currentPlan = buildPlan( mappingRows,
                                   effectiveSuffix,
                                   previousSelections,
-                                  dialog.renameMode() );
+                                  dialog.renameMode(), dialog.separatorEdit.text );
 
          if ( !outputDirectoryManuallyChanged )
          {
@@ -2470,6 +2522,8 @@ function ImageRenameByFilterDialog()
       dialog.updateWizard();
    };
 
+   this.separatorEdit.onTextUpdated = this.suffixEdit.onTextUpdated;
+
    this.singleRenameEdit.onTextUpdated = function()
    {
       dialog.updateWizard();
@@ -2480,6 +2534,7 @@ function ImageRenameByFilterDialog()
       if ( dialog.mappingModeRadio.checked )
       {
          dialog.suffixOnlyModeRadio.checked = false;
+         dialog.amendSuffixModeRadio.checked = false;
          dialog.singleRenameModeRadio.checked = false;
          dialog.saveOnlyModeRadio.checked = false;
       }
@@ -2494,6 +2549,7 @@ function ImageRenameByFilterDialog()
    {
       if ( dialog.suffixOnlyModeRadio.checked )
       {
+         dialog.amendSuffixModeRadio.checked = false;
          dialog.mappingModeRadio.checked = false;
          dialog.singleRenameModeRadio.checked = false;
          dialog.saveOnlyModeRadio.checked = false;
@@ -2505,12 +2561,28 @@ function ImageRenameByFilterDialog()
       dialog.updateWizard();
    };
 
+   this.amendSuffixModeRadio.onCheck = function()
+   {
+      if ( dialog.amendSuffixModeRadio.checked )
+      {
+         dialog.mappingModeRadio.checked = false;
+         dialog.suffixOnlyModeRadio.checked = false;
+         dialog.singleRenameModeRadio.checked = false;
+         dialog.saveOnlyModeRadio.checked = false;
+      }
+      dialog.saveDialogSettings();
+      dialog.updateOperationVisibility();
+      dialog.refreshPreview();
+      dialog.updateWizard();
+   };
+
    this.singleRenameModeRadio.onCheck = function()
    {
       if ( dialog.singleRenameModeRadio.checked )
       {
          dialog.mappingModeRadio.checked = false;
          dialog.suffixOnlyModeRadio.checked = false;
+         dialog.amendSuffixModeRadio.checked = false;
          dialog.saveOnlyModeRadio.checked = false;
       }
       dialog.saveDialogSettings();
@@ -2526,6 +2598,7 @@ function ImageRenameByFilterDialog()
       {
          dialog.mappingModeRadio.checked = false;
          dialog.suffixOnlyModeRadio.checked = false;
+         dialog.amendSuffixModeRadio.checked = false;
          dialog.singleRenameModeRadio.checked = false;
       }
       dialog.saveDialogSettings();
@@ -2643,7 +2716,7 @@ function ImageRenameByFilterDialog()
          currentPlan = buildPlan( mappingRows,
                                   sanitizeOptionalSuffix( dialog.suffixEdit.text ),
                                   capturePreviewSelections( dialog.previewTree, currentPlan ),
-                                  dialog.renameMode() );
+                                  dialog.renameMode(), dialog.separatorEdit.text );
 
          if ( dialog.renameMode().length == 0 )
          {
@@ -2728,7 +2801,7 @@ function ImageRenameByFilterDialog()
          currentPlan = buildPlan( mappingRows,
                                   sanitizeOptionalSuffix( dialog.suffixEdit.text ),
                                   capturePreviewSelections( dialog.previewTree, currentPlan ),
-                                  dialog.renameMode() );
+                                  dialog.renameMode(), dialog.separatorEdit.text );
          overwriteSelectedCurrentFiles( currentPlan, "" );
       }
       catch ( error )
