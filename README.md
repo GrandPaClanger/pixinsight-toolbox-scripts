@@ -118,7 +118,7 @@ Menu:
 
 Version:
 
-`3.2.2`
+`3.2.3`
 
 Purpose:
 
@@ -166,8 +166,8 @@ converted to underscores.
 #### Amend Suffix Name
 
 Choose this option immediately after Append suffix to current names. Enter the
-separator (default `_`) and the new suffix text. The text after the last
-separator is replaced: `M31_L_old` becomes `M31_L_new` with suffix `new`.
+separator (default `_`) and the new suffix text. The text after the first
+separator is replaced: `M31_L_old` becomes `M31_new` with suffix `new`.
 If the separator is absent, the separator and new suffix are appended.
 Both fields are required. Names retain the usual PixInsight identifier
 sanitization and collision handling. Continue through the same image selection,
@@ -274,7 +274,7 @@ PixInsight menu entry and dialog title are `ImageBatchManager`.
 
 The update package is:
 
-`packages/ChapelAstroUtilities-3.6.3.zip`
+`packages/ChapelAstroUtilities-3.6.4.zip`
 
 ## Validation
 
@@ -283,6 +283,14 @@ tests with PJSR doubles. PixInsight runtime acceptance checks are documented in
 `tests/PIXINSIGHT-MANUAL.md`; these remain to be performed in PixInsight.
 
 ## Change Log
+
+### Chapel Astro Utilities 3.6.4
+
+- Updates ImageBatchManager to 3.2.3: Amend Suffix Name replaces everything
+  after the first separator and preserves repeated underscores.
+- With separator `_` and new suffix `_PostLinearFit`,
+  `AstroImagePrimer_B_Oiii_PostLinearFit` becomes `AstroImagePrimer__PostLinearFit`.
+
 
 ### Chapel Astro Utilities 3.6.3
 

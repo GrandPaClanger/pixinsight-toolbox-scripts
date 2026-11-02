@@ -24,7 +24,7 @@
 #include <pjsr/UndoFlag.jsh>
 
 var IMAGE_RENAME_TITLE = "ImageBatchManager";
-var IMAGE_RENAME_VERSION = "3.2.2";
+var IMAGE_RENAME_VERSION = "3.2.3";
 var IMAGE_RENAME_SETTINGS_ROOT = "GrandPaClanger/ImageRenameByFilter";
 
 var DEFAULT_MAPPINGS =
@@ -352,9 +352,9 @@ function isCollapsedWindow( window )
    return false;
 }
 
-function allocateViewId( requestedId, allocated, currentId )
+function allocateViewId( requestedId, allocated, currentId, preserveUnderscores )
 {
-   var base = sanitizeViewId( requestedId );
+   var base = preserveUnderscores ? requestedId : sanitizeViewId( requestedId );
    var candidate = base;
    var suffix = 2;
 
@@ -375,9 +375,10 @@ function amendSuffixViewId( id, separator, suffix )
    if ( trimString( suffix ).length == 0 )
       throw new Error( "Enter the new suffix text for Amend Suffix Name." );
 
-   var position = id.lastIndexOf( separator );
+   var position = id.indexOf( separator );
    var base = position >= 0 ? id.substring( 0, position ) : id;
-   return sanitizeViewId( base + separator + sanitizeOptionalSuffix( suffix ) );
+   var result = trimString( base + separator + trimString( suffix ) ).replace( /[^A-Za-z0-9_]/g, "_" );
+   return /^[A-Za-z_]/.test( result ) ? result : "_" + result;
 }
 
 function buildPlan( mappings, suffix, previousSelections, renameMode, separator )
@@ -399,7 +400,7 @@ function buildPlan( mappings, suffix, previousSelections, renameMode, separator 
       {
          newId = allocateViewId( renameMode == "amendSuffix" ?
             amendSuffixViewId( currentId, separator === undefined ? "_" : separator, suffix ) :
-            suffixViewId( currentId, suffix ), allocated, currentId );
+            suffixViewId( currentId, suffix ), allocated, currentId, renameMode == "amendSuffix" );
          mapping = {
             match: "current name",
             imageId: currentId,
@@ -663,7 +664,7 @@ function showHelpDialog()
       "IMAGE BATCH MANAGER " + IMAGE_RENAME_VERSION + "\n\n" +
       "[1] RENAME MODES\n" +
       "- Rename By Filter Mappings: matches text in the image id, filename, or caption and renames to the mapped value.\n" +
-      "- Amend Suffix Name: replaces text after the last separator (default _), or appends when absent. Uses the Append workflow.\n" +
+      "- Amend Suffix Name: replaces text after the first separator (default _), or appends when absent. Uses the Append workflow.\n" +
       "- Append suffix to current names: adds the suffix to the current image id. Filter matching is ignored.\n" +
       "- Rename individual image: enter an ad-hoc name in Step 1, select exactly one image in Step 2, then use Apply Changes in the summary.\n" +
       "- Save selected images only: select images in Step 2, then save and overwrite them without renaming.\n" +
@@ -1877,14 +1878,14 @@ function ImageRenameByFilterDialog()
    this.separatorLabel.text = "Separator:";
    this.separatorEdit = new Edit( this );
    this.separatorEdit.text = Parameters.has( "suffixSeparator" ) ? Parameters.get( "suffixSeparator" ) : "_";
-   this.separatorEdit.toolTip = "Replace the text after the last occurrence of this separator. If absent, append the separator and new suffix.";
+   this.separatorEdit.toolTip = "Replace the text after the first occurrence of this separator. If absent, append the separator and new suffix.";
 
    this.suffixLabel = new Label( this );
    this.suffixLabel.text = "Suffix:";
    this.suffixLabel.textAlignment = TextAlign_Right | TextAlign_VertCenter;
 
    this.suffixEdit = new Edit( this );
-   this.suffixEdit.text = sanitizeOptionalSuffix( suffixText );
+   this.suffixEdit.text = renameMode == "amendSuffix" ? suffixText : sanitizeOptionalSuffix( suffixText );
    this.suffixEdit.toolTip = "Optional suffix added after the mapped name. Invalid PixInsight identifier characters are converted to underscores.";
 
    this.suffixPreviewLabel = new Label( this );
@@ -2032,10 +2033,16 @@ function ImageRenameByFilterDialog()
       saveSettings( dialog.mappingsText(),
                     dialog.saveCheckBox.checked,
                     trimString( dialog.outputEdit.text ),
-                    sanitizeOptionalSuffix( dialog.suffixEdit.text ),
+                    dialog.suffixText(),
                     dialog.postSaveAction(),
                     dialog.openSavedCheckBox.checked,
                     dialog.renameMode() );
+   };
+
+   this.suffixText = function()
+   {
+      return dialog.renameMode() == "amendSuffix" ?
+         trimString( dialog.suffixEdit.text ) : sanitizeOptionalSuffix( dialog.suffixEdit.text );
    };
 
    this.renameMode = function()
@@ -2261,7 +2268,7 @@ function ImageRenameByFilterDialog()
                "Save selected images only")));
       var selected = dialog.selectedPreviewCount();
       var matched = countMatched( currentPlan );
-      var suffix = sanitizeOptionalSuffix( dialog.suffixEdit.text );
+      var suffix = dialog.suffixText();
       var outputDirectory = trimString( dialog.outputEdit.text );
       var saveText = dialog.renameMode() == "single" ?
          "Single-image rename only. Files will not be saved, closed, or collapsed." :
@@ -2370,7 +2377,7 @@ function ImageRenameByFilterDialog()
       try
       {
          var previousSelections = capturePreviewSelections( dialog.previewTree, currentPlan );
-         var effectiveSuffix = sanitizeOptionalSuffix( dialog.suffixEdit.text );
+         var effectiveSuffix = dialog.suffixText();
          dialog.suffixPreviewLabel.text =
             effectiveSuffix.length > 0 ? "Suffix active: " +
                (dialog.renameMode() == "amendSuffix" ? dialog.separatorEdit.text : "_") + effectiveSuffix : "";
@@ -2714,7 +2721,7 @@ function ImageRenameByFilterDialog()
       try
       {
          currentPlan = buildPlan( mappingRows,
-                                  sanitizeOptionalSuffix( dialog.suffixEdit.text ),
+                                  dialog.suffixText(),
                                   capturePreviewSelections( dialog.previewTree, currentPlan ),
                                   dialog.renameMode(), dialog.separatorEdit.text );
 
@@ -2764,7 +2771,7 @@ function ImageRenameByFilterDialog()
          saveSettings( dialog.mappingsText(),
                        dialog.saveCheckBox.checked,
                        outputDirectory,
-                       sanitizeOptionalSuffix( dialog.suffixEdit.text ),
+                       dialog.suffixText(),
                        dialog.postSaveAction(),
                        dialog.openSavedCheckBox.checked,
                        dialog.renameMode() );
@@ -2799,7 +2806,7 @@ function ImageRenameByFilterDialog()
          }
 
          currentPlan = buildPlan( mappingRows,
-                                  sanitizeOptionalSuffix( dialog.suffixEdit.text ),
+                                  dialog.suffixText(),
                                   capturePreviewSelections( dialog.previewTree, currentPlan ),
                                   dialog.renameMode(), dialog.separatorEdit.text );
          overwriteSelectedCurrentFiles( currentPlan, "" );

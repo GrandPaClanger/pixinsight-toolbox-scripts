@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/ChapelAstroUtilities-3.6.3.zip"
-               sha1="45ab80ec04ddbcc57de1c214e7977e5b04b5760f"
+      <package fileName="packages/ChapelAstroUtilities-3.6.4.zip"
+               sha1="264fa5281de0f30342bffe7d95e8bd79078ee45c"
                type="script"
                releaseDate="20261102">
          <title>
-            Chapel Astro Utilities 3.6.3
+            Chapel Astro Utilities 3.6.4
          </title>
          <description>
             <p>
-               Installs SHO to RGB Stars 1.0.2, BatchSTFStretch 1.0.0, ImageBatchManager 3.2.2, MatchOpenImageSizes 1.2.1, and StarRecombine 1.0.2 under Script &gt; Chapel Astro Utilities.
-               Adds Amend Suffix Name to ImageBatchManager with a configurable separator (default _) and new suffix text, using the Append wizard workflow.
+               Installs SHO to RGB Stars 1.0.2, BatchSTFStretch 1.0.0, ImageBatchManager 3.2.3, MatchOpenImageSizes 1.2.1, and StarRecombine 1.0.2 under Script &gt; Chapel Astro Utilities.
+               Corrects Amend Suffix Name to replace text after the first separator and preserve repeated underscores.
             </p>
          </description>
       </package>
