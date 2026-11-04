@@ -6,17 +6,17 @@
       </p>
    </description>
    <platform os="all" arch="noarch" version="1.8.9-2:1.9.99">
-      <package fileName="packages/ChapelAstroUtilities-3.6.5.zip"
-               sha1="635497561c3353748ef08077116c0619ea5f1638"
+      <package fileName="packages/ChapelAstroUtilities-3.6.6.zip"
+               sha1="b3e94e20c1ed7e3fb62d740c608a86ec930c8f6a"
                type="script"
-               releaseDate="20261102">
+               releaseDate="20261104">
          <title>
-            Chapel Astro Utilities 3.6.5
+            Chapel Astro Utilities 3.6.6
          </title>
          <description>
             <p>
-               Installs SHO to RGB Stars 1.0.2, BatchSTFStretch 1.0.0, ImageBatchManager 3.2.4, MatchOpenImageSizes 1.2.1, and StarRecombine 1.0.2 under Script &gt; Chapel Astro Utilities.
-               Adds Wildcard Rename with find and replace text, * and ? patterns, and the same batch wizard workflow as Append and Amend.
+               Installs Close Weighted Windows 1.0.0, SHO to RGB Stars 1.0.2, BatchSTFStretch 1.0.0, ImageBatchManager 3.2.4, MatchOpenImageSizes 1.2.1, and StarRecombine 1.0.2 under Script &gt; Chapel Astro Utilities.
+               Adds Close Weighted Windows: closes image windows containing _weights in their title (case-insensitive), discarding unsaved changes without confirmation or summary.
             </p>
          </description>
       </package>

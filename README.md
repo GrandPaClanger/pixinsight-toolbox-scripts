@@ -45,6 +45,16 @@ menu after PixInsight refreshes scripts.
 
 ## Scripts
 
+### Close Weighted Windows
+
+Menu: `Script > Chapel Astro Utilities > Close Weighted Windows`
+
+Version: `1.0.0`
+
+Immediately closes every open image window whose title contains `_weights`
+(case-insensitive), including matches in the image identifier or displayed file
+name. Unsaved changes are discarded without confirmation or a summary.
+
 ### SHO to RGB Stars
 
 Menu: `Script > Chapel Astro Utilities > SHO to RGB Stars`
